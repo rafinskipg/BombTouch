@@ -15,8 +15,8 @@ var requestAnimFrame = (function(){
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 300;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 document.body.appendChild(canvas);
 
 // The main game loop
@@ -24,9 +24,11 @@ var lastTime;
 function main() {
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
-
-    update(dt);
-    render();
+    if(!isGameOver){
+         update(dt);
+        render();
+    }
+   
 
     lastTime = now;
     requestAnimFrame(main);
@@ -34,7 +36,8 @@ function main() {
 
 function init() {
 
-    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     terrainPattern = ctx.createPattern(resources.get('img/bg2.BMP'), 'repeat');
 
     document.getElementById('play-again').addEventListener('click', function() {
@@ -50,7 +53,7 @@ function init() {
 	        y: e.pageY - canvasPosition.y
 	    }
         bombs.push( { pos: [mouse.x, mouse.y],
-                       sprite: new Sprite('img/bomb_1.png', [0, 0], [32, 32],14,[0,1,2,3,4,5,6,7,8,9,10,11,12,13],null,
+                       sprite: new Sprite('img/nyan_cat.png', [0, 0], [49, 42],14,[0,1,2,3,4,5,6,7],null,
                                        true) });
                                        
     });
@@ -61,9 +64,9 @@ function init() {
 
 resources.load([
     'img/sprites.png',
-    'img/ramuh.png',
-    'img/bomb_1.png',
-    'img/tonberry.png',
+    'img/nyan1.png',
+    'img/nyan_cat.png',
+    'img/enemies.png',
     'img/bg2.BMP'
 ]);
 resources.onReady(init);
@@ -71,7 +74,7 @@ resources.onReady(init);
 // Game state
 var player = {
     pos: [0, 0],
-    sprite: new Sprite('img/ramuh.png', [0, 0], [32, 60], 3, [0, 1,2,3])
+    sprite: new Sprite('img/nyan1.png', [0, 0], [88,35], 4, [0, 1,2,3,4])
 };
 
 var bullets = [];
@@ -79,7 +82,7 @@ var bombs = [];
 var bombareas = [];
 var enemies = [];
 var explosions = [];
-
+    
 var lastFire = Date.now();
 var gameTime = 0;
 var isGameOver;
@@ -108,8 +111,8 @@ function update(dt) {
         enemies.push({
             pos: [canvas.width,
                   Math.random() * (canvas.height - 39)],
-            sprite: new Sprite('img/tonberry.png', [0,45], [40,45],
-                               4, [0, 1, 2])
+            sprite: new Sprite('img/enemies.png', [18,344], [28,30],
+                               6, [0, 1, 2,3,4,5])
         });
     }
 
