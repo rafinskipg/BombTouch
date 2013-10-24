@@ -1,2 +1,1 @@
-
-A simple starting point for writing 2d games. See tutorial.md for more information.
+A game about a cat, your finger and some bombs
