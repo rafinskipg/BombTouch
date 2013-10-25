@@ -1,0 +1,111 @@
+$iconSpritePath: "../images/glyphicons-halflings.png";
+$iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
+
+@import "   sass-bootstrap/lib/bootstrap";
+
+/* Put your CSS here */
+html, body {
+  margin: 20px;
+}
+
+body {
+    background: #52863D;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+}
+header{
+    color: white;
+    #logo{
+      //  background: url('../images/cat.gif');
+       // height: 50px;
+    }
+}
+.inicio {
+        margin: 50px auto 0 auto;
+        width: 300px;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 30px;
+        background-color: #eee;
+        border-radius: 6px;
+        padding: 60px;
+}
+.juego{
+    
+}
+
+
+
+img {
+    max-width:  100%;
+}
+
+
+canvas {
+   
+    margin: auto;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.wrapper {
+    width: 512px;
+    margin: 0 auto;
+    margin-top: 2em;
+}
+
+#instructions {
+    float: left;
+    font-family: sans-serif;
+    color: #757575;
+}
+
+#score {
+   
+position: absolute;
+top: 54px;
+z-index: 2999;
+    color: white;
+    font-size: 2em;
+}
+
+.key {
+    color: #aaffdd;
+}
+
+#game-over, #game-over-overlay {
+    margin: auto;
+    width: 512px;
+    height: 480px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    display: none;
+}
+
+#game-over-overlay {
+    background-color: black;
+    opacity: .5;
+}
+
+#game-over {
+    height: 200px;
+    text-align: center;
+    color: white;
+}
+
+#game-over h1 {
+    font-size: 3em;
+    font-family: sans-serif;
+}
+
+#game-over button {
+    font-size: 1.5em;
+}

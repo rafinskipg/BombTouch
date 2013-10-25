@@ -1,0 +1,35 @@
+<header>
+    <div class="row">
+        <div class="col-xs-5 col-md-2" id="Logo"><img src="images/cat.gif"/></div>
+        <div class="col-xs-5 col-md-10" id="Logo"><h1>BombTouch</h1><p>Oh my cat</p></div>
+       
+    </div>
+</header>
+<div class="inicio" ng-show="home">
+    
+    <div class="row" >
+      <div class="col-xs-6 col-md-6">
+            <a ng-click="start()">Start</a>
+       </div>
+       <div class="col-xs-6 col-md-6">
+            <a  ng-click="setSonido()">Sound: <span>{{getSonido()}}</span></a>
+       </div>
+    </div>
+    
+   
+</div>
+ <div class="juego" ng-show="juego">
+    <div id="game-over-overlay" ng-show="isGameOver()">
+    </div>
+
+    <div id="game-over" ng-show="isGameOver()">
+      <h1>GAME OVER</h1>
+      <button id="play-again" ng-click="start()">Play Again</button>
+    </div>
+
+    
+    <div id="score">{{getPuntos()}}</div>
+    
+    
+    <canvas id="canvas"></canvas>
+ </div>
