@@ -37,8 +37,17 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var enemySpeed = 50;
     // var sounds
     var SOUNDS = {
+        death: new Howl({
+          urls: ['../sounds/cut_grunt2.wav']
+        }),
+        shoot: new Howl({
+          urls: ['../sounds/laser5.wav']
+        }),
         explosion: new Howl({
-          urls: ['../sounds/explosion.wma']
+          urls: ['../sounds/atari_boom2.wav']
+        }),
+        ambient: new Howl({
+          urls: ['../sounds/April_Kisses.mp3']
         })
     } 
     //Suscribe to events of the game
@@ -51,7 +60,12 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         'images/newsprites.png',
         'images/bg2.BMP'
     ]);
-    resources.onReady(function() {resourcesLoaded = true});
+    resources.onReady(function() {
+        resourcesLoaded = true
+        if(soundActivated){
+            SOUNDS.ambient.play();
+        }
+    });
     
     
     // The main game loop
@@ -219,7 +233,9 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                            dir: 'down',
                            damage: 50,
                            sprite: new Sprite('images/newsprites.png', [77, 5], [11, 11], 5, [0,1,2,3],null, true) });
-
+            if(soundActivated){
+                SOUNDS.shoot.play();
+            }
             lastFire = Date.now();
         }
     }
@@ -278,6 +294,9 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 bombs.splice(i, 1);
                    
                 i--;
+                if(soundActivated){
+                    SOUNDS.explosion.play();
+                }
             }
         }
                              
@@ -369,7 +388,9 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 // Remove the enemy
                 enemies.splice(i, 1);
                 i--;
-
+                if(soundActivated){
+                    SOUNDS.death.play();
+                }
                 // Add an explosion
                 addExplosion(pos);
                
