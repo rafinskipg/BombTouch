@@ -13,7 +13,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             };
     })();
     
-    var canvas, ctx, soundActivated = false, gameOver = false, points = 0,  resourcesLoaded = false;
+    var canvas, ctx, soundActivated = false, gameOver = false, level = 1,  paused = false, points = 0,  resourcesLoaded = false;
     var bullets = bombs = bombareas = enemies = explosions = [];
        
     var lastFire = Date.now();
@@ -31,7 +31,11 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var bombAreaTime = 800;
     var enemySpeed = 50;
     
-    
+    //Suscribe to events of the game
+    var notifyGameEnd = [];
+    var notifyPoints = [];
+    var notifyLevelUp = [];
+
     resources.load([
         '../../images/sprites.png',
         '../../images/nyan1.png',
@@ -46,8 +50,8 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var main = function() {
         var now = Date.now();
         var dt = (now - lastTime) / 1000.0;
-        if(!isGameOver()){
-             update(dt);
+        if(!isGameOver() && !isPaused()){
+            update(dt);
             render();
         }
         lastTime = now;
@@ -91,7 +95,9 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         gameOver = false;
         gameTime = 0;
         points = 0;
-        
+        level = 1;
+        paused = false;
+
         bombs = [];
         bombareas = [];
         enemies = [];
@@ -103,8 +109,50 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     // Game over
     function endGame() {
         gameOver = true;
+        for(var i = 0; i<notifyGameEnd.length; i++){
+            notifyGameEnd[i]();
+        }
+    }
+
+    //Pause game
+    function pause(){
+        paused = true;
+    }
+    function resume(){
+        paused = false;
+    }
+
+    //Stages
+    function changeLevel(){
+        level++;
+        gameTime = 0;
+        enemies = [];
+        for(var i = 0; i<notifyLevelUp.length; i++){
+            notifyLevelUp[i](level);
+        }
+    }
+    //Add points
+    function addPoints(pts){
+        if(points < 2000 && points+pts >= 2000){
+            changeLevel();
+        }else if(points < 5000 && points+pts >= 5000){
+            changeLevel();
+        }
+
+        points+=pts;
+
+        for(var i = 0; i<notifyPoints.length; i++){
+            notifyPoints[i](points);
+        }
     }
     
+    //Check if is game over
+    function isGameOver(){
+        return gameOver;
+    }
+    function isPaused(){
+        return paused;
+    }
     // Update game objects
     function update(dt) {
         gameTime += dt;
@@ -114,19 +162,17 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
         // It gets harder over time by adding enemies using this
         // equation: 1-.993^gameTime
-        if(Math.random() < 1 - Math.pow(.999, gameTime)) {
-            enemies.push({
-                pos: [canvas.width,
-                      Math.random() * (canvas.height - 39)],
-                sprite: new Sprite('../../images/enemies.png', [18,344], [28,30],
-                                   6, [0, 1, 2,3,4,5])
-            });
+        var value = Math.random() < 1 - Math.pow(.999, gameTime);
+        if(value) {
+            console.log(Math.pow(.999, gameTime))
+            enemies.push(getEnemy());
+            
         }
 
         checkCollisions();
 
     };
-
+   
     function handleInput(dt) {
         if(input.isDown('DOWN') || input.isDown('s')) {
             player.pos[1] += playerSpeed * dt;
@@ -152,12 +198,15 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
             bullets.push({ pos: [x, y],
                            dir: 'forward',
+                           damage: 100,
                            sprite: new Sprite('../../images/sprites.png', [0, 39], [18, 8]) });
             bullets.push({ pos: [x, y],
                            dir: 'up',
+                           damage: 50,
                            sprite: new Sprite('../../images/sprites.png', [0, 50], [9, 5]) });
             bullets.push({ pos: [x, y],
                            dir: 'down',
+                           damage: 50,
                            sprite: new Sprite('../../images/sprites.png', [0, 60], [9, 5]) });
 
             lastFire = Date.now();
@@ -189,7 +238,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
         // Update all the enemies
         for(var i=0; i<enemies.length; i++) {
-            enemies[i].pos[0] -= enemySpeed * dt;
+            enemies[i].pos[0] -= enemies[i].speed * dt;
             enemies[i].sprite.update(dt);
 
             // Remove if offscreen
@@ -198,30 +247,30 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 i--;
             }
         }
-        console.log(bombs.length);
+        
        for(var i=0; i<bombs.length; i++) {
             bombs[i].sprite.update(dt);
 
             // Remove if animation is done
             if(bombs[i].sprite.done) {
-                bombareas.push({ pos: bombs[i].pos,
-                           sprite: new Sprite('../../images/sprites.png',
+                bombareas.push({ 
+                            pos: bombs[i].pos,
+                            sprite: new Sprite('../../images/sprites.png',
                                            [0, 117],
                                            [39, 39],
                                            16,
                                            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                                            null,
-                                           true)});
+                                           true),
+                            damage: 5
+                            });
                 bombs.splice(i, 1);
                    
                 i--;
             }
         }
-            
-               /* */
-                        
+                             
                   
-        
         for(var i = 0; i<bombareas.length; i++){
             bombareas[i].sprite.update(dt);
              //Remove if animation is done
@@ -271,24 +320,28 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 var size2 = bullets[j].sprite.size;
 
                 if(boxCollides(pos, size, pos2, size2)) {
-                    // Remove the enemy
-                    enemies.splice(i, 1);
-                    i--;
+                    enemies[i].life -=  bullets[j].damage;
+                    if(enemies[i].life <= 0){
+                        // Add score
+                        addPoints(enemies[i].points);
 
-                    // Add score
-                    score += 100;
+                        // Remove the enemy
+                        enemies.splice(i, 1);
+                        i--;
 
-                    // Add an explosion
-                    explosions.push({
-                        pos: pos,
-                        sprite: new Sprite('../../images/sprites.png',
-                                           [0, 117],
-                                           [39, 39],
-                                           16,
-                                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                           null,
-                                           true)
-                    });
+                        // Add an explosion
+                        explosions.push({
+                            pos: pos,
+                            sprite: new Sprite('../../images/sprites.png',
+                                               [0, 117],
+                                               [39, 39],
+                                               16,
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                                               null,
+                                               true)
+                        });
+                    }
+                    
 
                     // Remove the bullet and stop this iteration
                     bullets.splice(j, 1);
@@ -298,28 +351,32 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
              
             
             for(var z= 0; z<bombareas.length; z++){
-                var pos2 = bombareas[j].pos;
-                var size2 = bombareas[j].sprite.size;
+                var pos2 = bombareas[z].pos;
+                var size2 = bombareas[z].sprite.size;
 
                 if(boxCollides(pos, size, pos2, size2)) {
-                    // Remove the enemy
-                    enemies.splice(i, 1);
-                    i--;
+                    enemies[i].life -=  bombareas[z].damage;
+                    console.log(enemies[i].life)
+                    if(enemies[i].life <= 0){
+                        // Add score
+                        addPoints(enemies[i].points);
 
-                    // Add score
-                    points += 100;
+                        // Remove the enemy
+                        enemies.splice(i, 1);
+                        i--;
 
-                    // Add an explosion
-                    explosions.push({
-                        pos: pos,
-                        sprite: new Sprite('../../images/sprites.png',
-                                           [0, 117],
-                                           [39, 39],
-                                           16,
-                                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                           null,
-                                           true)
-                    });
+                        // Add an explosion
+                        explosions.push({
+                            pos: pos,
+                            sprite: new Sprite('../../images/sprites.png',
+                                               [0, 117],
+                                               [39, 39],
+                                               16,
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                                               null,
+                                               true)
+                        });
+                    }
                     break;
                 }
             }
@@ -327,6 +384,52 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 endGame();
             }
         }
+    }
+
+
+    function getEnemy(){
+        // Sprite(url, pos, size, speed, frames, dir, once)
+        switch(level){
+            case 1:
+
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('../../images/enemies.png', [18,344], [28,30],
+                                       6, [0, 1, 2,3,4,5]),
+                    speed: enemySpeed,
+                    points: 100,
+                    life: 100
+                }
+
+            break;
+
+            case 2: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('../../images/enemies.png', [18,518], [35,50],
+                                       4, [0, 1, 2,3]),
+                    speed: enemySpeed /2,
+                    points: 200,
+                    life: 200
+                }
+
+            break;
+            case 3: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('../../images/enemies.png', [712,141], [72,72],
+                                       1, [0]),
+                    speed: enemySpeed /2,
+                    points: 700,
+                    life: 700
+                }
+
+            break;
+        }
+       
     }
 
     function checkPlayerBounds() {
@@ -369,6 +472,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         //renderEntities(bullets);
         renderEntities(bombs);
         renderEntities(bombareas);
+        renderEntities(bullets);
         renderEntities(enemies);
         renderEntities(explosions);
     };
@@ -386,29 +490,30 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         ctx.restore();
     }
     
+
     
-    function stop(){
-        endGame();
+    function suscribeGameOver( fn){
+        notifyGameEnd.push(fn);
     }
-        
-    function getPoints(){
-        return points;
+    function suscribeLevelUp( fn){
+        notifyLevelUp.push(fn);
     }
-    
-    function isGameOver(){
-        return gameOver;
+    function suscribePoints(fn){
+        notifyPoints.push(fn);
     }
-    
     function setSound(bool){
         soundActivated = bool;
     }
     
     var GAME = {
-        isGameOver : isGameOver,
-        start : start,
-        getPoints : getPoints,
+        suscribeGameOver : suscribeGameOver,
+        suscribeLevelUp : suscribeLevelUp,
+        suscribePoints : suscribePoints,
         setSound : setSound,
-        stop : stop
+        endGame : endGame,
+        start : start,
+        pause: pause,
+        resume : resume
        };
     //API 
     return  GAME;

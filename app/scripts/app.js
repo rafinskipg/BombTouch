@@ -2,6 +2,6 @@ define([
 	'angular'
 	], function (angular ) {
 		'use strict';
-
-		return angular.module('BombTouchApp', []) ;
+        var BombTouchApp = angular.module('BombTouchApp', ['ngRoute']) ;
+		return BombTouchApp;
 });

@@ -19,17 +19,21 @@
    
 </div>
  <div class="juego" ng-show="juego">
-    <div id="game-over-overlay" ng-show="isGameOver()">
+    <div class="top_menu">
+      <div id="pause" ng-click="pause()" ng-show="paused == false"> || </div>
+      <div id="resume" ng-click="resume()" ng-show="paused"> Resume </div>
+      <div id="score">{{puntos}}</div>
     </div>
 
-    <div id="game-over" ng-show="isGameOver()">
+    <div id="game-over-overlay" ng-show="gameOver">
+    </div>
+
+    <div id="game-over" ng-show="gameOver">
       <h1>GAME OVER</h1>
       <button id="play-again" ng-click="start()">Play Again</button>
     </div>
 
-    
-    <div id="score">{{getPuntos()}}</div>
-    
+    <div id="level" ng-show="showLevel">Prepare your anus for level {{level}}!</div>
     
     <canvas id="canvas"></canvas>
  </div>

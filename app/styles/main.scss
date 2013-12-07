@@ -12,6 +12,7 @@ body {
     background: #52863D;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #333;
+
 }
 header{
     color: white;
@@ -31,7 +32,7 @@ header{
         padding: 60px;
 }
 .juego{
-    
+    overflow: hidden;
 }
 
 
@@ -64,13 +65,33 @@ canvas {
     color: #757575;
 }
 
-#score {
+.top_menu{
+    position: absolute;
+    top: 24px;
+    z-index: 2999;
+    color: rgb(252, 252, 252);
+    font-size: 1.5em;
+    background: rgba(11, 11, 218, 0.44);
+    padding: 20px;
+}
+
+#score { 
    
-position: absolute;
-top: 54px;
-z-index: 2999;
-    color: white;
-    font-size: 2em;
+}
+
+#pause, #resume{
+    float: left;
+}
+
+#level{
+    position: absolute;
+    top: 44%;
+    left: 39%;
+    color: blue;
+    z-index: 2000;
+    background: rgba(130, 236, 103, 0.6);
+    padding: 30px;
+    font-size: 19px;
 }
 
 .key {
@@ -87,7 +108,7 @@ z-index: 2999;
     right: 0;
     bottom: 0;
     z-index: 1;
-    display: none;
+   
 }
 
 #game-over-overlay {
@@ -109,3 +130,4 @@ z-index: 2999;
 #game-over button {
     font-size: 1.5em;
 }
+
