@@ -22,7 +22,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     
     var player = {
         pos: [0, 0],
-        sprite: new Sprite('../../images/nyan1.png', [0, 0], [88,35], 4, [0, 1,2,3,4])
+        sprite: new Sprite('images/nyan1.png', [0, 0], [88,35], 4, [0, 1,2,3,4])
     };
     // Speed in pixels per second
     var playerSpeed = 200;
@@ -37,11 +37,11 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var notifyLevelUp = [];
 
     resources.load([
-        '../../images/sprites.png',
-        '../../images/nyan1.png',
-        '../../images/nyan_cat.png',
-        '../../images/enemies.png',
-        '../../images/bg2.BMP'
+        'images/sprites.png',
+        'images/nyan1.png',
+        'images/nyan_cat.png',
+        'images/enemies.png',
+        'images/bg2.BMP'
     ]);
     resources.onReady(function() {resourcesLoaded = true});
     
@@ -68,7 +68,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        terrainPattern = ctx.createPattern(resources.get('../../images/bg2.BMP'), 'repeat');
+        terrainPattern = ctx.createPattern(resources.get('images/bg2.BMP'), 'repeat');
 
         $(canvas).on('vclick',function(e){
             var canvasPosition = {
@@ -80,7 +80,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 y: e.pageY - canvasPosition.y
             }
             bombs.push( { pos: [mouse.x, mouse.y],
-                           sprite: new Sprite('../../images/nyan_cat.png', [0, 0], [49, 42],14,[0,1,2,3,4,5,6,7],null,
+                           sprite: new Sprite('images/nyan_cat.png', [0, 0], [49, 42],14,[0,1,2,3,4,5,6,7],null,
                                            true) });
                                            
         });
@@ -199,15 +199,15 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             bullets.push({ pos: [x, y],
                            dir: 'forward',
                            damage: 100,
-                           sprite: new Sprite('../../images/sprites.png', [0, 39], [18, 8]) });
+                           sprite: new Sprite('images/sprites.png', [0, 39], [18, 8]) });
             bullets.push({ pos: [x, y],
                            dir: 'up',
                            damage: 50,
-                           sprite: new Sprite('../../images/sprites.png', [0, 50], [9, 5]) });
+                           sprite: new Sprite('images/sprites.png', [0, 50], [9, 5]) });
             bullets.push({ pos: [x, y],
                            dir: 'down',
                            damage: 50,
-                           sprite: new Sprite('../../images/sprites.png', [0, 60], [9, 5]) });
+                           sprite: new Sprite('images/sprites.png', [0, 60], [9, 5]) });
 
             lastFire = Date.now();
         }
@@ -255,7 +255,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             if(bombs[i].sprite.done) {
                 bombareas.push({ 
                             pos: bombs[i].pos,
-                            sprite: new Sprite('../../images/sprites.png',
+                            sprite: new Sprite('images/sprites.png',
                                            [0, 117],
                                            [39, 39],
                                            16,
@@ -332,7 +332,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                         // Add an explosion
                         explosions.push({
                             pos: pos,
-                            sprite: new Sprite('../../images/sprites.png',
+                            sprite: new Sprite('images/sprites.png',
                                                [0, 117],
                                                [39, 39],
                                                16,
@@ -368,7 +368,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                         // Add an explosion
                         explosions.push({
                             pos: pos,
-                            sprite: new Sprite('../../images/sprites.png',
+                            sprite: new Sprite('images/sprites.png',
                                                [0, 117],
                                                [39, 39],
                                                16,
@@ -395,7 +395,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 return {
                     pos: [canvas.width,
                           Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('../../images/enemies.png', [18,344], [28,30],
+                    sprite: new Sprite('images/enemies.png', [18,344], [28,30],
                                        6, [0, 1, 2,3,4,5]),
                     speed: enemySpeed,
                     points: 100,
@@ -408,7 +408,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 return {
                     pos: [canvas.width,
                           Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('../../images/enemies.png', [18,518], [35,50],
+                    sprite: new Sprite('images/enemies.png', [18,518], [35,50],
                                        4, [0, 1, 2,3]),
                     speed: enemySpeed /2,
                     points: 200,
@@ -420,7 +420,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 return {
                     pos: [canvas.width,
                           Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('../../images/enemies.png', [712,141], [72,72],
+                    sprite: new Sprite('images/enemies.png', [712,141], [72,72],
                                        1, [0]),
                     speed: enemySpeed /2,
                     points: 700,
@@ -456,8 +456,8 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         //ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
         
-       //ctx.drawImage(resources.get('../../images/bg2.BMP'), BGx, 0,canvas.width, canvas.height);
-       //ctx.drawImage(resources.get('../../images/bg2.BMP'), BGx + canvas.width, 0,canvas.width, canvas.height);
+       //ctx.drawImage(resources.get('images/bg2.BMP'), BGx, 0,canvas.width, canvas.height);
+       //ctx.drawImage(resources.get('images/bg2.BMP'), BGx + canvas.width, 0,canvas.width, canvas.height);
      
         // If the image scrolled off the screen, reset
        // if (BGx < -canvas.width){
