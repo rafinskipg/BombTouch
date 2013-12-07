@@ -15,9 +15,11 @@ body {
 
 }
 header{
+    text-shadow: #fff 0 0 4px;
     color: white;
+
     #logo{
-      //  background: url('../images/cat.gif');
+       //  background: url('../images/cat.gif');
        // height: 50px;
     }
 }
@@ -27,9 +29,9 @@ header{
         font-size: 18px;
         font-weight: 200;
         line-height: 30px;
-        background-color: #eee;
+        //background-color: #eee;
         border-radius: 6px;
-        padding: 60px;
+        //padding: 60px;
 }
 .juego{
     overflow: hidden;
@@ -100,8 +102,8 @@ canvas {
 
 #game-over, #game-over-overlay {
     margin: auto;
-    width: 512px;
-    height: 480px;
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;

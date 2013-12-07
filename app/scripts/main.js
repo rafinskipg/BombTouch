@@ -11,7 +11,8 @@ requirejs.config({
         ngresource : '../bower_components/angular-resource/angular-resource',
         ngcookies : '../bower_components/angular-cookies/angular-cookies',
         ngsanitize : '../bower_components/angular-sanitize/angular-sanitize',
-        ngroute : '../bower_components/angular-route/angular-route'
+        ngroute : '../bower_components/angular-route/angular-route',
+        howler : 'howler.min'
         
     },
     shim: {
@@ -51,7 +52,8 @@ require( [
 	'jquery',
 	'app',
     'controllers/main',
-    'routes'
+    'routes',
+    'howler'
 ], function(angular, $, app) {
 	'use strict';
     $(document).ready(function(){

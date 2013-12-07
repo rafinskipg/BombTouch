@@ -13,7 +13,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             };
     })();
     
-    var canvas, ctx, soundActivated = false, gameOver = false, level = 1,  paused = false, points = 0,  resourcesLoaded = false;
+    var canvas, ctx, soundActivated = true, gameOver = false, level = 1,  paused = false, points = 0,  resourcesLoaded = false;
     var bullets = bombs = bombareas = enemies = explosions = [];
        
     var lastFire = Date.now();
@@ -22,7 +22,12 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     
     var player = {
         pos: [0, 0],
-        sprite: new Sprite('images/nyan1.png', [0, 0], [88,35], 4, [0, 1,2,3,4])
+        life: 10000,
+        totalLife: 10000,
+        height: 35,
+        width: 88,
+        damage: 80,
+        sprite: new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
     };
     // Speed in pixels per second
     var playerSpeed = 200;
@@ -30,17 +35,20 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var bombTime = 800;
     var bombAreaTime = 800;
     var enemySpeed = 50;
-    
+    // var sounds
+    var SOUNDS = {
+        explosion: new Howl({
+          urls: ['../sounds/explosion.wma']
+        })
+    } 
     //Suscribe to events of the game
     var notifyGameEnd = [];
     var notifyPoints = [];
     var notifyLevelUp = [];
 
+    //Resources
     resources.load([
-        'images/sprites.png',
-        'images/nyan1.png',
-        'images/nyan_cat.png',
-        'images/enemies.png',
+        'images/newsprites.png',
         'images/bg2.BMP'
     ]);
     resources.onReady(function() {resourcesLoaded = true});
@@ -60,7 +68,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
     //Start Game
     var start = function() {
-        
+        //wait till resources loaded
         if(!resourcesLoaded){ requestAnimFrame(start); return; }
         
         // Create the canvas
@@ -80,7 +88,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 y: e.pageY - canvasPosition.y
             }
             bombs.push( { pos: [mouse.x, mouse.y],
-                           sprite: new Sprite('images/nyan_cat.png', [0, 0], [49, 42],14,[0,1,2,3,4,5,6,7],null,
+                           sprite: new Sprite('images/newsprites.png', [282, 50], [50, 42],14,[0,1,2,3,4,5,6,7],null,
                                            true) });
                                            
         });
@@ -104,6 +112,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         bullets = [];
 
         player.pos = [50, canvas.height / 2];
+        player.life = player.totalLife;
     };
     
     // Game over
@@ -125,17 +134,19 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     //Stages
     function changeLevel(){
         level++;
-        gameTime = 0;
-        enemies = [];
+        gameTime = 10 * level;
+        
         for(var i = 0; i<notifyLevelUp.length; i++){
             notifyLevelUp[i](level);
         }
     }
     //Add points
     function addPoints(pts){
-        if(points < 2000 && points+pts >= 2000){
-            changeLevel();
-        }else if(points < 5000 && points+pts >= 5000){
+        if((points < 3000 && points+pts >= 3000)
+         ||(points < 10000 && points+pts >= 10000)
+         ||(points < 40000 && points+pts >= 40000)
+         ||(points < 70000 && points+pts >= 70000)
+        ){
             changeLevel();
         }
 
@@ -164,7 +175,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         // equation: 1-.993^gameTime
         var value = Math.random() < 1 - Math.pow(.999, gameTime);
         if(value) {
-            console.log(Math.pow(.999, gameTime))
+            console.log(gameTime)
             enemies.push(getEnemy());
             
         }
@@ -199,15 +210,15 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             bullets.push({ pos: [x, y],
                            dir: 'forward',
                            damage: 100,
-                           sprite: new Sprite('images/sprites.png', [0, 39], [18, 8]) });
+                           sprite: new Sprite('images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2],null, true) });
             bullets.push({ pos: [x, y],
                            dir: 'up',
                            damage: 50,
-                           sprite: new Sprite('images/sprites.png', [0, 50], [9, 5]) });
+                           sprite: new Sprite('images/newsprites.png', [77, 5], [11, 11], 5, [0,1,2,3],null, true) });
             bullets.push({ pos: [x, y],
                            dir: 'down',
                            damage: 50,
-                           sprite: new Sprite('images/sprites.png', [0, 60], [9, 5]) });
+                           sprite: new Sprite('images/newsprites.png', [77, 5], [11, 11], 5, [0,1,2,3],null, true) });
 
             lastFire = Date.now();
         }
@@ -255,11 +266,11 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             if(bombs[i].sprite.done) {
                 bombareas.push({ 
                             pos: bombs[i].pos,
-                            sprite: new Sprite('images/sprites.png',
-                                           [0, 117],
+                            sprite: new Sprite('images/newsprites.png',
+                                           [15, 340],
                                            [39, 39],
                                            16,
-                                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
                                            null,
                                            true),
                             damage: 5
@@ -315,78 +326,73 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             var pos = enemies[i].pos;
             var size = enemies[i].sprite.size;
 
+            //Damage from bullets
             for(var j=0; j<bullets.length; j++) {
                 var pos2 = bullets[j].pos;
                 var size2 = bullets[j].sprite.size;
 
                 if(boxCollides(pos, size, pos2, size2)) {
                     enemies[i].life -=  bullets[j].damage;
-                    if(enemies[i].life <= 0){
-                        // Add score
-                        addPoints(enemies[i].points);
-
-                        // Remove the enemy
-                        enemies.splice(i, 1);
-                        i--;
-
-                        // Add an explosion
-                        explosions.push({
-                            pos: pos,
-                            sprite: new Sprite('images/sprites.png',
-                                               [0, 117],
-                                               [39, 39],
-                                               16,
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                               null,
-                                               true)
-                        });
-                    }
-                    
-
                     // Remove the bullet and stop this iteration
                     bullets.splice(j, 1);
                     break;
                 }
             }
              
-            
+            //Damage from bombareas
             for(var z= 0; z<bombareas.length; z++){
                 var pos2 = bombareas[z].pos;
                 var size2 = bombareas[z].sprite.size;
 
                 if(boxCollides(pos, size, pos2, size2)) {
                     enemies[i].life -=  bombareas[z].damage;
-                    console.log(enemies[i].life)
-                    if(enemies[i].life <= 0){
-                        // Add score
-                        addPoints(enemies[i].points);
-
-                        // Remove the enemy
-                        enemies.splice(i, 1);
-                        i--;
-
-                        // Add an explosion
-                        explosions.push({
-                            pos: pos,
-                            sprite: new Sprite('images/sprites.png',
-                                               [0, 117],
-                                               [39, 39],
-                                               16,
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                               null,
-                                               true)
-                        });
-                    }
                     break;
                 }
             }
+
+            //If collides with Nyancat
             if(boxCollides(pos, size, player.pos, player.sprite.size)) {
-                endGame();
+                player.life -= enemies[i].damage;
+                enemies[i].life -= player.damage;
+
+                if(player.life <= 0){
+                    endGame();
+                } 
+            }
+
+            if(enemies[i].life <= 0){
+                // Add score
+                addPoints(enemies[i].points);
+
+                // Add power
+
+                // Remove the enemy
+                enemies.splice(i, 1);
+                i--;
+
+                // Add an explosion
+                addExplosion(pos);
+               
             }
         }
     }
 
-
+    function addExplosion(pos){
+        explosions.push({
+            pos: pos,
+            sprite: new Sprite('images/newsprites.png',
+                           [15, 340],
+                           [39, 39],
+                           16,
+                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                           null,
+                           true)
+        });
+        if(soundActivated){
+            SOUNDS.explosion.play();
+        }
+        
+    }
     function getEnemy(){
         // Sprite(url, pos, size, speed, frames, dir, once)
         switch(level){
@@ -395,11 +401,16 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 return {
                     pos: [canvas.width,
                           Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/enemies.png', [18,344], [28,30],
-                                       6, [0, 1, 2,3,4,5]),
+                    sprite: new Sprite('images/newsprites.png', [4,186], [28,30],
+                                       6, [0, 1, 2,3,4]),
                     speed: enemySpeed,
                     points: 100,
-                    life: 100
+                    totalLife: 100,
+                    life: 100,
+                    width: 28,
+                    height: 30,
+                    damage: 100
+
                 }
 
             break;
@@ -408,11 +419,15 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 return {
                     pos: [canvas.width,
                           Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/enemies.png', [18,518], [35,50],
-                                       4, [0, 1, 2,3]),
+                    sprite: new Sprite('images/newsprites.png', [0,216], [35,50],
+                                       8, [0, 1, 2,3]),
                     speed: enemySpeed /2,
                     points: 200,
-                    life: 200
+                    totalLife: 200,
+                    life: 200,
+                    width: 35,
+                    height: 50,
+                    damage: 200
                 }
 
             break;
@@ -420,11 +435,47 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 return {
                     pos: [canvas.width,
                           Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/enemies.png', [712,141], [72,72],
+                    sprite: new Sprite('images/newsprites.png', [175,185], [23,45],
+                                       7, [0,1,2,3,4,5,6]),
+                    speed: enemySpeed *1.5,
+                    points: 300,
+                    totalLife: 300,
+                    life: 300,
+                    width: 23,
+                    height: 45,
+                    damage: 300
+                }
+
+            break;
+            case 4: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [175,230], [33,40],
+                                       8, [0,1,2,3,4,3,2,1]),
+                    speed: enemySpeed /2,
+                    points: 400,
+                    totalLife: 400,
+                    life: 400,
+                    width: 30,
+                    height: 37,
+                    damage: 400
+                }
+
+            break;
+            case 5: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [172,0], [72,72],
                                        1, [0]),
                     speed: enemySpeed /2,
-                    points: 700,
-                    life: 700
+                    points: 500,
+                    totalLife: 500,
+                    life: 500,
+                    width: 72,
+                    height: 72,
+                    damage: 500
                 }
 
             break;
@@ -488,6 +539,29 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         ctx.translate(entity.pos[0], entity.pos[1]);
         entity.sprite.render(ctx);
         ctx.restore();
+        if(entity.life){
+            drawLife(entity);
+        }
+        
+    }
+    function drawLife(entity){
+      var lifeTotal = entity.width * (entity.life/ entity.totalLife);
+
+      ctx.beginPath();
+      //ctx.translate(entity.pos[0], entity.pos[1]);
+      ctx.rect(entity.pos[0], entity.pos[1] + entity.height, entity.width, 7);
+      ctx.fillStyle = 'yellow';
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black'; 
+      ctx.stroke();
+
+      ctx.beginPath();
+      // ctx.translate(entity.pos[0], entity.pos[1]);
+      ctx.rect(entity.pos[0], entity.pos[1] + entity.height, lifeTotal, 7);
+      ctx.fillStyle = 'blue';
+      ctx.fill();
+      ctx.stroke();
     }
     
 
