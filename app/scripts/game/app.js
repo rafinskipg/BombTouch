@@ -38,16 +38,16 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     // var sounds
     var SOUNDS = {
         death: new Howl({
-          urls: ['../sounds/cut_grunt2.wav']
+          urls: ['sounds/cut_grunt2.wav']
         }),
         shoot: new Howl({
-          urls: ['../sounds/laser5.wav']
+          urls: ['sounds/laser5.wav']
         }),
         explosion: new Howl({
-          urls: ['../sounds/atari_boom2.wav']
+          urls: ['sounds/atari_boom2.wav']
         }),
         ambient: new Howl({
-          urls: ['../sounds/April_Kisses.mp3']
+          urls: ['sounds/April_Kisses.mp3']
         })
     } 
     //Suscribe to events of the game
@@ -62,9 +62,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     ]);
     resources.onReady(function() {
         resourcesLoaded = true
-        if(soundActivated){
-            SOUNDS.ambient.play();
-        }
+        
     });
     
     
@@ -84,7 +82,9 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var start = function() {
         //wait till resources loaded
         if(!resourcesLoaded){ requestAnimFrame(start); return; }
-        
+        if(soundActivated){
+            SOUNDS.ambient.play();
+        }
         // Create the canvas
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
