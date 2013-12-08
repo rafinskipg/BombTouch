@@ -84,7 +84,15 @@ canvas {
 #pause, #resume{
     float: left;
 }
-
+#megashoot{
+    position: absolute;
+    bottom: 10%;
+    left: 39%;
+    z-index: 2000;
+    background: rgba(28, 65, 213, 0.6);
+    color:white;
+    font-size: 19px;
+}
 #level{
     position: absolute;
     top: 44%;

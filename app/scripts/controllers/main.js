@@ -6,6 +6,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.puntos = 0;
         $scope.gameOver = false;
         $scope.paused = false;
+        $scope.megaShootActive = false;
         var booleanSonido = true;
 
         
@@ -41,6 +42,10 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             },1500)
         }
 
+        $scope.megaShoot = function(){
+            console.log('megasoot')
+            GAME.megaShoot();
+        }
         //Observer of the game
         GAME.suscribeGameOver(function(){
             $scope.gameOver = true;
@@ -54,6 +59,11 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
 
         GAME.suscribeLevelUp(function(level){
             showLevel(level);
+        });
+
+        GAME.suscribeMaxPower(function(bool){
+            $scope.megaShootActive = bool;
+            $scope.$apply();
         });
 
       }]);
