@@ -71,11 +71,187 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         'images/bg2.BMP',
         'images/bg.png'
     ]);
+
+    //Flag for initialization
     resources.onReady(function() {
         resourcesLoaded = true
         
     });
     
+
+    function getEntity(name, pos){
+        switch(name){
+            case 'bombarea':
+                return { 
+                        pos: pos,
+                        sprite: new Sprite('images/newsprites.png',
+                                       [15, 340],
+                                       [39, 39],
+                                       16,
+                                       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                                       null,
+                                       true),
+                        damage: 5
+                        }
+            break;
+            case 'special':
+                return{ 
+                            pos: [player.pos[0]+ player.width,player.pos[1]- player.height/2] ,
+                            sprite: new Sprite('images/boom.png',
+                                           [0, 0],
+                                           [590, 100],
+                                           40,
+                                           [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4,3,2,1,2,3,4,3,2,1,0,1,2,3],
+                                           'vertical',
+                                           true),
+                            damage: 100
+                            }
+            break;
+            case 'explosion':
+                return {
+                        pos: pos,
+                        sprite: new Sprite('images/newsprites.png',
+                                       [15, 340],
+                                       [39, 39],
+                                       16,
+                                       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                                       null,
+                                       true)
+                    }
+            break;
+            case 'bomb':
+                 return { pos:pos,
+                           sprite: new Sprite('images/newsprites.png', [282, 50], [50, 42],14,[0,1,2,3,4,5,6,7],null,
+                                           true) }
+            break;
+
+            case 'bullet':
+               return { pos: pos,
+                           dir: 'forward',
+                           damage: bulletDamage,
+                           sprite: new Sprite('images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]) }
+            break;
+            case 'bottomBullet':
+               return { pos: pos,
+                           dir: 'down',
+                           damage: bulletDamage/2,
+                           sprite: new Sprite('images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]) }
+            break;
+            case 'topBullet':
+               return { pos: pos,
+                           dir: 'up',
+                           damage: bulletDamage/2,
+                           sprite: new Sprite('images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]) }
+            break;
+        }
+    }
+
+    function getEnemy(){
+        // Sprite(url, pos, size, speed, frames, dir, once)
+        switch(level){
+            case 1:
+
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [4,186], [28,30],
+                                       6, [0, 1, 2,3,4]),
+                    speed: enemySpeed,
+                    points: 100,
+                    totalLife: 100,
+                    life: 100,
+                    width: 28,
+                    height: 30,
+                    damage: 100
+
+                }
+
+            break;
+
+            case 2: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [0,216], [35,50],
+                                       8, [0, 1, 2,3]),
+                    speed: enemySpeed /2,
+                    points: 200,
+                    totalLife: 200,
+                    life: 200,
+                    width: 35,
+                    height: 50,
+                    damage: 200
+                }
+
+            break;
+            case 3: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [175,185], [23,45],
+                                       7, [0,1,2,3,4,5,6]),
+                    speed: enemySpeed *1.5,
+                    points: 300,
+                    totalLife: 300,
+                    life: 300,
+                    width: 23,
+                    height: 45,
+                    damage: 300
+                }
+
+            break;
+            case 4: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [175,230], [33,40],
+                                       8, [0,1,2,3,4,3,2,1]),
+                    speed: enemySpeed /2,
+                    points: 400,
+                    totalLife: 400,
+                    life: 400,
+                    width: 30,
+                    height: 37,
+                    damage: 400
+                }
+
+            break;
+            case 5: 
+                return {
+                    pos: [canvas.width,
+                          Math.random() * (canvas.height - 39)],
+                    sprite: new Sprite('images/newsprites.png', [172,0], [72,72],
+                                       1, [0]),
+                    speed: enemySpeed /2,
+                    points: 500,
+                    totalLife: 500,
+                    life: 500,
+                    width: 72,
+                    height: 72,
+                    damage: 500
+                }
+
+            break;
+            case 6:
+
+                return {
+                    pos: [canvas.width,
+                          50],
+                    sprite: new Sprite('images/newsprites.png', [557,141], [240,347],
+                                       4, [0,1,2,1,2,1]),
+                    speed: enemySpeed /3,
+                    points: 100000,
+                    totalLife: 10000,
+                    life: 10000,
+                    width: 240,
+                    height: 347,
+                    damage: 10000
+                }
+
+            break;
+        }
+       
+    }
     
     // The main game loop
     var main = function() {
@@ -125,9 +301,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 x: e.pageX - canvasPosition.x,
                 y: e.pageY - canvasPosition.y
             }
-            bombs.push( { pos: [mouse.x, mouse.y],
-                           sprite: new Sprite('images/newsprites.png', [282, 50], [50, 42],14,[0,1,2,3,4,5,6,7],null,
-                                           true) });
+            bombs.push(getEntity('bomb', [mouse.x, mouse.y]));
                                            
         });
         reset();
@@ -230,17 +404,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         if(soundActivated){
             SOUNDS.nyan.play();
         }
-        specials.push({ 
-                            pos: [player.pos[0]+ player.width,player.pos[1]- player.height/2] ,
-                            sprite: new Sprite('images/boom.png',
-                                           [0, 0],
-                                           [590, 100],
-                                           40,
-                                           [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4,3,2,1,2,3,4,3,2,1,0,1,2,3],
-                                           'vertical',
-                                           true),
-                            damage: 100
-                            });
+        specials.push(getEntity('special'));
        
     }
     //Check if is game over
@@ -250,6 +414,43 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     function isPaused(){
         return paused;
     }
+   
+   
+    function handleInput(dt) {
+        if(input.isDown('DOWN') || input.isDown('s')) {
+            player.pos[1] += playerSpeed * dt;
+        }
+
+        if(input.isDown('UP') || input.isDown('w')) {
+            player.pos[1] -= playerSpeed * dt;
+        }
+
+        if(input.isDown('LEFT') || input.isDown('a')) {
+            player.pos[0] -= playerSpeed * dt;
+        }
+
+        if(input.isDown('RIGHT') || input.isDown('d')) {
+            player.pos[0] += playerSpeed * dt;
+        }
+
+        if(input.isDown('SPACE') &&
+           !isGameOver() &&
+            Date.now() - lastFire > 100) {
+
+            var x = player.pos[0] + player.sprite.size[0] / 2;
+            var y = player.pos[1] + player.sprite.size[1] / 2;
+
+            bullets.push(getEntity('bullet', [x,y]));
+            bullets.push(getEntity('topBullet', [x,y]));
+            bullets.push(getEntity('bottomBullet', [x,y]));
+          
+            if(soundActivated){
+                SOUNDS.shoot.play();
+            }
+            lastFire = Date.now();
+        }
+    }
+
     // Update game objects
     function update(dt) {
         gameTime += dt;
@@ -274,48 +475,6 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         checkCollisions();
 
     };
-   
-    function handleInput(dt) {
-        if(input.isDown('DOWN') || input.isDown('s')) {
-            player.pos[1] += playerSpeed * dt;
-        }
-
-        if(input.isDown('UP') || input.isDown('w')) {
-            player.pos[1] -= playerSpeed * dt;
-        }
-
-        if(input.isDown('LEFT') || input.isDown('a')) {
-            player.pos[0] -= playerSpeed * dt;
-        }
-
-        if(input.isDown('RIGHT') || input.isDown('d')) {
-            player.pos[0] += playerSpeed * dt;
-        }
-
-        if(input.isDown('SPACE') &&
-           !isGameOver() &&
-           Date.now() - lastFire > 100) {
-            var x = player.pos[0] + player.sprite.size[0] / 2;
-            var y = player.pos[1] + player.sprite.size[1] / 2;
-
-            bullets.push({ pos: [x, y],
-                           dir: 'forward',
-                           damage: bulletDamage,
-                           sprite: new Sprite('images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]) });
-            bullets.push({ pos: [x, y],
-                           dir: 'up',
-                           damage: bulletDamage/2,
-                           sprite: new Sprite('images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]) });
-            bullets.push({ pos: [x, y],
-                           dir: 'down',
-                           damage: bulletDamage/2,
-                           sprite: new Sprite('images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]) });
-            if(soundActivated){
-                SOUNDS.shoot.play();
-            }
-            lastFire = Date.now();
-        }
-    }
 
     function updateEntities(dt) {
         // Update the player sprite animation
@@ -357,17 +516,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
             // Remove if animation is done
             if(bombs[i].sprite.done) {
-                bombareas.push({ 
-                            pos: bombs[i].pos,
-                            sprite: new Sprite('images/newsprites.png',
-                                           [15, 340],
-                                           [39, 39],
-                                           16,
-                                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                                           null,
-                                           true),
-                            damage: 5
-                            });
+                bombareas.push(getEntity('bombarea',bombs[i].pos));
                 bombs.splice(i, 1);
                    
                 i--;
@@ -507,127 +656,13 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     }
 
     function addExplosion(pos){
-        explosions.push({
-            pos: pos,
-            sprite: new Sprite('images/newsprites.png',
-                           [15, 340],
-                           [39, 39],
-                           16,
-                           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                           null,
-                           true)
-        });
+        explosions.push(getEntity('explosion',pos));
         if(soundActivated){
             SOUNDS.explosion.play();
         }
         
     }
-    function getEnemy(){
-        // Sprite(url, pos, size, speed, frames, dir, once)
-        switch(level){
-            case 1:
-
-                return {
-                    pos: [canvas.width,
-                          Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/newsprites.png', [4,186], [28,30],
-                                       6, [0, 1, 2,3,4]),
-                    speed: enemySpeed,
-                    points: 100,
-                    totalLife: 100,
-                    life: 100,
-                    width: 28,
-                    height: 30,
-                    damage: 100
-
-                }
-
-            break;
-
-            case 2: 
-                return {
-                    pos: [canvas.width,
-                          Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/newsprites.png', [0,216], [35,50],
-                                       8, [0, 1, 2,3]),
-                    speed: enemySpeed /2,
-                    points: 200,
-                    totalLife: 200,
-                    life: 200,
-                    width: 35,
-                    height: 50,
-                    damage: 200
-                }
-
-            break;
-            case 3: 
-                return {
-                    pos: [canvas.width,
-                          Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/newsprites.png', [175,185], [23,45],
-                                       7, [0,1,2,3,4,5,6]),
-                    speed: enemySpeed *1.5,
-                    points: 300,
-                    totalLife: 300,
-                    life: 300,
-                    width: 23,
-                    height: 45,
-                    damage: 300
-                }
-
-            break;
-            case 4: 
-                return {
-                    pos: [canvas.width,
-                          Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/newsprites.png', [175,230], [33,40],
-                                       8, [0,1,2,3,4,3,2,1]),
-                    speed: enemySpeed /2,
-                    points: 400,
-                    totalLife: 400,
-                    life: 400,
-                    width: 30,
-                    height: 37,
-                    damage: 400
-                }
-
-            break;
-            case 5: 
-                return {
-                    pos: [canvas.width,
-                          Math.random() * (canvas.height - 39)],
-                    sprite: new Sprite('images/newsprites.png', [172,0], [72,72],
-                                       1, [0]),
-                    speed: enemySpeed /2,
-                    points: 500,
-                    totalLife: 500,
-                    life: 500,
-                    width: 72,
-                    height: 72,
-                    damage: 500
-                }
-
-            break;
-            case 6:
-
-                return {
-                    pos: [canvas.width,
-                          50],
-                    sprite: new Sprite('images/newsprites.png', [557,141], [240,347],
-                                       4, [0,1,2,1,2,1]),
-                    speed: enemySpeed /3,
-                    points: 100000,
-                    totalLife: 10000,
-                    life: 10000,
-                    width: 240,
-                    height: 347,
-                    damage: 10000
-                }
-
-            break;
-        }
-       
-    }
+    
 
     function checkPlayerBounds() {
         // Check bounds
