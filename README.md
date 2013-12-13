@@ -2,7 +2,7 @@
 ----------
 Nyancat is a super sayan!
 
-[DEMO](http://monchacos.com/experiments/BombTouch/)
+[DEMO](http://rvpg.me/experiments/BombTouch/)
 
 
 
