@@ -1,20 +1,37 @@
 ## BombTouch
+----------
+Nyancat is a super sayan!
 
-Bombtouch is a Canvas game made with sprites. It is embebbed into an angularJS application.
+[DEMO](http://monchacos.com/experiments/BombTouch/)
 
-The original game is in app/Old_game. Now i'm working on extending the game and refactoring it. 
 
-I want to publish it to the applications stores using Phonegap.
 
-I tested it in a Tizen device and it works really great.
+## Contribute!!
+- Add new levels
+- Add better sprites for the boss
+- New shooting modes
+- Add flying bonuses that changes your shoot 
+- Add wathever you want!!
 
-You can find a demo [here](http://monchacos.com/experiments/BombTouch/)
+### Installation 
 
-### Tasks if you want to contribute
+Run from shell (needs node)
 
-- [x] Do a demo
-- [ ] Make an angular JS app for wrapping it
-- [ ] Refactor game
-- [ ] Add a final boss
-- [ ] Webaudio API
-- [ ] Add good styles
+````
+npm install 
+````
+Then
+
+````
+bower update
+````
+
+Then 
+
+```
+grunt server
+````
+
+
+
+
