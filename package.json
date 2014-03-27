@@ -1,7 +1,9 @@
 {
   "name": "bombtouch",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-requirejs": "^0.4.1"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
@@ -22,7 +24,7 @@
     "grunt-rev": "~0.1.0",
     "grunt-open": "~0.2.0",
     "grunt-concurrent": "~0.3.0",
-    "load-grunt-tasks": "~0.1.0",
+    "load-grunt-tasks": "latest",
     "connect-livereload": "~0.2.0",
     "grunt-google-cdn": "~0.2.0",
     "grunt-ngmin": "~0.0.2",

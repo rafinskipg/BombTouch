@@ -1,5 +1,5 @@
 requirejs.config({
-    
+    baseUrl: 'scripts',
     paths: {
         angular : '../bower_components/angular/angular',
         jquery : '../bower_components/jquery/jquery',

@@ -227,6 +227,16 @@ module.exports = function (grunt) {
         }]
       }
     },
+    requirejs: {
+        dist: {
+            options: {
+                baseUrl        : '<%= yeoman.app %>/scripts/',
+                name           : 'main',
+                mainConfigFile : '<%= yeoman.app %>/scripts/main.js',
+                out            : '.tmp/concat/scripts/main.js'
+            }
+        }
+    },
     cssmin: {
       // By default, your `index.html` <!-- Usemin Block --> will take care of
       // minification. This option is pre-configured if you do not wish to use
@@ -274,7 +284,9 @@ module.exports = function (grunt) {
             '.htaccess',
             'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
-            'styles/fonts/*'
+            'styles/fonts/*',
+            'fonts/*',
+            'sounds/*'
           ]
         }, {
           expand: true,
@@ -373,12 +385,11 @@ module.exports = function (grunt) {
     'concurrent:dist',
     'autoprefixer',
     'concat',
+    'requirejs',
     'copy:dist',
-    'cdnify',
     'ngmin',
     'cssmin',
     'uglify',
-    'rev',
     'usemin'
   ]);
 
