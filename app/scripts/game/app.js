@@ -69,7 +69,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     resources.load([
         'images/newsprites.png',
         'images/boom.png',
-        'images/bg2.BMP',
+        //'images/bg2.bmp',
         'images/bg.png'
     ]);
 
