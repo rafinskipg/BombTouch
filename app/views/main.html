@@ -21,18 +21,26 @@
       
   </div>
    <div class="juego" ng-show="juego">
-      <div class="top_menu">
-        <div id="pause" class="btn btn-info" ng-click="pause()" ng-show="paused == false"> Pause </div>
-        <div id="resume" ng-click="resume()"  class="btn btn-info"  ng-show="paused"> Resume </div>
-        <div id="score"  class="btn btn-warning" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
-        <div class="progress progress-striped active">
-          <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
-            <span class="">{{power}}% of CAT POWER</span>
+      <div class="top_menu row">
+        <div class="col-xs-2">
+          <div id="pause" class="btn btn-info" ng-click="pause()" ng-show="paused == false"> Pause </div>
+          <div id="resume" ng-click="resume()"  class="btn btn-info"  ng-show="paused"> Resume </div>
+        </div>
+        <div class="col-xs-2">
+          <div id="score"  class="btn btn-warning" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
+        </div>
+        <div class="col-xs-6">
+          <div class="progress progress-striped active">
+            <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
+              <span class="">{{power}}% of CAT POWER</span>
+            </div>
           </div>
         </div>
-        <div class="btn btn-info" ng-click="setSoundInGame()">
-          <span ng-show="getSonido() == 'OFF'" class="glyphicon glyphicon-volume-off"></span>
-          <span ng-show="getSonido() == 'ON'" class="glyphicon glyphicon-volume-up"></span>
+        <div class="col-xs-2">
+          <div class="btn btn-info" ng-click="setSoundInGame()">
+            <span ng-show="getSonido() == 'OFF'" class="glyphicon glyphicon-volume-off"></span>
+            <span ng-show="getSonido() == 'ON'" class="glyphicon glyphicon-volume-up"></span>
+          </div>
         </div>
       </div>
 

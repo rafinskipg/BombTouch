@@ -71,7 +71,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             }else{
                 $scope.megaShootActive = false;
             }
-            $scope.$apply();
+            //TODO applyhere
         });
 
         GAME.suscribeLevelUp(function(level){

@@ -1,7 +1,7 @@
 $iconSpritePath: "../images/glyphicons-halflings.png";
 $iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
 
-@import "   sass-bootstrap/lib/bootstrap";
+@import "sass-bootstrap/lib/bootstrap";
 
 /* Put your CSS here */
 html, body {
@@ -73,14 +73,9 @@ canvas {
     color: black;
     font-size: 1.5em;
     background: white;
-    padding: 20px;
-    .btn{
-        float: left;
-        margin-left: 20px;
-    }
+    padding: 5px;
+    margin-left: 0px;
     .progress{
-        width: 60%;
-        float: left;
         margin-left: 30px;
         margin-top: 5px;
         margin-bottom: 0px;
@@ -155,3 +150,4 @@ canvas {
     font-size: 1.5em;
 }
 
+@import "mobile";

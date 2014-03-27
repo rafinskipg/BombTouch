@@ -12,8 +12,8 @@ requirejs.config({
         ngcookies : '../bower_components/angular-cookies/angular-cookies',
         ngsanitize : '../bower_components/angular-sanitize/angular-sanitize',
         ngroute : '../bower_components/angular-route/angular-route',
-        howler : 'howler.min'
-        
+        howler : 'howler.min',
+        fastclick: '../bower_components/fastclick-amd/fastclick'
     },
     shim: {
         jquery: {
@@ -53,7 +53,8 @@ require( [
 	'app',
     'controllers/main',
     'routes',
-    'howler'
+    'howler',
+    'fastclick'
 ], function(angular, $, app) {
 	'use strict';
     $(document).ready(function(){
