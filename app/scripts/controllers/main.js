@@ -16,7 +16,14 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.setSonido = function(){ 
             GAME.setSound(booleanSonido = (booleanSonido == true ? false : true));
         }
+        $scope.setSoundInGame = function(){ 
+            GAME.setSoundInGame(booleanSonido = (booleanSonido == true ? false : true));
+        }
         
+        $scope.shoot = function(){
+            GAME.shoot();
+        }
+
         $scope.start = function(){
             $scope.home = false;
             $scope.juego = true; 
@@ -57,13 +64,18 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             $scope.$apply();
         });
 
-        GAME.suscribeLevelUp(function(level){
-            showLevel(level);
+        GAME.suscribePower(function(power){
+            $scope.power = power;
+            if(power == 100){
+                $scope.megaShootActive = true;
+            }else{
+                $scope.megaShootActive = false;
+            }
+            $scope.$apply();
         });
 
-        GAME.suscribeMaxPower(function(bool){
-            $scope.megaShootActive = bool;
-            $scope.$apply();
+        GAME.suscribeLevelUp(function(level){
+            showLevel(level);
         });
 
       }]);

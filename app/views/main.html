@@ -1,39 +1,52 @@
-<header>
-    <div class="row">
-        <div class="col-xs-5 col-md-2" id="Logo"><img src="images/cat.gif"/></div>
-        <div class="col-xs-5 col-md-10" id="Logo"><h1>BombTouch</h1><p>Oh my cat</p></div>
-       
-    </div>
-</header>
-<div class="inicio" ng-show="home">
-    
-    <div class="row" >
-      <div class="col-xs-6 col-md-6">
-            <button class="btn" ng-click="start()">Start</button>
-       </div>
-       <div class="col-xs-6 col-md-6">
-             <button class="btn"  ng-click="setSonido()">Sound: <span>{{getSonido()}}</span></button>
-       </div>
-    </div>
-    
-   
+<div class="container">
+  <header>
+      <div class="row">
+          <div class="col-xs-5 col-md-2" id="Logo"><img src="images/cat.gif"/></div>
+          <div class="col-xs-5 col-md-10" id="Logo">
+            <h1>The adventures of nyan cat</h1>
+            <p>Now presenting: <b>A cat in the space</b></p>
+          </div>
+      </div>
+  </header>
+  <div class="inicio" ng-show="home">
+      
+      <div class="row" >
+        <div class="col-xs-6 col-md-6">
+              <button class="btn btn-success" ng-click="start()">Start</button>
+         </div>
+         <div class="col-xs-6 col-md-6">
+               <button class="btn btn-info"  ng-click="setSonido()">Sound: <span><b>{{getSonido()}}</b></span></button>
+         </div>
+      </div>
+      
+  </div>
+   <div class="juego" ng-show="juego">
+      <div class="top_menu">
+        <div id="pause" class="btn btn-info" ng-click="pause()" ng-show="paused == false"> Pause </div>
+        <div id="resume" ng-click="resume()"  class="btn btn-info"  ng-show="paused"> Resume </div>
+        <div id="score"  class="btn btn-warning" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
+        <div class="progress progress-striped active">
+          <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
+            <span class="">{{power}}% of CAT POWER</span>
+          </div>
+        </div>
+        <div class="btn btn-info" ng-click="setSoundInGame()">
+          <span ng-show="getSonido() == 'OFF'" class="glyphicon glyphicon-volume-off"></span>
+          <span ng-show="getSonido() == 'ON'" class="glyphicon glyphicon-volume-up"></span>
+        </div>
+      </div>
+
+      <div id="game-over-overlay" ng-show="gameOver">
+      </div>
+
+      <div id="game-over" ng-show="gameOver">
+        <h1>GAME OVER</h1>
+        <button id="play-again" class="btn" ng-click="start()">Play Again</button>
+      </div>
+
+      <div id="level" ng-show="showLevel">Prepare your anus for level {{level}}!</div>
+      <button id="megashoot" class="btn" ng-disabled="!megaShootActive" ng-click="megaShoot()"><span class="glyphicon glyphicon-random"></span></button>
+      <button id="shoot" class="btn btn-success" ng-click="shoot()"><span class="glyphicon glyphicon-fire"></span></button>
+      <canvas id="canvas"></canvas>
+   </div>
 </div>
- <div class="juego" ng-show="juego">
-    <div class="top_menu">
-      <div id="pause" ng-click="pause()" ng-show="paused == false"> || </div>
-      <div id="resume" ng-click="resume()" ng-show="paused"> Resume </div>
-      <div id="score">{{puntos}}</div>
-    </div>
-
-    <div id="game-over-overlay" ng-show="gameOver">
-    </div>
-
-    <div id="game-over" ng-show="gameOver">
-      <h1>GAME OVER</h1>
-      <button id="play-again" class="btn" ng-click="start()">Play Again</button>
-    </div>
-
-    <div id="level" ng-show="showLevel">Prepare your anus for level {{level}}!</div>
-    <button id="megashoot" class="btn" ng-show="megaShootActive" ng-click="megaShoot()">Tap here for megashoot!</button>
-    <canvas id="canvas"></canvas>
- </div>

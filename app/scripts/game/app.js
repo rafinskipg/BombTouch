@@ -13,7 +13,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             };
     })();
     
-    var canvas, ctx, soundActivated = true, gameOver = false,finalStage = false, level = 1,power = 0, maxPower = 1000,  paused = false, points = 0,  resourcesLoaded = false;
+    var canvas, ctx, soundActivated = true, gameOver = false,finalStage = false, level = 1,power = 0, MAX_POWER = 1000,  paused = false, points = 0,  resourcesLoaded = false;
     var bullets = bombs = bombareas = enemies = explosions = specials =  [];
        
     var lastFire = Date.now();
@@ -62,6 +62,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var notifyGameEnd = [];
     var notifyPoints = [];
     var notifyLevelUp = [];
+    var notifyPower = [];
     var notifyMaxPower = [];
 
     //Resources
@@ -282,9 +283,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             console.log(bulletDamage);
         });
 
-        if(soundActivated){
-            SOUNDS.ambient.play();
-        }
+        playSound(SOUNDS.ambient);
         // Create the canvas
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
@@ -309,6 +308,22 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         main();
     }
 
+    function shoot(){
+      if(!isGameOver() &&
+          Date.now() - lastFire > 100) {
+
+          var x = player.pos[0] + player.sprite.size[0] / 2;
+          var y = player.pos[1] + player.sprite.size[1] / 2;
+
+          bullets.push(getEntity('bullet', [x,y]));
+          bullets.push(getEntity('topBullet', [x,y]));
+          bullets.push(getEntity('bottomBullet', [x,y]));
+        
+          playSound(SOUNDS.shoot);
+          lastFire = Date.now();
+      }
+    }
+
     // Reset game to original state
     function reset() {
         
@@ -318,7 +333,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         level = 1;
         paused = false;
         finalStage = false;
-        power = 0;
+        setPower(0);
         bombs = [];
         bombareas = [];
         enemies = [];
@@ -332,9 +347,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     // Game over
     function endGame() {
         gameOver = true;
-        if(soundActivated){
-          SOUNDS.ambient.stop();
-        }
+        stopAmbientSound();
         for(var i = 0; i<notifyGameEnd.length; i++){
             notifyGameEnd[i]();
         }
@@ -343,15 +356,23 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     //Pause game
     function pause(){
         paused = true;
-        if(soundActivated){
-            SOUNDS.ambient.pause();
-        }
+        pauseAmbientSound();
     }
     function resume(){
         paused = false;
-        if(soundActivated){
-            SOUNDS.ambient.play();
-        }
+        playSound(SOUNDS.ambient);
+    }
+
+    function playSound(sound){
+      if(!paused && !isGameOver() &&soundActivated){
+        sound.play();
+      }
+    }
+    function pauseAmbientSound(){
+      SOUNDS.ambient.pause();
+    }
+    function stopAmbientSound(){
+      SOUNDS.ambient.stop();
     }
 
     //Stages
@@ -384,28 +405,32 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     // Add power
     function addPower(pow){
         pow = pow/2;
-
-        if(power < maxPower && power+pow >= maxPower ){
+        var newPower = ((power + pow) < MAX_POWER) ? power+pow : MAX_POWER;
+        setPower(newPower);
+    }
+    function setPower(pow){
+        if(pow >= MAX_POWER && power < MAX_POWER ){
+            console.log('NOTIFYING MAX POWER')
             for(var i = 0; i<notifyMaxPower.length; i++){
                 notifyMaxPower[i](true);
             }
+        }else if(power != 0 && pow <= 0){
+            for(var i = 0; i<notifyMaxPower.length; i++){
+                notifyMaxPower[i](false);
+            }
         }
-        power = ((power + pow) <= maxPower) ? power+pow : maxPower;
-
-        
+        power = pow;
+        var percentage = parseFloat((power/MAX_POWER) *100).toFixed(2);
+        console.log('notifying', percentage, power, MAX_POWER);
+        for(var i = 0; i<notifyPower.length; i++){
+            notifyPower[i](percentage);
+        }
     }
-
     //Shoot X RAY
     function megaShoot(){
-        for(var i = 0; i<notifyMaxPower.length; i++){
-            notifyMaxPower[i](false);
-        }
-        power = 0;
-        if(soundActivated){
-            SOUNDS.nyan.play();
-        }
+        setPower(0);
+        playSound(SOUNDS.nyan);
         specials.push(getEntity('special'));
-       
     }
     //Check if is game over
     function isGameOver(){
@@ -433,23 +458,12 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             player.pos[0] += playerSpeed * dt;
         }
 
-        if(input.isDown('SPACE') &&
-           !isGameOver() &&
-            Date.now() - lastFire > 100) {
-
-            var x = player.pos[0] + player.sprite.size[0] / 2;
-            var y = player.pos[1] + player.sprite.size[1] / 2;
-
-            bullets.push(getEntity('bullet', [x,y]));
-            bullets.push(getEntity('topBullet', [x,y]));
-            bullets.push(getEntity('bottomBullet', [x,y]));
-          
-            if(soundActivated){
-                SOUNDS.shoot.play();
-            }
-            lastFire = Date.now();
+        if(input.isDown('SPACE') ){
+          shoot();
         }
     }
+
+
 
     // Update game objects
     function update(dt) {
@@ -520,9 +534,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 bombs.splice(i, 1);
                    
                 i--;
-                if(soundActivated){
-                    SOUNDS.explosion.play();
-                }
+                playSound(SOUNDS.explosion);
             }
         }
                              
@@ -637,9 +649,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 enemies.splice(i, 1);
                 i--;
 
-                if(soundActivated){
-                    SOUNDS.death.play();
-                }
+                playSound(SOUNDS.death);
                 // Add an explosion
                 addExplosion(pos);
                
@@ -657,13 +667,9 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
     function addExplosion(pos){
         explosions.push(getEntity('explosion',pos));
-        if(soundActivated){
-            SOUNDS.explosion.play();
-        }
-        
+        playSound(SOUNDS.explosion);
     }
     
-
     function checkPlayerBounds() {
         // Check bounds
         if(player.pos[0] < 0) {
@@ -745,8 +751,8 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     }
     
     function renderPower(){
-        var powerColor = power == maxPower ?  'red': 'blue' ;
-        var totalPower = window.innerWidth/3 *( power / maxPower);
+        var powerColor = power == MAX_POWER ?  'red': 'blue' ;
+        var totalPower = window.innerWidth/3 *( power / MAX_POWER);
 
         ctx.beginPath();
         ctx.rect(window.innerWidth/3, 10, window.innerWidth/3, 20);
@@ -773,24 +779,39 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     function suscribePoints(fn){
         notifyPoints.push(fn);
     }
+    function suscribePower(fn){
+        notifyPower.push(fn);
+    }
     function suscribeMaxPower(fn){
         notifyMaxPower.push(fn);
     }
     function setSound(bool){
-        soundActivated = bool;
+      soundActivated = bool;
     }
-    
+    function setSoundInGame(bool){
+      if(!soundActivated){
+        soundActivated = bool;
+        playSound(SOUNDS.ambient);
+      }else{
+        pauseAmbientSound();
+        soundActivated = bool;
+      }
+
+    }
+
     var GAME = {
         suscribeGameOver : suscribeGameOver,
         suscribeLevelUp : suscribeLevelUp,
         suscribePoints : suscribePoints,
-        suscribeMaxPower : suscribeMaxPower,
+        suscribePower : suscribePower,
         megaShoot : megaShoot,
         setSound : setSound,
+        setSoundInGame: setSoundInGame,
         endGame : endGame,
         start : start,
         pause: pause,
-        resume : resume
+        resume : resume,
+        shoot: shoot
        };
     //API 
     return  GAME;

@@ -9,14 +9,13 @@ html, body {
 }
 
 body {
-    background: #52863D;
+    background: white;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #333;
+    color: black;
 
 }
 header{
-    text-shadow: #fff 0 0 4px;
-    color: white;
+    color: black;
 
     #logo{
        //  background: url('../images/cat.gif');
@@ -45,9 +44,7 @@ img {
 
 
 canvas {
-   
     margin: auto;
-
     position: absolute;
     top: 0;
     bottom: 0;
@@ -69,37 +66,54 @@ canvas {
 
 .top_menu{
     position: absolute;
-    top: 24px;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 2999;
-    color: rgb(252, 252, 252);
+    color: black;
     font-size: 1.5em;
-    background: rgba(11, 11, 218, 0.44);
+    background: white;
     padding: 20px;
+    .btn{
+        float: left;
+        margin-left: 20px;
+    }
+    .progress{
+        width: 60%;
+        float: left;
+        margin-left: 30px;
+        margin-top: 5px;
+        margin-bottom: 0px;
+    }
 }
 
-#score { 
-   
-}
 
 #pause, #resume{
     float: left;
 }
-#megashoot{
+#megashoot, #shoot{
     position: absolute;
-    bottom: 10%;
-    left: 39%;
+    bottom: 20px;
     z-index: 2000;
     background: rgba(28, 65, 213, 0.6);
     color:white;
     font-size: 19px;
+    &[disabled]{
+        background: rgba(131, 131, 138, 0.56)
+    }
 }
+#megashoot{
+    right: 80px;
+}
+#shoot{
+    right: 20px;
+}
+
 #level{
     position: absolute;
     top: 44%;
     left: 39%;
-    color: blue;
     z-index: 2000;
-    background: rgba(130, 236, 103, 0.6);
     padding: 30px;
     font-size: 19px;
 }
