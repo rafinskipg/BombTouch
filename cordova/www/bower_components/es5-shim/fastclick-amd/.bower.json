@@ -1,0 +1,14 @@
+{
+  "name": "fastclick-amd",
+  "homepage": "https://github.com/sjltaylor/fastclick-amd",
+  "_release": "f5a8538ea7",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "f5a8538ea72f56d05449672f1c4cdd0ef96e3d29"
+  },
+  "_source": "git://github.com/sjltaylor/fastclick-amd.git",
+  "_target": "*",
+  "_originalSource": "fastclick-amd",
+  "_direct": true
+}
