@@ -30,11 +30,11 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         sprite: new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
     };
     
-
+    var DEFAULT_BULLET_DAMAGE = 50;
     // Speed in pixels per second
     var playerSpeed = 200;
     var bulletSpeed = 500;
-    var bulletDamage = 50;
+    var bulletDamage = DEFAULT_BULLET_DAMAGE ;
     var bombTime = 800;
     var bombAreaTime = 800;
     var enemySpeed = 50;
@@ -270,20 +270,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var start = function() {
         //wait till resources loaded
         if(!resourcesLoaded){ requestAnimFrame(start); return; }
-
-        //suscribe changing the player sprite 
-        suscribeMaxPower(function(bool){
-            if(bool){
-                bulletDamage +=80;
-                player.sprite =  new Sprite('images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]);
-            }else{
-                bulletDamage -=80;
-                player.sprite =  new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
-            }
-            console.log(bulletDamage);
-        });
-
-        playSound(SOUNDS.ambient);
+       
         // Create the canvas
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
@@ -303,7 +290,20 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             bombs.push(getEntity('bomb', [mouse.x, mouse.y]));
                                            
         });
-        reset();
+
+         reset();
+        //suscribe changing the player sprite 
+        suscribeMaxPower(function(bool){
+            if(bool){
+                bulletDamage +=80;
+                player.sprite =  new Sprite('images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]);
+            }else{
+                bulletDamage = DEFAULT_BULLET_DAMAGE;
+                player.sprite =  new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
+            }
+        });
+
+        playSound(SOUNDS.ambient);
         lastTime = Date.now();
         main();
     }
@@ -332,6 +332,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         points = 0;
         level = 1;
         paused = false;
+        bulletDamage = DEFAULT_BULLET_DAMAGE;
         finalStage = false;
         setPower(0);
         bombs = [];
@@ -339,7 +340,6 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         enemies = [];
         bullets = [];
         specials =[];
-
         player.pos = [50, canvas.height / 2];
         player.life = player.totalLife;
     };
