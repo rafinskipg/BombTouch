@@ -3,8 +3,14 @@ define([
 	], function (angular, FastClick ) {
 		'use strict';
 
-        var BombTouchApp = angular.module('BombTouchApp', ['ngRoute']).run(function() {
-			    FastClick.attach(document.body);
-			  }) ;
+    document.addEventListener('deviceready', init, false);
+
+    function init(){
+      window.isFromCordova = true;
+    }
+
+    var BombTouchApp = angular.module('BombTouchApp', ['ngRoute']).run(function() {
+	    FastClick.attach(document.body);
+	  }) ;
 		return BombTouchApp;
 });

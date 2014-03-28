@@ -52,6 +52,8 @@ require( [
 	'jquery',
 	'app',
     'controllers/main',
+    'services/social',
+    'services/localStorage',
     'routes',
     'howler',
     'fastclick'
