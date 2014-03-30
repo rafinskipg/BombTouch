@@ -9,6 +9,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.megaShootActive = false;
         var booleanSonido = true;
 
+        $scope.isMobile = window.isMobile ? true : false;
         $scope.bestScore = localStorageSrv.getBestScore();
         
         $scope.getSonido = function(){
@@ -51,7 +52,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.megaShoot = function(){
-            console.log('megasoot')
             GAME.megaShoot();
         }
         //Observer of the game

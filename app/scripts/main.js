@@ -13,7 +13,8 @@ requirejs.config({
         ngsanitize : '../bower_components/angular-sanitize/angular-sanitize',
         ngroute : '../bower_components/angular-route/angular-route',
         howler : 'howler.min',
-        fastclick: '../bower_components/fastclick-amd/fastclick'
+        fastclick: '../bower_components/fastclick-amd/fastclick',
+        hu: '../bower_components/hu/hu'
     },
     shim: {
         jquery: {
