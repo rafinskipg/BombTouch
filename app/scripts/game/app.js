@@ -22,8 +22,8 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     
     var player = {
         pos: [0, 0],
-        life: 10000,
-        totalLife: 10000,
+        life: 1,
+        totalLife: 1,
         height: 35,
         width: 88,
         damage: 80,

@@ -3,7 +3,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
   return BombTouchApp.
     factory('localStorageSrv', ['$http', '$q', function($http, $q) {
 
-
+    var __APP_NAME = 'nyanspace';
     var save = function(data){
       var commandsSaved = getLocals(); 
       if(command.checked){
@@ -19,10 +19,10 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       
     }
     var saveLocals = function(locals){
-      localStorage.setItem("gitella", JSON.stringify(locals));
+      localStorage.setItem(__APP_NAME, JSON.stringify(locals));
     }
     var getData = function(){
-      var commands =  JSON.parse(localStorage.getItem("nyanspace"));
+      var commands =  JSON.parse(localStorage.getItem(__APP_NAME));
       if(!commands){
         commands = {
           maxScore :0

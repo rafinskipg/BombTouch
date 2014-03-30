@@ -17,8 +17,10 @@
          <div class="col-xs-4 col-md-4">
                <button class="btn btn-info"  ng-click="setSonido()">Sound: <span><b>{{getSonido()}}</b></span></button>
          </div>
-         <div class="col-xs-4 col-md-4">
-          <p class="">Your best score is <span class="badge pull-right">{{bestScore}}</span></p>
+      </div>
+      <div class="row score">
+         <div class="col-xs-12 col-md-12">
+          <p class="">Your best score is <span class="badge">{{bestScore}}</span></p>
          </div>
       </div>
       
@@ -50,9 +52,22 @@
       <div id="game-over-overlay" ng-show="gameOver">
       </div>
 
-      <div id="game-over" ng-show="gameOver">
-        <h1>GAME OVER</h1>
-        <button id="play-again" class="btn" ng-click="start()">Play Again</button>
+      <div id="game-over" ng-show="gameOver" class="row">
+        <div class="col-xs-offset-4 col-xs-4 game-retry">
+          <h1>Yay! Game ended</h1>
+          <div>Your score is {{puntos}}</div>
+          <div class="sharer">
+            <a title="send to Facebook" 
+              href="http://www.facebook.com/sharer.php?s=100&p[title]=YOUR_TITLE&p[summary]=YOUR_SUMMARY&p[url]=YOUR_URL&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT"
+              target="_blank">
+              <span>
+                <img width="14" height="14" src="'icons/fb.gif" alt="Facebook" /> Facebook 
+              </span>
+            </a>
+            <a class="facebook" target="_blank" onclick="return !window.open(this.href, 'Facebook', 'width=640,height=300')" href="http://www.facebook.com/sharer/sharer.php?u=http://nyanspace.herokuapp.com">Share it!</a>
+          </div>
+          <button id="play-again" class="btn btn-success" ng-click="start()">Play Again</button>
+        </div>
       </div>
 
       <div id="level" ng-show="showLevel">
@@ -61,7 +76,7 @@
           Prepare your anus for level {{level}}!
         </div>
       </div>
-      <button id="megashoot" class="btn" ng-disabled="!megaShootActive" ng-click="megaShoot()"><span class="glyphicon glyphicon-random"></span></button>
+      <button id="megashoot" class="btn btn-success" ng-disabled="!megaShootActive" ng-click="megaShoot()"><span class="glyphicon glyphicon-random"></span></button>
       <button id="shoot" class="btn btn-success" ng-click="shoot()"><span class="glyphicon glyphicon-fire"></span></button>
       <canvas id="canvas"></canvas>
    </div>

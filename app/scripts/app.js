@@ -6,7 +6,7 @@ define([
     document.addEventListener('deviceready', init, false);
 
     function init(){
-      window.isFromCordova = true;
+      window.isMobile = true;
     }
 
     var BombTouchApp = angular.module('BombTouchApp', ['ngRoute']).run(function() {
