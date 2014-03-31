@@ -1,5 +1,4 @@
-define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
-  
+define( [ 'jquery','hu','resources','sprite','input', 'jqmobile'], function($,hu){
     // A cross-browser requestAnimationFrame
     // See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
     var requestAnimFrame = (function(){
@@ -14,16 +13,16 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     })();
     
     var canvas, ctx, soundActivated = true, gameOver = false,finalStage = false, level = 1,power = 0, MAX_POWER = 1000,  paused = false, points = 0,  resourcesLoaded = false;
-    var bullets = bombs = bombareas = enemies = explosions = specials =  [];
-       
+    var bullets = bombs = bombareas = enemies = explosions = specials =  bonuses = [];
+
     var lastFire = Date.now();
     var gameTime = 0,lastTime = 0 ;
     var terrainPattern;
     
     var player = {
         pos: [0, 0],
-        life: 10000,
-        totalLife: 10000,
+        life: 1,
+        totalLife: 1,
         height: 35,
         width: 88,
         damage: 80,
@@ -70,13 +69,12 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         'images/newsprites.png',
         'images/boom.png',
         //'images/bg2.bmp',
-        'images/bg.png'
+        'images/background.png'
     ]);
 
     //Flag for initialization
     resources.onReady(function() {
         resourcesLoaded = true
-        
     });
     
 
@@ -130,19 +128,31 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                return { pos: pos,
                            dir: 'forward',
                            damage: bulletDamage,
+                           speed: bulletSpeed,
                            sprite: new Sprite('images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]) }
             break;
             case 'bottomBullet':
                return { pos: pos,
                            dir: 'down',
                            damage: bulletDamage/2,
+                           speed: bulletSpeed,
                            sprite: new Sprite('images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]) }
             break;
             case 'topBullet':
                return { pos: pos,
                            dir: 'up',
                            damage: bulletDamage/2,
+                           speed: bulletSpeed,
                            sprite: new Sprite('images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]) }
+            break;
+            case 'bonus':
+                var numberOfBonus = Math.ceil(Math.random(5) * 10);
+                return {
+                    pos:pos,
+                    number:numberOfBonus,
+                    speed: 200,
+                    image: 'images/orb'+numberOfBonus+'.png'
+                }
             break;
         }
     }
@@ -270,7 +280,25 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     var start = function() {
         //wait till resources loaded
         if(!resourcesLoaded){ requestAnimFrame(start); return; }
-       
+        initCanvas();
+        reset();
+        //suscribe changing the player sprite 
+        suscribeMaxPower(function(bool){
+            if(bool){
+                bulletDamage +=80;
+                player.sprite =  new Sprite('images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]);
+            }else{
+                bulletDamage = DEFAULT_BULLET_DAMAGE;
+                player.sprite =  new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
+            }
+        });
+
+        playSound(SOUNDS.ambient);
+        lastTime = Date.now();
+        main();
+    }
+
+    var initCanvas = function initCanvas(){
         // Create the canvas
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
@@ -287,25 +315,8 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
                 x: e.pageX - canvasPosition.x,
                 y: e.pageY - canvasPosition.y
             }
-            bombs.push(getEntity('bomb', [mouse.x, mouse.y]));
-                                           
+            bombs.push(getEntity('bomb', [mouse.x, mouse.y]));                             
         });
-
-         reset();
-        //suscribe changing the player sprite 
-        suscribeMaxPower(function(bool){
-            if(bool){
-                bulletDamage +=80;
-                player.sprite =  new Sprite('images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]);
-            }else{
-                bulletDamage = DEFAULT_BULLET_DAMAGE;
-                player.sprite =  new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
-            }
-        });
-
-        playSound(SOUNDS.ambient);
-        lastTime = Date.now();
-        main();
     }
 
     function shoot(){
@@ -326,7 +337,7 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
 
     // Reset game to original state
     function reset() {
-        
+        bonuses = [];
         gameOver = false;
         gameTime = 0;
         points = 0;
@@ -485,7 +496,6 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
             finalStage = true;
         }
        
-
         checkCollisions();
 
     };
@@ -493,86 +503,113 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
     function updateEntities(dt) {
         // Update the player sprite animation
         player.sprite.update(dt);
-
-        // Update all the bullets
-        for(var i=0; i<bullets.length; i++) {
-            var bullet = bullets[i];
-            bullets[i].sprite.update(dt);
-            switch(bullet.dir) {
-            case 'up': bullet.pos[1] -= bulletSpeed * dt; break;
-            case 'down': bullet.pos[1] += bulletSpeed * dt; break;
-            default:
-                bullet.pos[0] += bulletSpeed * dt;
-            }
-
-            // Remove the bullet if it goes offscreen
-            if(bullet.pos[1] < 0 || bullet.pos[1] > canvas.height ||
-               bullet.pos[0] > canvas.width) {
-                bullets.splice(i, 1);
-                i--;
-            }
-        }
-
-        // Update all the enemies
-        for(var i=0; i<enemies.length; i++) {
-            enemies[i].pos[0] -= enemies[i].speed * dt;
-            enemies[i].sprite.update(dt);
-
-            // Remove if offscreen
-            if(enemies[i].pos[0] + enemies[i].sprite.size[0] < 0) {
-                enemies.splice(i, 1);
-                i--;
-            }
-        }
-        
-       for(var i=0; i<bombs.length; i++) {
-            bombs[i].sprite.update(dt);
-
-            // Remove if animation is done
-            if(bombs[i].sprite.done) {
-                bombareas.push(getEntity('bombarea',bombs[i].pos));
-                bombs.splice(i, 1);
-                   
-                i--;
-                playSound(SOUNDS.explosion);
-            }
-        }
-                             
-                  
-        for(var i = 0; i<bombareas.length; i++){
-            bombareas[i].sprite.update(dt);
-             //Remove if animation is done
-            if(bombareas[i].sprite.done){
-              bombareas.splice(i,1);
-                i--;
-            }
-        }
-
-        for(var i = 0; i<specials.length; i++){
-            specials[i].pos =  [player.pos[0]+ player.width,player.pos[1]- player.height/2] ;
-            specials[i].sprite.update(dt);
-             //Remove if animation is done
-            if(specials[i].sprite.done){
-              specials.splice(i,1);
-                i--;
-            }
-        }
-        
-        
-        // Update all the explosions
-        for(var i=0; i<explosions.length; i++) {
-            explosions[i].sprite.update(dt);
-
-            // Remove if animation is done
-            if(explosions[i].sprite.done) {
-                explosions.splice(i, 1);
-                i--;
-            }
-        }
+        updateBullets(dt);
+        updateEnemies(dt);
+        updateBombs(dt);
+        updateBombAreas(dt);
+        updateSpecials(dt);
+        updateExplosions(dt);
     }
 
-    // Collisions
+    /** UPDATE ENTITIES */
+    /* Helpers */
+    function entityInFrontOfPlayer(entity){
+      entity.pos = [player.pos[0]+ player.width,player.pos[1]- player.height/2];
+      return entity;
+    }
 
+    function updateSprite(dt){
+      return function(entity){
+        entity.sprite.update(dt);
+        return entity;
+      }
+    }
+    function moveToDirection(dt){
+      return function(entity){
+        switch(entity.dir) {
+        case 'up': entity.pos[1] -= entity.speed * dt; break;
+        case 'down': entity.pos[1] += entity.speed * dt; break;
+        default:
+            entity.pos[0] += entity.speed * dt;
+        }
+        return entity;
+      }  
+    }
+    function moveLeft(dt){
+      return function(entity){
+        entity.pos[0] -= entity.speed * dt;
+        return entity;
+      }
+    }
+    function removeIfOutsideScreen(entity){
+      if(entity.pos[1] < 0 || entity.pos[1] > canvas.height ||
+         entity.pos[0] > canvas.width) {
+          return void 0;
+      }else{
+        return entity;
+      }
+    }
+    function removeIfOutsideScreenleft(entity){
+      if(! (entity.pos[0] + entity.sprite.size[0] < 0) ) {
+        return entity;
+      }
+    }
+
+    function pushBombIfDone(entity){
+      if(entity.sprite.done){
+        bombareas.push(getEntity('bombarea',entity.pos));
+        playSound(SOUNDS.explosion);
+      }
+      return entity;
+    }
+    function removeIfDone(entity){
+      if(!entity.sprite.done){
+        return entity;
+      }
+    }
+
+    function updateNormalEntities(entities, dt){
+      return hu.compact(
+        entities.map(updateSprite(dt))
+          .map(removeIfDone)
+      ); 
+    }
+
+    /* Updates */
+    function updateBullets(dt){
+      bullets = hu.compact(
+        bullets.map(updateSprite(dt))
+        .map(moveToDirection(dt))
+        .map(removeIfOutsideScreen)
+      );
+    }
+    function updateEnemies(dt){
+      enemies = hu.compact(
+                  enemies.map(moveLeft(dt))
+                    .map(updateSprite(dt))
+                    .map(removeIfOutsideScreenleft)
+                );
+    }
+    function updateBombs(dt){
+      bombs = hu.compact(
+        bombs.map(updateSprite(dt))
+        .map(pushBombIfDone)
+        .map(removeIfDone));
+    }
+    function updateBombAreas(dt){
+      bombareas = updateNormalEntities(bombareas,dt);
+    }
+    
+    function updateSpecials(dt){
+      specials = updateNormalEntities(specials.map(entityInFrontOfPlayer), dt);
+    }
+    
+    function updateExplosions(dt){
+      explosions = updateNormalEntities(explosions, dt);        
+    }
+    /**
+     COLLISION HANDLING
+    **/
     function collides(x, y, r, b, x2, y2, r2, b2) {
         return !(r <= x2 || x > r2 ||
                  b <= y2 || y > b2);
@@ -694,8 +731,8 @@ define( [ 'jquery','resources','sprite','input', 'jqmobile'], function($){
         //ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
         
-       ctx.drawImage(resources.get('images/bg.png'), BGx, 0,canvas.width, canvas.height);
-       ctx.drawImage(resources.get('images/bg.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
+       ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
+       ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
      
         // If the image scrolled off the screen, reset
        if (BGx < -canvas.width){

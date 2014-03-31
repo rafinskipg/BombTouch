@@ -1,6 +1,6 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
-    return BombTouchApp.controller('MainCtrl',['$scope', '$timeout', function ($scope, $timeout) {
+    return BombTouchApp.controller('MainCtrl',['$scope', '$timeout', 'socialSrv', 'localStorageSrv',function ($scope, $timeout,socialSrv, localStorageSrv) {
         $scope.home = true;
         $scope.juego = false;
         $scope.puntos = 0;
@@ -9,6 +9,8 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.megaShootActive = false;
         var booleanSonido = true;
 
+        $scope.isMobile = window.isMobile ? true : false;
+        $scope.bestScore = localStorageSrv.getBestScore();
         
         $scope.getSonido = function(){
             return booleanSonido == true ? 'ON' : 'OFF';
@@ -27,8 +29,8 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.start = function(){
             $scope.home = false;
             $scope.juego = true; 
-            $scope.gameOver = false;
             $scope.puntos = 0;
+            $scope.gameOver = false;
             GAME.start();
         }
 
@@ -50,13 +52,13 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.megaShoot = function(){
-            console.log('megasoot')
             GAME.megaShoot();
         }
         //Observer of the game
         GAME.suscribeGameOver(function(){
             $scope.gameOver = true;
             $scope.$apply();
+            localStorageSrv.saveBestScore($scope.puntos);
         });
 
         GAME.suscribePoints(function(points){

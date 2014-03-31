@@ -1,0 +1,56 @@
+{
+  "name": "hu",
+  "version": "0.1.0-rc.2",
+  "description": "Functional-oriented utility helper library",
+  "license": "MIT",
+  "author": {
+    "name": "Tomas Aparicio"
+  },
+  "main": "./hu.js",
+  "homepage": "https://github.com/h2non/hu",
+  "bugs": "https://github.com/h2non/hu/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/h2non/hu.git"
+  },
+  "keywords": [
+    "util",
+    "functional",
+    "utilities",
+    "utility",
+    "helper",
+    "helpers",
+    "functions",
+    "methods",
+    "istype",
+    "lodash",
+    "underscore"
+  ],
+  "ignore": [
+    "**/.*",
+    ".*",
+    "*.md",
+    "src",
+    "lib",
+    "test",
+    "report",
+    "docs",
+    "benchmarks",
+    "grammar",
+    "Makefile",
+    ".editorconfig",
+    ".gitignore",
+    ".travis.yml",
+    ".npmignore",
+    "package.json"
+  ],
+  "_release": "0.1.0-rc.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.0-rc.2",
+    "commit": "995463bf93b4457c1c1eb97ace6daa02ca210de9"
+  },
+  "_source": "git://github.com/h2non/hu.git",
+  "_target": "~0.1.0-rc.2",
+  "_originalSource": "hu"
+}

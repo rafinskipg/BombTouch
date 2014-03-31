@@ -9,6 +9,5 @@
   },
   "_source": "git://github.com/sjltaylor/fastclick-amd.git",
   "_target": "*",
-  "_originalSource": "fastclick-amd",
-  "_direct": true
+  "_originalSource": "fastclick-amd"
 }
