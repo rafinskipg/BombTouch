@@ -1,20 +1,25 @@
 define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'], function($,hu, EL){
-  // A cross-browser requestAnimationFrame
-  // See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
+  /****************************
+  ****************************
+    Cross browser animation frame
+  ****************************
+  ****************************/
   var requestAnimFrame = (function(){
-    return window.requestAnimationFrame       ||
+    return window.requestAnimationFrame  ||
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame    ||
       window.oRequestAnimationFrame      ||
       window.msRequestAnimationFrame     ||
       function(callback){
-          window.setTimeout(callback, 1000 / 60);
+        window.setTimeout(callback, 1000 / 60);
       };
   })();
 
-  /**
-   Game variables
-  **/
+  /****************************
+  ****************************
+    GAME Variables
+  ****************************
+  ****************************/
   var STATE = {
     sound_enabled: true,
     final_stage : false,
@@ -71,11 +76,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       urls: ['sounds/upmid.wav']
     })
   };
-  /**
-   End game variables
-  **/
 
-  //Resources
+  /****************************
+  ****************************
+    GAME Initialization
+  ****************************
+  ****************************/
+
+  //Resources loaded asynchronously
   resources.load([
       'images/newsprites.png',
       'images/boom.png',
@@ -125,7 +133,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     });
   };
 
-  // Reset game to original state
   function reset() {
     STATE = {
       sound_enabled: true,
@@ -165,8 +172,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
     });
   }
-    
-  // Game over
+
+  /****************************
+  ****************************
+    GAME State modifiers
+  ****************************
+  ****************************/
+  
   function endGame() {
     STATE.game_over = true;
     stopAmbientSound();
@@ -174,12 +186,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       notifyGameEnd[i]();
     }
   }
-   //Check if is game over
+
   function isGameOver(){
       return STATE.game_over;
   }
 
-  //Pause game
   function pause(){
     STATE.paused = true;
     pauseAmbientSound();
@@ -208,7 +219,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     SOUNDS.ambient.stop();
   }
 
-  //Stages
   function changeLevel(){
     STATE.level++;
     STATE.gameTime = 10 * STATE.level;
@@ -218,7 +228,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  //Shoot
   function shoot(){
     if(!isGameOver() &&
       Date.now() - TIMERS.lastFire > 100) {
@@ -235,15 +244,17 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  //Shoot X RAY
   function megaShoot(){
     setPower(0);
     playSound(SOUNDS.nyan);
     specials.push(EL.getEntity('special', [player.pos[0] + player.width, player.pos[1] - player.height/2]));
   }
  
+  function addExplosion(pos){
+    explosions.push(EL.getEntity('explosion',pos));
+    playSound(SOUNDS.explosion);
+  }
 
-  //Add points
   function addPoints(pts){
     if((STATE.points < 3000 && STATE.points + pts >= 3000)
      ||(STATE.points < 10000 && STATE.points + pts >= 10000)
@@ -261,7 +272,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
     
-  // Add power
   function addPower(pow){
     pow = pow/2;
     var newPower = ((STATE.power + pow) < STATE.max_power) ? STATE.power+pow : STATE.max_power;
@@ -311,10 +321,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  // Update game objects
+  /****************************
+  ****************************
+    Entity update
+  ****************************
+  ****************************/
   function update(dt) {
     STATE.gameTime += dt;
-
     handleInput(dt);
     updateEntities(dt);
 
@@ -342,8 +355,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateSpecials(dt);
     updateExplosions(dt);
   }
-
-  /** UPDATE ENTITIES */
   /* Helpers */
   function entityInFrontOfPlayer(entity){
     entity.pos = [player.pos[0]+ player.width,player.pos[1]- player.height/2];
@@ -442,9 +453,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
 
-  /**
-   COLLISION HANDLING
-  **/
+  /****************************
+  ****************************
+    Collision Handling
+  ****************************
+  ****************************/   
   function collides(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   }
@@ -456,191 +469,138 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
                     pos2[0] + size2[0], pos2[1] + size2[1]);
   }
 
-    function checkCollisions() {
-        checkPlayerBounds();
-        
-        // Run collision detection for all enemies and bullets
-        for(var i=0; i<enemies.length; i++) {
-            var pos = enemies[i].pos;
-            var size = enemies[i].sprite.size;
+  function entitiesCollide(a,b){
+    return boxCollides(a.pos, a.sprite.size, b.pos, b.sprite.size);
+  }
 
-            //Damage from bullets
-            for(var j=0; j<bullets.length; j++) {
-                var pos2 = bullets[j].pos;
-                var size2 = bullets[j].sprite.size;
-
-                if(boxCollides(pos, size, pos2, size2)) {
-                    enemies[i].life -=  bullets[j].damage;
-                    // Remove the bullet and stop this iteration
-                    bullets.splice(j, 1);
-                    break;
-                }
-            }
-             
-            //Damage from bombareas
-            for(var z= 0; z<bombareas.length; z++){
-                var pos2 = bombareas[z].pos;
-                var size2 = bombareas[z].sprite.size;
-
-                if(boxCollides(pos, size, pos2, size2)) {
-                    enemies[i].life -=  bombareas[z].damage;
-                    break;
-                }
-            }
-
-            //Damage from bombareas
-            for(var z= 0; z<specials.length; z++){
-                var pos2 = specials[z].pos;
-                var size2 = specials[z].sprite.size;
-
-                if(boxCollides(pos, size, pos2, size2)) {
-                    enemies[i].life -=  specials[z].damage;
-                    break;
-                }
-            }
-
-            //If collides with Nyancat
-            if(boxCollides(pos, size, player.pos, player.sprite.size)) {
-                player.life -= enemies[i].damage;
-                enemies[i].life -= player.damage;
-
-                if(player.life <= 0){
-                    endGame();
-                } 
-            }
-
-            if(enemies[i].life <= 0){
-                // Add score
-                addPoints(enemies[i].points);
-
-                // Add power
-                addPower(enemies[i].points);
-
-                // Remove the enemy
-                enemies.splice(i, 1);
-                i--;
-
-                playSound(SOUNDS.death);
-                // Add an explosion
-                addExplosion(pos);
-               
-                if(enemies.length == 0 && final_stage){
-                    console.log('YOU WON');
-                    alert('you won, now random shit');
-                    for (var i = 0; i < 100; i++){
-                        level = Math.floor(Math.random()* 5)+1;
-                        enemies.push(getEnemy());
-                    }
-                }
-            }
-        }
+  function ifCollidesApplyDamageTo(entity){
+    return function(item){
+      if(entitiesCollide(entity,item)){
+        entity.life -= item.damage;
+      }
+      return item;
     }
+  }
 
-    function addExplosion(pos){
-        explosions.push(EL.getEntity('explosion',pos));
-        playSound(SOUNDS.explosion);
+  function removeIfCollideWith(entity){
+    return function(item){
+      if(!entitiesCollide(entity, item)){
+        return item;
+      }
     }
+  }
+
+  function checkCollisions() {
+    checkPlayerBounds();
     
-    function checkPlayerBounds() {
-        // Check bounds
-        if(player.pos[0] < 0) {
-            player.pos[0] = 0;
-        }
-        else if(player.pos[0] > canvas.width - player.sprite.size[0]) {
-            player.pos[0] = canvas.width - player.sprite.size[0];
-        }
+    enemies = enemies.map(function(enemy){
+      bullets = bullets.map(ifCollidesApplyDamageTo(enemy)).map(removeIfCollideWith(enemy));
+      bombareas.map(ifCollidesApplyDamageTo(enemy));
+      specials.map(ifCollidesApplyDamageTo(enemy));
 
-        if(player.pos[1] < 0) {
-            player.pos[1] = 0;
-        }
-        else if(player.pos[1] > canvas.height - player.sprite.size[1]) {
-            player.pos[1] = canvas.height - player.sprite.size[1];
-        }
+      if(entitiesCollide(enemy, player)){
+        player.life -= enemy.damage;
+        enemy.life -= player.damage;
+        if(player.life <= 0){
+          endGame();
+        } 
+      }
+
+      if(enemy.life > 0){
+        return enemy;
+      }else{
+        addPoints(enemy.points);
+        addPower(enemy.points);
+        playSound(SOUNDS.death);
+        addExplosion(enemy.pos);    
+      }
+    });
+  }
+
+  function checkPlayerBounds() {
+    if(player.pos[0] < 0) {
+      player.pos[0] = 0;
     }
-    var BGx = 0;
-    // Draw everything
-    function render() {
-        //ctx.fillStyle = terrainPattern;
-        BGx -= 0.3;
-        //ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
-        
-       ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
-       ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
-     
-        // If the image scrolled off the screen, reset
-       if (BGx < -canvas.width){
-              BGx =0;
-        }
-      
-        // Render the player if the game isn't over
-        if(!isGameOver()) {
-            renderEntity(player);
-        }
-
-        renderEntities(bombs);
-        renderEntities(bombareas);
-        renderEntities(bullets);
-        renderEntities(enemies);
-        renderEntities(explosions);
-        renderEntities(specials);
-        renderPower();
-    };
-
-    function renderEntities(list) {
-        for(var i=0; i<list.length; i++) {
-            renderEntity(list[i]);
-        }    
+    else if(player.pos[0] > canvas.width - player.sprite.size[0]) {
+      player.pos[0] = canvas.width - player.sprite.size[0];
     }
 
-    function renderEntity(entity) {
-        ctx.save();
-        ctx.translate(entity.pos[0], entity.pos[1]);
-        entity.sprite.render(ctx);
-        ctx.restore();
-        if(entity.life){
-            drawLife(entity);
-        }
+    if(player.pos[1] < 0) {
+      player.pos[1] = 0;
     }
-
-    function drawLife(entity){
-      var lifeTotal = entity.width * (entity.life/ entity.totalLife);
-
-      ctx.beginPath();
-      ctx.rect(entity.pos[0], entity.pos[1] + entity.height, entity.width, 7);
-      ctx.fillStyle = 'yellow';
-      ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'black'; 
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.rect(entity.pos[0], entity.pos[1] + entity.height, lifeTotal, 7);
-      ctx.fillStyle = 'blue';
-      ctx.fill();
-      ctx.stroke();
+    else if(player.pos[1] > canvas.height - player.sprite.size[1]) {
+      player.pos[1] = canvas.height - player.sprite.size[1];
     }
-    
-    function renderPower(){
-        var powerColor = STATE.power == STATE.max_power ?  'red': 'blue' ;
-        var totalPower = window.innerWidth/3 *( STATE.power / STATE.max_power);
+  }
 
-        ctx.beginPath();
-        ctx.rect(window.innerWidth/3, 10, window.innerWidth/3, 20);
-        ctx.fillStyle = 'yellow';
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'black'; 
-        ctx.stroke();
+  /****************************
+  ****************************
+    Drawables
+  ****************************
+  ****************************/   
+  var BGx = 0;
 
-        ctx.beginPath();
-        ctx.rect(window.innerWidth/3, 10, totalPower, 20);
-        ctx.fillStyle = powerColor;
-        ctx.fill();
-        ctx.stroke();
+  function render() {
+    BGx -= 0.3;
+    ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
+    ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
+    ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
+ 
+    // If the image scrolled off the screen, reset
+    if (BGx < -canvas.width){
+      BGx =0;
+    }
+  
+    if(!isGameOver()) {
+      renderEntity(player);
+    }
+    renderEntities(bombs);
+    renderEntities(bombareas);
+    renderEntities(bullets);
+    renderEntities(enemies);
+    renderEntities(explosions);
+    renderEntities(specials);
+  };
+
+  function renderEntities(list) {
+    for(var i=0; i<list.length; i++) {
+      renderEntity(list[i]);
     }    
+  }
 
-    
+  function renderEntity(entity) {
+    ctx.save();
+    ctx.translate(entity.pos[0], entity.pos[1]);
+    entity.sprite.render(ctx);
+    ctx.restore();
+    if(entity.life){
+      drawLife(entity);
+    }
+  }
+
+  function drawLife(entity){
+    var lifeTotal = entity.width * (entity.life/ entity.totalLife);
+
+    ctx.beginPath();
+    ctx.rect(entity.pos[0], entity.pos[1] + entity.height, entity.width, 7);
+    ctx.fillStyle = 'yellow';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black'; 
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.rect(entity.pos[0], entity.pos[1] + entity.height, lifeTotal, 7);
+    ctx.fillStyle = 'blue';
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  /****************************
+  ****************************
+     Game Suscriptions
+  ****************************
+  ****************************/  
   function suscribeGameOver( fn){
       notifyGameEnd.push(fn);
   }
@@ -669,6 +629,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  /****************************
+  ****************************
+    GAME API
+  ****************************
+  ****************************/
   var GAME = {
     suscribeGameOver : suscribeGameOver,
     suscribeLevelUp : suscribeLevelUp,
@@ -684,7 +649,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     shoot: shoot
    };
 
-  //API 
   return  GAME;
 
 });
