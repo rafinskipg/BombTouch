@@ -13,7 +13,7 @@ define( [ ], function(){
     40,
     [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4,3,2,1,2,3,4,3,2,1,0,1,2,3],
     'vertical',
-    true],
+    true];
 
   var explosionSpriteSchema = ['images/newsprites.png',
     [15, 340],
@@ -23,8 +23,8 @@ define( [ ], function(){
     null,
     true];
 
-  var bombSpriteSchema = ['images/newsprites.png', 
-    [282, 50], 
+  var bombSpriteSchema = ['images/newsprites.png',
+    [282, 50],
     [50, 42],
     14,
     [0,1,2,3,4,5,6,7],
@@ -42,18 +42,27 @@ define( [ ], function(){
   var level4SpriteSchema = ['images/newsprites.png', [175,230], [33,40], 8, [0,1,2,3,4,3,2,1]];
   var level5SpriteSchema = ['images/newsprites.png', [172,0], [72,72],1, [0]];
   var level6SpriteSchema = ['images/newsprites.png', [557,141], [240,347], 4, [0,1,2,1,2,1]];
+ 
+  //Player
+  var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
+  var superPlayerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
 
-  function construct(constructor, args) {
-    function F() {
-        return constructor.apply(this, args);
-    }
-    F.prototype = constructor.prototype;
-    return new F();
+  //Thanks dr.axel
+   if (!Function.prototype.construct) {
+      Function.prototype.construct = function(argArray) {
+          if (! Array.isArray(argArray)) {
+              throw new TypeError("Argument must be an array");
+          }
+          var constr = this;
+          var nullaryFunc = Function.prototype.bind.apply(
+              constr, [null].concat(argArray));
+          return new nullaryFunc();
+      };
   }
 
   function Entity(pos, spriteSchema){
     this.pos = pos;
-    this.sprite = constructor(Sprite, spriteSchema);
+    this.sprite = Sprite.construct(spriteSchema);
   }
 
   function Bombarea(pos){
@@ -78,37 +87,52 @@ define( [ ], function(){
     return entity;
   }
 
-  function Bullet(pos){
+  function Bullet(pos, opts){
     var entity = new Entity(pos, normalBulletSpriteSchema);
     entity.dir = 'forward';
-    entity.damage = 50;
-    entity.speed = 200;
+    entity.damage = opts.damage || 50;
+    entity.speed = opts.speed || 500;
     return entity;
   }
 
-  function BottomBullet(pos){
+  function BottomBullet(pos, opts){
     var entity = new Entity(pos, bottomBulletSpriteSchema);
     entity.dir = 'down';
-    entity.damage = 25;
-    entity.speed = 200;
+    entity.damage = opts.damage || 25;
+    entity.speed = opts.speed || 500;
     return entity;
   }
 
-  function TopBullet(pos){
+  function TopBullet(pos, opts){
     var entity = new Entity(pos, topBulletSpriteSchema);
     entity.dir = 'up';
-    entity.damage = 25;
-    entity.speed = 200;
+    entity.damage = opts.damage || 25;
+    entity.speed = opts.speed || 500;
     return entity;
   }
 
-  function getEntity(name, pos){
+  function Player(pos, opts){
+    var sprite = opts.isSuperSaiyan ? superPlayerSpriteSchema : playerSpriteSchema;
+    var entity  = new Entity(pos, sprite);
+    entity.life = opts.life || 1000;
+    entity.totalLife = opts.totalLife || 1000;
+    entity.height = 35;
+    entity.width = 88;
+    entity.damage = opts.damage || 80;
+    entity.speed = opts.speed || 200;
+    return entity;
+  }
+
+  function getEntity(name, pos, opts){
+    if(!opts){
+      opts = {};
+    }
     switch(name){
       case 'bombarea':
         return new Bombarea(pos);
       break;
       case 'special':
-        return new Special( [player.pos[0] + player.width, player.pos[1] - player.height/2])
+        return new Special(pos);
       break;
       case 'explosion':
         return new Explosion(pos);
@@ -117,21 +141,32 @@ define( [ ], function(){
         return new Bomb(pos);
       break;
       case 'bullet':
-        return new Bullet(pos);
+        return new Bullet(pos, opts);
       break;
       case 'bottomBullet':
-         return new BottomBullet(pos);
+         return new BottomBullet(pos, opts);
       break;
       case 'topBullet':
-        return new TopBullet(pos);
+        return new TopBullet(pos, opts);
+      break;
+      case 'player': 
+        return new Player(pos, opts);
+      break;
+      case 'superPlayer':
+        opts = {
+          damage: 160,
+          isSuperSaiyan: true,
+          speed: 400
+        };
+        return new Player(pos, opts);
       break;
       case 'bonus':
         var numberOfBonus = Math.ceil(Math.random(5) * 10);
         return {
-            pos:pos,
-            number:numberOfBonus,
-            speed: 200,
-            image: 'images/orb'+numberOfBonus+'.png'
+          pos:pos,
+          number:numberOfBonus,
+          speed: 200,
+          image: 'images/orb'+numberOfBonus+'.png'
         }
       break;
     }
@@ -147,6 +182,7 @@ define( [ ], function(){
     entity.width = 28;
     entity.height = 30;
     entity.damage = 100;
+    entity.dir = 'left';
     return entity;
   }
 
@@ -159,6 +195,7 @@ define( [ ], function(){
     entity.width = 35;
     entity.height = 50;
     entity.damage = 200;
+    entity.dir = 'left';
     return entity;
   }  
   function level3Enemy(pos){
@@ -170,6 +207,7 @@ define( [ ], function(){
     entity.width = 23;
     entity.height = 45;
     entity.damage = 300;
+    entity.dir = 'left';
     return entity;
   }  
 
@@ -182,6 +220,7 @@ define( [ ], function(){
     entity.width = 30;
     entity.height = 37;
     entity.damage = 400;
+    entity.dir = 'left';
     return entity;
   }  
 
@@ -194,6 +233,7 @@ define( [ ], function(){
     entity.width = 72;
     entity.height = 72;
     entity.damage = 500;
+    entity.dir = 'left';
     return entity;
   }
 
@@ -206,6 +246,7 @@ define( [ ], function(){
     entity.width = 240;
     entity.height = 347;
     entity.damage = 10000;
+    entity.dir = 'left';
     return entity;
   }
 
@@ -215,7 +256,7 @@ define( [ ], function(){
       case 1:
         return new level1Enemy([width, Math.random() * (height - 39)]);
       break;
-      case 2: 
+      case 2:
         return new level2Enemy([width, Math.random() * (height - 39)]);
       break;
       case 3: 

@@ -1,4 +1,4 @@
-define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], function($,hu, entities){
+define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'], function($,hu, EL){
   // A cross-browser requestAnimationFrame
   // See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
   var requestAnimFrame = (function(){
@@ -12,40 +12,46 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
       };
   })();
 
-  //GAME DATA
-  var gameState = {
-    soundActivated: true,
-    finalStage : false, 
+  /**
+   Game variables
+  **/
+  var STATE = {
+    sound_enabled: true,
+    final_stage : false,
     level: 1,
-    POINTS : 0,
-    DEFAULT_POWER: 0,
-    MAX_POWER :1000,
-    GAME_OVER: false,
-    PAUSED: false,
-    RESOURCES_LOADED: false
+    points : 0,
+    default_power: 0,
+    max_power :1000,
+    game_over: false,
+    paused: false,
+    resources_loaded: false
   };
 
-  var gameEntities = {
-    bullets: [],
-    bombs : [],
-    bombareas: [],
-    enemies: [],
-    explosions: [],
-    specials: [],
-    bonuses: [],
-    player = {
-      pos: [0, 0],
-      life: 1,
-      totalLife: 1,
-      height: 35,
-      width: 88,
-      damage: 80,
-      speed: 200,
-      sprite: new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
-    }
+  var TIMERS = {
+    lastFire : Date.now(),
+    lastTime: Date.now(),
+    gameTime: 0
   };
 
-   // var sounds
+  var bullets = [],
+    bombs = [],
+    bombareas = [],
+    enemies = [],
+    explosions = [],
+    specials = [],
+    bonuses = [],
+    player = {};
+
+  var canvas, ctx, power = 0;
+  var terrainPattern;
+
+  //Suscribe to events of the game
+  var notifyGameEnd = [];
+  var notifyPoints = [];
+  var notifyLevelUp = [];
+  var notifyPower = [];
+  var notifyMaxPower = [];
+
   var SOUNDS = {
     death: new Howl({
       urls: ['sounds/cut_grunt2.wav']
@@ -65,23 +71,9 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
       urls: ['sounds/upmid.wav']
     })
   };
-
-  var canvas, ctx, power = 0;
-  var lastFire = Date.now();
-  var gameTime = 0,lastTime = 0 ;
-  var terrainPattern;
-  
-  var bulletSpeed = 500;
-  var bombTime = 800;
-  var bombAreaTime = 800;
-  
-
-  //Suscribe to events of the game
-  var notifyGameEnd = [];
-  var notifyPoints = [];
-  var notifyLevelUp = [];
-  var notifyPower = [];
-  var notifyMaxPower = [];
+  /**
+   End game variables
+  **/
 
   //Resources
   resources.load([
@@ -92,366 +84,377 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
 
   //Flag for initialization
   resources.onReady(function() {
-    gameState.RESOURCES_LOADED = true
+    STATE.resources_loaded = true;
   });
 
   // The main game loop
   var main = function() {
     var now = Date.now();
-    var dt = (now - lastTime) / 1000.0;
+    var dt = (now - TIMERS.lastTime) / 1000.0;
     if(!isGameOver() && !isPaused()){
       update(dt);
       render();
     }
-    lastTime = now;
+    TIMERS.lastTime = now;
     requestAnimFrame(main);
   };
 
-  //Start Game
-  var start = function() {
+  function start() {
     //wait till resources loaded
-    if(!gameState.RESOURCES_LOADED){ requestAnimFrame(start); return; }
+    if(!STATE.resources_loaded){
+      requestAnimFrame(start);
+      return;
+    }
     initCanvas();
     reset();
-    //suscribe changing the player sprite 
-    suscribeMaxPower(function(bool){
-      if(bool){
-        bulletDamage +=80;
-        player.sprite =  new Sprite('images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]);
-      }else{
-        bulletDamage = 50;
-        player.sprite =  new Sprite('images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4])
-      }
-    });
-
+    suscribeToEvents();
     playSound(SOUNDS.ambient);
-    lastTime = Date.now();
     main();
-  }
+  };
 
-  var initCanvas = function initCanvas(){
-    // Create the canvas
+  function initCanvas(){
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    //terrainPattern = ctx.createPattern(resources.get('images/bg2.BMP'), 'repeat');
 
     $(canvas).on('vclick',function(e){
-      var canvasPosition = {
-          x: $(canvas).offset().left,
-          y: $(canvas).offset().top
-      };
-      var mouse= {
-          x: e.pageX - canvasPosition.x,
-          y: e.pageY - canvasPosition.y
+      var x = e.pageX - $(canvas).offset().left;
+      var y = e.pageY - $(canvas).offset().top;
+      bombs.push(EL.getEntity('bomb', [x, y]));                             
+    });
+  };
+
+  // Reset game to original state
+  function reset() {
+    STATE = {
+      sound_enabled: true,
+      final_stage : false,
+      level: 1,
+      points : 0,
+      power: 0,
+      max_power :1000,
+      game_over: false,
+      paused: false,
+      resources_loaded: true,
+      game_time: 0
+    };
+
+    bullets = [];
+    bombs = [];
+    bombareas = [];
+    enemies = [];
+    explosions = [];
+    specials = [];
+    bonuses = [];
+    player = EL.getEntity('player', [50, canvas.height / 2]);
+
+    TIMERS = {
+      lastFire : Date.now(),
+      lastTime: Date.now(),
+      gameTime: 0
+    };
+  };
+
+  function suscribeToEvents(){
+    suscribeMaxPower(function(bool){
+      if(bool){
+        player = EL.getEntity('superPlayer', [player.pos.x, player.pos.y]);
+      }else{
+        player = EL.getEntity('player', [player.pos.x, player.pos.y]);
       }
-      bombs.push(entities.getEntity('bomb', [mouse.x, mouse.y]));                             
     });
   }
+    
+  // Game over
+  function endGame() {
+    STATE.game_over = true;
+    stopAmbientSound();
+    for(var i = 0; i<notifyGameEnd.length; i++){
+      notifyGameEnd[i]();
+    }
+  }
+   //Check if is game over
+  function isGameOver(){
+      return STATE.game_over;
+  }
 
+  //Pause game
+  function pause(){
+    STATE.paused = true;
+    pauseAmbientSound();
+  }
+
+  function isPaused(){
+    return STATE.paused;
+  }
+  
+  function resume(){
+    STATE.paused = false;
+    playSound(SOUNDS.ambient);
+  }
+
+  function playSound(sound){
+    if(!isPaused() && !isGameOver() && STATE.sound_enabled){
+      sound.play();
+    }
+  }
+
+  function pauseAmbientSound(){
+    SOUNDS.ambient.pause();
+  }
+
+  function stopAmbientSound(){
+    SOUNDS.ambient.stop();
+  }
+
+  //Stages
+  function changeLevel(){
+    STATE.level++;
+    STATE.gameTime = 10 * STATE.level;
+    
+    for(var i = 0; i<notifyLevelUp.length; i++){
+      notifyLevelUp[i](STATE.level);
+    }
+  }
+
+  //Shoot
   function shoot(){
     if(!isGameOver() &&
-      Date.now() - lastFire > 100) {
+      Date.now() - TIMERS.lastFire > 100) {
 
       var x = player.pos[0] + player.sprite.size[0] / 2;
       var y = player.pos[1] + player.sprite.size[1] / 2;
 
-      bullets.push(entities.getEntity('bullet', [x,y]));
-      bullets.push(entities.getEntity('topBullet', [x,y]));
-      bullets.push(entities.getEntity('bottomBullet', [x,y]));
+      bullets.push(EL.getEntity('bullet', [x,y]));
+      bullets.push(EL.getEntity('topBullet', [x,y]));
+      bullets.push(EL.getEntity('bottomBullet', [x,y]));
     
       playSound(SOUNDS.shoot);
-      lastFire = Date.now();
+      TIMERS.lastFire = Date.now();
     }
   }
 
-  // Reset game to original state
-  function reset() {
-    bonuses = [];
-    gameOver = false;
-    gameTime = 0;
-    points = 0;
-    level = 1;
-    paused = false;
-    bulletDamage = DEFAULT_BULLET_DAMAGE;
-    finalStage = false;
+  //Shoot X RAY
+  function megaShoot(){
     setPower(0);
-    bombs = [];
-    bombareas = [];
-    enemies = [];
-    bullets = [];
-    specials =[];
-    player.pos = [50, canvas.height / 2];
-    player.life = player.totalLife;
+    playSound(SOUNDS.nyan);
+    specials.push(EL.getEntity('special', [player.pos[0] + player.width, player.pos[1] - player.height/2]));
+  }
+ 
+
+  //Add points
+  function addPoints(pts){
+    if((STATE.points < 3000 && STATE.points + pts >= 3000)
+     ||(STATE.points < 10000 && STATE.points + pts >= 10000)
+     ||(STATE.points < 50000 && STATE.points + pts >= 50000)
+     ||(STATE.points < 100000 && STATE.points + pts >= 100000)
+     ||(STATE.points < 200000 && STATE.points + pts >= 200000)
+    ){
+      changeLevel();
+    }
+
+    STATE.points += pts;
+
+    for(var i = 0; i<notifyPoints.length; i++){
+      notifyPoints[i](STATE.points);
+    }
+  }
+    
+  // Add power
+  function addPower(pow){
+    pow = pow/2;
+    var newPower = ((STATE.power + pow) < STATE.max_power) ? STATE.power+pow : STATE.max_power;
+    setPower(newPower);
+  }
+
+  function setPower(pow){
+    checkIfHasArrivedToMaxPower(pow);
+    STATE.power = pow;
+    var percentage = parseFloat((STATE.power / STATE.max_power) *100).toFixed(2);    
+    for(var i = 0; i<notifyPower.length; i++){
+      notifyPower[i](percentage);
+    }
+  }
+
+  function checkIfHasArrivedToMaxPower(pow){
+    if(pow >= STATE.max_power && STATE.power < STATE.max_power ){
+      for(var i = 0; i<notifyMaxPower.length; i++){
+        notifyMaxPower[i](true);
+      }
+    }else if(STATE.power != 0 && pow <= 0){
+      for(var i = 0; i<notifyMaxPower.length; i++){
+        notifyMaxPower[i](false);
+      }
+    }
+  }
+
+  function handleInput(dt) {
+    if(input.isDown('DOWN') || input.isDown('s')) {
+      movePlayer('down', dt);
+    }
+
+    if(input.isDown('UP') || input.isDown('w')) {
+      movePlayer('up', dt);
+    }
+
+    if(input.isDown('LEFT') || input.isDown('a')) {
+      movePlayer('left', dt);
+    }
+
+    if(input.isDown('RIGHT') || input.isDown('d')) {
+      movePlayer('right', dt);
+    }
+
+    if(input.isDown('SPACE') ){
+      shoot();
+    }
+  }
+
+  // Update game objects
+  function update(dt) {
+    STATE.gameTime += dt;
+
+    handleInput(dt);
+    updateEntities(dt);
+
+    // It gets harder over time by adding enemies using this
+    // equation: 1-.993^gameTime
+    if(STATE.level < 6 && !STATE.final_stage){
+      var value = Math.random() < 1 - Math.pow(.999, STATE.gameTime);
+      if(value) {
+        enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
+      }
+    }else if(!STATE.final_stage){
+      enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
+      STATE.final_stage = true;
+    }
+   
+    checkCollisions();
   };
-    
-    // Game over
-    function endGame() {
-        gameOver = true;
-        stopAmbientSound();
-        for(var i = 0; i<notifyGameEnd.length; i++){
-            notifyGameEnd[i]();
-        }
-    }
 
-    //Pause game
-    function pause(){
-        paused = true;
-        pauseAmbientSound();
-    }
-    function resume(){
-        paused = false;
-        playSound(SOUNDS.ambient);
-    }
+  function updateEntities(dt) {
+    player.sprite.update(dt);
+    updateBullets(dt);
+    updateEnemies(dt);
+    updateBombs(dt);
+    updateBombAreas(dt);
+    updateSpecials(dt);
+    updateExplosions(dt);
+  }
 
-    function playSound(sound){
-      if(!paused && !isGameOver() &&soundActivated){
-        sound.play();
-      }
-    }
-    function pauseAmbientSound(){
-      SOUNDS.ambient.pause();
-    }
-    function stopAmbientSound(){
-      SOUNDS.ambient.stop();
-    }
+  /** UPDATE ENTITIES */
+  /* Helpers */
+  function entityInFrontOfPlayer(entity){
+    entity.pos = [player.pos[0]+ player.width,player.pos[1]- player.height/2];
+    return entity;
+  }
 
-    //Stages
-    function changeLevel(){
-        level++;
-        gameTime = 10 * level;
-        
-        for(var i = 0; i<notifyLevelUp.length; i++){
-            notifyLevelUp[i](level);
-        }
-    }
-    //Add points
-    function addPoints(pts){
-        if((points < 3000 && points+pts >= 3000)
-         ||(points < 10000 && points+pts >= 10000)
-         ||(points < 50000 && points+pts >= 50000)
-         ||(points < 100000 && points+pts >= 100000)
-         ||(points < 200000 && points+pts >= 200000)
-        ){
-            changeLevel();
-        }
-
-        points+=pts;
-
-        for(var i = 0; i<notifyPoints.length; i++){
-            notifyPoints[i](points);
-        }
-    }
-    
-    // Add power
-    function addPower(pow){
-        pow = pow/2;
-        var newPower = ((power + pow) < MAX_POWER) ? power+pow : MAX_POWER;
-        setPower(newPower);
-    }
-    function setPower(pow){
-        if(pow >= MAX_POWER && power < MAX_POWER ){
-            console.log('NOTIFYING MAX POWER')
-            for(var i = 0; i<notifyMaxPower.length; i++){
-                notifyMaxPower[i](true);
-            }
-        }else if(power != 0 && pow <= 0){
-            for(var i = 0; i<notifyMaxPower.length; i++){
-                notifyMaxPower[i](false);
-            }
-        }
-        power = pow;
-        var percentage = parseFloat((power/MAX_POWER) *100).toFixed(2);
-        console.log('notifying', percentage, power, MAX_POWER);
-        for(var i = 0; i<notifyPower.length; i++){
-            notifyPower[i](percentage);
-        }
-    }
-    //Shoot X RAY
-    function megaShoot(){
-        setPower(0);
-        playSound(SOUNDS.nyan);
-        specials.push(getEntity('special'));
-    }
-    //Check if is game over
-    function isGameOver(){
-        return gameOver;
-    }
-    function isPaused(){
-        return paused;
-    }
-   
-   
-    function handleInput(dt) {
-        if(input.isDown('DOWN') || input.isDown('s')) {
-            player.pos[1] += playerSpeed * dt;
-        }
-
-        if(input.isDown('UP') || input.isDown('w')) {
-            player.pos[1] -= playerSpeed * dt;
-        }
-
-        if(input.isDown('LEFT') || input.isDown('a')) {
-            player.pos[0] -= playerSpeed * dt;
-        }
-
-        if(input.isDown('RIGHT') || input.isDown('d')) {
-            player.pos[0] += playerSpeed * dt;
-        }
-
-        if(input.isDown('SPACE') ){
-          shoot();
-        }
-    }
-
-
-
-    // Update game objects
-    function update(dt) {
-        gameTime += dt;
-
-        handleInput(dt);
-        updateEntities(dt);
-
-        // It gets harder over time by adding enemies using this
-        // equation: 1-.993^gameTime
-        if(level < 6 && !finalStage){
-            var value = Math.random() < 1 - Math.pow(.999, gameTime);
-            if(value) {
-                //console.log(gameTime)
-                enemies.push(getEnemy());
-            }
-        }else if(!finalStage){
-            enemies.push(getEnemy());
-            finalStage = true;
-        }
-       
-        checkCollisions();
-
+  function updateSprite(dt){
+    return function(entity){
+      entity.sprite.update(dt);
+      return entity;
     };
+  }
 
-    function updateEntities(dt) {
-        // Update the player sprite animation
-        player.sprite.update(dt);
-        updateBullets(dt);
-        updateEnemies(dt);
-        updateBombs(dt);
-        updateBombAreas(dt);
-        updateSpecials(dt);
-        updateExplosions(dt);
-    }
-
-    /** UPDATE ENTITIES */
-    /* Helpers */
-    function entityInFrontOfPlayer(entity){
-      entity.pos = [player.pos[0]+ player.width,player.pos[1]- player.height/2];
-      return entity;
-    }
-
-    function updateSprite(dt){
-      return function(entity){
-        entity.sprite.update(dt);
-        return entity;
-      }
-    }
-    function moveToDirection(dt){
-      return function(entity){
-        switch(entity.dir) {
-        case 'up': entity.pos[1] -= entity.speed * dt; break;
-        case 'down': entity.pos[1] += entity.speed * dt; break;
-        default:
-            entity.pos[0] += entity.speed * dt;
-        }
-        return entity;
-      }  
-    }
-    function moveLeft(dt){
-      return function(entity){
-        entity.pos[0] -= entity.speed * dt;
-        return entity;
-      }
-    }
-    function removeIfOutsideScreen(entity){
-      if(entity.pos[1] < 0 || entity.pos[1] > canvas.height ||
-         entity.pos[0] > canvas.width) {
-          return void 0;
-      }else{
-        return entity;
-      }
-    }
-    function removeIfOutsideScreenleft(entity){
-      if(! (entity.pos[0] + entity.sprite.size[0] < 0) ) {
-        return entity;
-      }
-    }
-
-    function pushBombIfDone(entity){
-      if(entity.sprite.done){
-        bombareas.push(getEntity('bombarea',entity.pos));
-        playSound(SOUNDS.explosion);
+  function moveToDirection(dt){
+    return function(entity){
+      switch(entity.dir) {
+      case 'up': entity.pos[1] -= entity.speed * dt; break;
+      case 'down': entity.pos[1] += entity.speed * dt; break;
+      case 'left': entity.pos[0] -= entity.speed * dt; break;
+      case 'right': entity.pos[0] += entity.speed * dt; break;
+      default:
+        entity.pos[0] += entity.speed * dt;
       }
       return entity;
-    }
-    function removeIfDone(entity){
-      if(!entity.sprite.done){
-        return entity;
-      }
-    }
+    }  
+  }
 
-    function updateNormalEntities(entities, dt){
-      return hu.compact(
-        entities.map(updateSprite(dt))
-          .map(removeIfDone)
-      ); 
+  function removeIfOutsideScreen(entity){
+    if(entity.pos[1] < 0 || entity.pos[1] > canvas.height ||
+       entity.pos[0] > canvas.width) {
+        return void 0;
+    }else{
+      return entity;
     }
+  }
+  function removeIfOutsideScreenleft(entity){
+    if(! (entity.pos[0] + entity.sprite.size[0] < 0) ) {
+      return entity;
+    }
+  }
 
-    /* Updates */
-    function updateBullets(dt){
-      bullets = hu.compact(
-        bullets.map(updateSprite(dt))
-        .map(moveToDirection(dt))
-        .map(removeIfOutsideScreen)
-      );
+  function pushBombIfDone(entity){
+    if(entity.sprite.done){
+      bombareas.push(EL.getEntity('bombarea',entity.pos));
+      playSound(SOUNDS.explosion);
     }
-    function updateEnemies(dt){
-      enemies = hu.compact(
-                  enemies.map(moveLeft(dt))
-                    .map(updateSprite(dt))
-                    .map(removeIfOutsideScreenleft)
-                );
+    return entity;
+  }
+  function removeIfDone(entity){
+    if(!entity.sprite.done){
+      return entity;
     }
-    function updateBombs(dt){
-      bombs = hu.compact(
-        bombs.map(updateSprite(dt))
-        .map(pushBombIfDone)
-        .map(removeIfDone));
-    }
-    function updateBombAreas(dt){
-      bombareas = updateNormalEntities(bombareas,dt);
-    }
-    
-    function updateSpecials(dt){
-      specials = updateNormalEntities(specials.map(entityInFrontOfPlayer), dt);
-    }
-    
-    function updateExplosions(dt){
-      explosions = updateNormalEntities(explosions, dt);        
-    }
-    /**
-     COLLISION HANDLING
-    **/
-    function collides(x, y, r, b, x2, y2, r2, b2) {
-        return !(r <= x2 || x > r2 ||
-                 b <= y2 || y > b2);
-    }
+  }
 
-    function boxCollides(pos, size, pos2, size2) {
-        return collides(pos[0], pos[1],
-                        pos[0] + size[0], pos[1] + size[1],
-                        pos2[0], pos2[1],
-                        pos2[0] + size2[0], pos2[1] + size2[1]);
-    }
+  function updateNormalEntities(entities, dt){
+    return hu.compact(
+      entities.map(updateSprite(dt))
+        .map(removeIfDone)
+    ); 
+  }
+
+  /* Updates */
+  function movePlayer(dir,dt){
+    player.dir =dir;
+    player = moveToDirection(dt)(player);
+  }
+
+  function updateBullets(dt){
+    bullets = hu.compact(
+      bullets.map(updateSprite(dt))
+      .map(moveToDirection(dt))
+      .map(removeIfOutsideScreen));
+  }
+  function updateEnemies(dt){
+    enemies = hu.compact(
+      enemies.map(moveToDirection(dt))
+      .map(updateSprite(dt))
+      .map(removeIfOutsideScreenleft));
+  }
+  function updateBombs(dt){
+    bombs = hu.compact(
+      bombs.map(updateSprite(dt))
+      .map(pushBombIfDone)
+      .map(removeIfDone));
+  }
+  function updateBombAreas(dt){
+    bombareas = updateNormalEntities(bombareas,dt);
+  }
+  
+  function updateSpecials(dt){
+    specials = updateNormalEntities(specials.map(entityInFrontOfPlayer), dt);
+  }
+  
+  function updateExplosions(dt){
+    explosions = updateNormalEntities(explosions, dt);        
+  }
+
+
+  /**
+   COLLISION HANDLING
+  **/
+  function collides(x, y, r, b, x2, y2, r2, b2) {
+    return !(r <= x2 || x > r2 || b <= y2 || y > b2);
+  }
+
+  function boxCollides(pos, size, pos2, size2) {
+    return collides(pos[0], pos[1],
+                    pos[0] + size[0], pos[1] + size[1],
+                    pos2[0], pos2[1],
+                    pos2[0] + size2[0], pos2[1] + size2[1]);
+  }
 
     function checkCollisions() {
         checkPlayerBounds();
@@ -521,7 +524,7 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
                 // Add an explosion
                 addExplosion(pos);
                
-                if(enemies.length == 0 && finalStage){
+                if(enemies.length == 0 && final_stage){
                     console.log('YOU WON');
                     alert('you won, now random shit');
                     for (var i = 0; i < 100; i++){
@@ -534,7 +537,7 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
     }
 
     function addExplosion(pos){
-        explosions.push(getEntity('explosion',pos));
+        explosions.push(EL.getEntity('explosion',pos));
         playSound(SOUNDS.explosion);
     }
     
@@ -619,8 +622,8 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
     }
     
     function renderPower(){
-        var powerColor = power == MAX_POWER ?  'red': 'blue' ;
-        var totalPower = window.innerWidth/3 *( power / MAX_POWER);
+        var powerColor = STATE.power == STATE.max_power ?  'red': 'blue' ;
+        var totalPower = window.innerWidth/3 *( STATE.power / STATE.max_power);
 
         ctx.beginPath();
         ctx.rect(window.innerWidth/3, 10, window.innerWidth/3, 20);
@@ -638,50 +641,50 @@ define( [ 'jquery','hu','entities','resources','sprite','input', 'jqmobile'], fu
     }    
 
     
-    function suscribeGameOver( fn){
-        notifyGameEnd.push(fn);
+  function suscribeGameOver( fn){
+      notifyGameEnd.push(fn);
+  }
+  function suscribeLevelUp( fn){
+      notifyLevelUp.push(fn);
+  }
+  function suscribePoints(fn){
+      notifyPoints.push(fn);
+  }
+  function suscribePower(fn){
+      notifyPower.push(fn);
+  }
+  function suscribeMaxPower(fn){
+      notifyMaxPower.push(fn);
+  }
+  function setSound(bool){
+    STATE.sound_enabled = bool;
+  }
+  function setSoundInGame(bool){
+    if(!STATE.sound_enabled){
+      STATE.sound_enabled = bool;
+      playSound(SOUNDS.ambient);
+    }else{
+      pauseAmbientSound();
+      STATE.sound_enabled = bool;
     }
-    function suscribeLevelUp( fn){
-        notifyLevelUp.push(fn);
-    }
-    function suscribePoints(fn){
-        notifyPoints.push(fn);
-    }
-    function suscribePower(fn){
-        notifyPower.push(fn);
-    }
-    function suscribeMaxPower(fn){
-        notifyMaxPower.push(fn);
-    }
-    function setSound(bool){
-      soundActivated = bool;
-    }
-    function setSoundInGame(bool){
-      if(!soundActivated){
-        soundActivated = bool;
-        playSound(SOUNDS.ambient);
-      }else{
-        pauseAmbientSound();
-        soundActivated = bool;
-      }
+  }
 
-    }
+  var GAME = {
+    suscribeGameOver : suscribeGameOver,
+    suscribeLevelUp : suscribeLevelUp,
+    suscribePoints : suscribePoints,
+    suscribePower : suscribePower,
+    megaShoot : megaShoot,
+    setSound : setSound,
+    setSoundInGame: setSoundInGame,
+    endGame : endGame,
+    start : start,
+    pause: pause,
+    resume : resume,
+    shoot: shoot
+   };
 
-    var GAME = {
-        suscribeGameOver : suscribeGameOver,
-        suscribeLevelUp : suscribeLevelUp,
-        suscribePoints : suscribePoints,
-        suscribePower : suscribePower,
-        megaShoot : megaShoot,
-        setSound : setSound,
-        setSoundInGame: setSoundInGame,
-        endGame : endGame,
-        start : start,
-        pause: pause,
-        resume : resume,
-        shoot: shoot
-       };
-    //API 
-    return  GAME;
+  //API 
+  return  GAME;
 
 });
