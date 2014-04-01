@@ -143,8 +143,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       max_power :1000,
       game_over: false,
       paused: false,
-      resources_loaded: true,
-      game_time: 0
+      resources_loaded: true
     };
 
     bullets = [];
@@ -166,9 +165,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function suscribeToEvents(){
     suscribeMaxPower(function(bool){
       if(bool){
-        player = EL.getEntity('superPlayer', [player.pos.x, player.pos.y]);
+
+        player = EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
       }else{
-        player = EL.getEntity('player', [player.pos.x, player.pos.y]);
+        player = EL.getEntity('player', player.pos ,{life:player.life, totalLife: player.totalLife});
       }
     });
   }
@@ -221,7 +221,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function changeLevel(){
     STATE.level++;
-    STATE.gameTime = 10 * STATE.level;
+    TIMERS.gameTime = 10 * STATE.level;
     
     for(var i = 0; i<notifyLevelUp.length; i++){
       notifyLevelUp[i](STATE.level);
@@ -235,9 +235,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       var x = player.pos[0] + player.sprite.size[0] / 2;
       var y = player.pos[1] + player.sprite.size[1] / 2;
 
-      bullets.push(EL.getEntity('bullet', [x,y]));
-      bullets.push(EL.getEntity('topBullet', [x,y]));
-      bullets.push(EL.getEntity('bottomBullet', [x,y]));
+      bullets.push(EL.getEntity('bullet', [x,y], { damage: player.damage }));
+      bullets.push(EL.getEntity('topBullet', [x,y], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity('bottomBullet', [x,y], { damage: player.damage/2 }));
     
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = Date.now();
@@ -326,15 +326,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     Entity update
   ****************************
   ****************************/
+
   function update(dt) {
-    STATE.gameTime += dt;
+    TIMERS.gameTime += dt;
     handleInput(dt);
     updateEntities(dt);
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
     if(STATE.level < 6 && !STATE.final_stage){
-      var value = Math.random() < 1 - Math.pow(.999, STATE.gameTime);
+      var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
       if(value) {
         enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
       }
@@ -493,8 +494,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function checkCollisions() {
     checkPlayerBounds();
     
-    enemies = enemies.map(function(enemy){
-      bullets = bullets.map(ifCollidesApplyDamageTo(enemy)).map(removeIfCollideWith(enemy));
+    enemies = hu.compact(enemies.map(function(enemy){
+      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy)).map(removeIfCollideWith(enemy)));
       bombareas.map(ifCollidesApplyDamageTo(enemy));
       specials.map(ifCollidesApplyDamageTo(enemy));
 
@@ -502,6 +503,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         player.life -= enemy.damage;
         enemy.life -= player.damage;
         if(player.life <= 0){
+          console.log(player);
           endGame();
         } 
       }
@@ -509,12 +511,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       if(enemy.life > 0){
         return enemy;
       }else{
+        console.log('removing enemy', enemies.length);
         addPoints(enemy.points);
         addPower(enemy.points);
         playSound(SOUNDS.death);
         addExplosion(enemy.pos);    
       }
-    });
+    }));
   }
 
   function checkPlayerBounds() {
@@ -553,6 +556,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   
     if(!isGameOver()) {
       renderEntity(player);
+    }else{
+      console.log(STATE);
     }
     renderEntities(bombs);
     renderEntities(bombareas);

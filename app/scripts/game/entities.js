@@ -45,7 +45,7 @@ define( [ ], function(){
  
   //Player
   var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
-  var superPlayerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
+  var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
 
   //Thanks dr.axel
    if (!Function.prototype.construct) {
@@ -116,6 +116,7 @@ define( [ ], function(){
     var entity  = new Entity(pos, sprite);
     entity.life = opts.life || 1000;
     entity.totalLife = opts.totalLife || 1000;
+    entity.isSuperSaiyan = opts.isSuperSaiyan;
     entity.height = 35;
     entity.width = 88;
     entity.damage = opts.damage || 80;
@@ -156,7 +157,9 @@ define( [ ], function(){
         opts = {
           damage: 160,
           isSuperSaiyan: true,
-          speed: 400
+          speed: 500,
+          life: opts.life,
+          totalLife: opts.totalLife
         };
         return new Player(pos, opts);
       break;
@@ -252,6 +255,7 @@ define( [ ], function(){
 
 
   function getEnemy(level, width, height){
+
     switch(level){
       case 1:
         return new level1Enemy([width, Math.random() * (height - 39)]);
