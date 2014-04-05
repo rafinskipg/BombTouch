@@ -327,7 +327,24 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     Entity update
   ****************************
   ****************************/
+  var throttle = function(lambda, ms){
+    var allow = true;
+    return function(){
+      if(allow){
+        allow = false,
+        lambda();
 
+        setTimeout(function(){
+          allow = true;
+        },ms);
+      }
+    }
+  }
+  var createBonus = throttle(function(){
+     console.log(bonuses);
+    console.log('creating boinus', bonuses.length);
+    bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
+  }, 5000);
   function update(dt) {
     TIMERS.gameTime += dt;
     handleInput(dt);
@@ -337,14 +354,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     // equation: 1-.993^gameTime
     if(STATE.level < 6 && !STATE.final_stage){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
-      console.log(parseInt(TIMERS.gameTime,10))
+      //console.log(parseInt(TIMERS.gameTime,10))
       if(value) {
         enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
       }
       //TODO: add it only every 5 seconds
       if(parseInt(TIMERS.gameTime,10)%5 === 0 && parseInt(TIMERS.gameTime,10) > 5){
-        bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]))
+       // createBonus();
       }
+
+      createBonus();
     }else if(!STATE.final_stage){
       enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
       STATE.final_stage = true;
@@ -376,9 +395,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     };
   }
   function calculateNextDirection(entity, dt){
-    var pos = [];
+    var pos = [entity.pos[0], entity.pos[1]];
     switch(entity.dir) {
-      case 'up': pos[1] = entity.pos[1] - entity.speed * dt; break;
+      case 'up': 
+        pos[1] = entity.pos[1] - entity.speed * dt; break;
       case 'down': pos[1] = entity.pos[1] + entity.speed * dt; break;
       case 'left': pos[0] = entity.pos[0] - entity.speed * dt; break;
       case 'right': pos[0] = entity.pos[0] + entity.speed * dt; break;
@@ -413,12 +433,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function isOutsideScreen(pos, sprite){
     return(pos[1] + sprite.size[1] < 0 || pos[1] - sprite.size[1] > canvas.height ||
-       pos[0] - sprite.size[0] > canvas.width);
+       pos[0] - sprite.size[0] > canvas.width || pos[0] + sprite.size[0] < 0);
   }
 
   function isOnTheScreenEdges(pos,sprite){
-    return(pos[1] - sprite.size[1] <= 0 || pos[1] + sprite.size[1] >= canvas.height ||
-       pos[0] + sprite.size[0] >= canvas.width);
+
+    return(pos[1] <= 0 || pos[1] >= canvas.height ||
+       pos[0] >= canvas.width);
   }
 
   function removeIfOutsideScreen(entity){
@@ -500,7 +521,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = updateNormalEntities(explosions, dt);        
   }
   function updateBonuses(dt){
-    console.log(bonuses);
     bonuses = hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
       .map(moveToDirection(dt))
       .map(removeIfOutsideScreen));

@@ -91,7 +91,7 @@ define( [ ], function(){
 
   function Bullet(pos, opts){
     var entity = new Entity(pos, normalBulletSpriteSchema);
-    entity.dir = 'forward';
+    entity.dir = 'right';
     entity.damage = opts.damage || 50;
     entity.speed = opts.speed || 500;
     return entity;
