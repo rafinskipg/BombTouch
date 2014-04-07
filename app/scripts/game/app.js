@@ -45,6 +45,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = [],
     specials = [],
     bonuses = [],
+    bonusWeapons = [],
     player = {};
 
   var canvas, ctx, power = 0;
@@ -88,7 +89,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       'images/newsprites.png',
       'images/boom.png',
       'images/background.png',
-      'images/orbes/bonus.png'
+      'images/orbes/bonus.png',
+      'images/bonusWeapon.png'
   ]);
 
   //Flag for initialization
@@ -154,6 +156,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = [];
     specials = [];
     bonuses = [];
+    bonusWeapons = [];
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
     TIMERS = {
@@ -381,6 +384,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
+    updateBonusWeapons(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -485,6 +489,25 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function moveInCircleAround(around, dt){
+    var dt = dt;
+    var radius = around.height > around.width ? around.height : around.width;
+    return function(entity){  
+      var radians = entity.speed / radius;
+      var x1 = entity.pos[0];
+      var y1 = entity.pos[1];
+      var xC = radius * Math.cos( Math.atan(x1 / y1) + radians );
+      var yC = radius * Math.sin( Math.atan(x1 / y1) + radians );
+      
+      xC = xC + around.pos[0];
+      yC = yC + around.pos[1];
+      
+      entity.pos =[xC,yC]
+      return entity;
+    }
+  }
+
+
   /* Updates */
   function movePlayer(dir,dt){
     player.dir =dir;
@@ -523,9 +546,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
       .map(moveToDirection(dt))
-      .map(removeIfOutsideScreen));
+      .map(removeIfOutsideScreen)
+      .map(ifCollidesApplyBonusTo(player))
+      .map(removeIfCollideWith(player)));
   }
 
+  function updateBonusWeapons(dt){
+    bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt)));
+  }
 
   /****************************
   ****************************
@@ -547,6 +575,18 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     return boxCollides(a.pos, a.sprite.size, b.pos, b.sprite.size);
   }
 
+  
+  function ifCollidesApplyBonusTo(entity){
+    return function(bonus){
+      if(entitiesCollide(entity,bonus)){
+        entity.hasBonus = true;
+        bonusWeapons.push( EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1] -2*entity.height]));
+        console.log(bonusWeapons);
+        console.log(player.hasBonus);
+      }
+      return bonus;
+    }
+  }
   function ifCollidesApplyDamageTo(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
@@ -629,6 +669,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   
     if(!isGameOver()) {
       renderEntity(player);
+      if(player.hasBonus){
+        renderEntities(bonusWeapons);
+      }
     }else{
       console.log(STATE);
     }

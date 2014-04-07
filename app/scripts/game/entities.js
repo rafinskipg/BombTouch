@@ -48,6 +48,7 @@ define( [ ], function(){
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
 
   var bonusSpriteSchema = ['images/orbes/bonus.png', [0,0], [40,40], 1, [0]];
+  var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Thanks dr.axel
    if (!Function.prototype.construct) {
@@ -133,6 +134,11 @@ define( [ ], function(){
     entity.dir = opts.dir || 'downleft';
     return entity;
   }
+  function BonusWeapon(pos,opts){
+    var entity = new Entity(pos,bonusWeaponSpriteSchema);
+    entity.speed = opts.speed || 20;
+    return entity;
+  }
 
   function getEntity(name, pos, opts){
     if(!opts){
@@ -187,6 +193,9 @@ define( [ ], function(){
           speed: 200
         }
         return new Bonus(pos, opts);
+      break;
+      case 'bonusWeapon':
+        return new BonusWeapon(pos, opts);
       break;
     }
   }
