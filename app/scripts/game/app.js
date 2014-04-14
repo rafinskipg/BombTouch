@@ -492,21 +492,20 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function moveInCircleAround(around, dt){
     var dt = dt;
     var radius = around.height > around.width ? around.height : around.width;
-    return function(entity){  
-      var radians = entity.speed / radius;
-      var x1 = entity.pos[0];
-      var y1 = entity.pos[1];
-      var xC = radius * Math.cos( Math.atan(x1 / y1) + radians );
-      var yC = radius * Math.sin( Math.atan(x1 / y1) + radians );
-      
+    return function(entity){ 
+      var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+      var phi = velocityPerSeconds * TIMERS.gameTime;
+      var angleInRadians = Math.atan(entity.pos[0], entity.pos[1]) + phi;
+
+      var xC = radius * Math.cos(angleInRadians )+phi;
+      var yC = radius * Math.sin(angleInRadians  )+phi;
+
       xC = xC + around.pos[0];
       yC = yC + around.pos[1];
-      
       entity.pos =[xC,yC]
       return entity;
     }
   }
-
 
   /* Updates */
   function movePlayer(dir,dt){
@@ -580,7 +579,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
         entity.hasBonus = true;
-        bonusWeapons.push( EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1] -2*entity.height]));
+        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
         console.log(bonusWeapons);
         console.log(player.hasBonus);
       }
