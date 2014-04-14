@@ -497,8 +497,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       var phi = velocityPerSeconds * TIMERS.gameTime;
       var angleInRadians = Math.atan(entity.pos[0], entity.pos[1]) + phi;
 
-      var xC = radius * Math.cos(angleInRadians )+phi;
-      var yC = radius * Math.sin(angleInRadians  )+phi;
+      var xC = radius * Math.cos(angleInRadians)+phi;
+      var yC = radius * Math.sin(angleInRadians)+phi;
 
       xC = xC + around.pos[0];
       yC = yC + around.pos[1];
@@ -543,10 +543,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = updateNormalEntities(explosions, dt);        
   }
   function updateBonuses(dt){
-    bonuses = hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
+    bonuses = hu.compact(hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
       .map(moveToDirection(dt))
-      .map(removeIfOutsideScreen)
       .map(ifCollidesApplyBonusTo(player))
+      .map(removeIfOutsideScreen))
       .map(removeIfCollideWith(player)));
   }
 
@@ -580,8 +580,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       if(entitiesCollide(entity,bonus)){
         entity.hasBonus = true;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
-        console.log(bonusWeapons);
-        console.log(player.hasBonus);
       }
       return bonus;
     }
@@ -607,9 +605,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     checkPlayerBounds();
     
     enemies = hu.compact(enemies.map(function(enemy){
-      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy)).map(removeIfCollideWith(enemy)));
-      bombareas.map(ifCollidesApplyDamageTo(enemy));
-      specials.map(ifCollidesApplyDamageTo(enemy));
+
+      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+        .map(removeIfCollideWith(enemy)));
+
+      bombareas
+        .map(ifCollidesApplyDamageTo(enemy));
+        
+      specials
+        .map(ifCollidesApplyDamageTo(enemy));
 
       if(entitiesCollide(enemy, player)){
         player.life -= enemy.damage;
