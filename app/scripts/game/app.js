@@ -248,6 +248,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function simpleShoot(pos){
+    bullets.push(EL.getEntity('bullet', pos, {damage: 15}));
+    playSound(SOUNDS.shoot);
+  }
+
   function megaShoot(){
     setPower(0);
     playSound(SOUNDS.nyan);
@@ -507,6 +512,38 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function updateTimeCounter(dt){
+    return function(entity){
+      var previousTime = entity.timeAlive || 0;
+      previousTime+=dt;
+      entity.timeAlive = previousTime;
+      return entity;
+    }
+  }
+
+  function removeIfTimeCounterGreaterThan(time){
+    return function(entity){
+      if(!entity.timeAlive){
+        return entity;
+      }
+
+      if(entity.timeAlive && parseInt(entity.timeAlive,10) <= time){
+        return entity;
+      }
+    }
+  }
+
+  function shootIfHavePassedThatSecondsFromLastFire(time, dt){
+    return function(entity){
+      if(!entity.lastFire || ((entity.lastFire + dt) > time)){
+        simpleShoot(entity.pos);
+        entity.lastFire = dt;
+      }else{
+        entity.lastFire += dt;
+      }
+      return entity;
+    }
+  }
   /* Updates */
   function movePlayer(dir,dt){
     player.dir =dir;
@@ -551,7 +588,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function updateBonusWeapons(dt){
-    bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt)));
+    bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
+      .map(updateTimeCounter(dt))
+      .map(shootIfHavePassedThatSecondsFromLastFire(0.5, dt))
+      .map(removeIfTimeCounterGreaterThan(10)));
   }
 
   /****************************
