@@ -169,10 +169,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function suscribeToEvents(){
     suscribeMaxPower(function(bool){
       if(bool){
-
-        player = EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
+        var superPlayerOptions =  EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
+        player.sprite = superPlayerOptions.sprite;
+        player.speed = superPlayerOptions.speed;
+        player.damage = superPlayerOptions.damage;
       }else{
-        player = EL.getEntity('player', player.pos ,{life:player.life, totalLife: player.totalLife});
+        var normalPlayerOptions =  EL.getEntity('player', player.pos, {life:player.life, totalLife: player.totalLife});
+        player.sprite = normalPlayerOptions.sprite;
+        player.speed = normalPlayerOptions.speed;
+        player.damage = normalPlayerOptions.damage;
       }
     });
   }
@@ -249,7 +254,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function simpleShoot(pos){
-    bullets.push(EL.getEntity('bullet', pos, {damage: 15}));
+    bullets.push(EL.getEntity('bulletBlue', pos, {damage: 15}));
     playSound(SOUNDS.shoot);
   }
 

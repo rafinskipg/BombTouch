@@ -34,6 +34,7 @@ define( [ ], function(){
   var normalBulletSpriteSchema = ['images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]];
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
+  var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
 
   //Enemies
   var level1SpriteSchema = ['images/newsprites.png', [4,186], [28,30], 6, [0, 1, 2,3,4]];
@@ -92,6 +93,13 @@ define( [ ], function(){
 
   function Bullet(pos, opts){
     var entity = new Entity(pos, normalBulletSpriteSchema);
+    entity.dir = 'right';
+    entity.damage = opts.damage || 50;
+    entity.speed = opts.speed || 500;
+    return entity;
+  } 
+  function BlueBullet(pos, opts){
+    var entity = new Entity(pos, blueBulletSpriteSchema);
     entity.dir = 'right';
     entity.damage = opts.damage || 50;
     entity.speed = opts.speed || 500;
@@ -159,6 +167,9 @@ define( [ ], function(){
       break;
       case 'bullet':
         return new Bullet(pos, opts);
+      break;
+      case 'bulletBlue':
+        return new BlueBullet(pos, opts);
       break;
       case 'bottomBullet':
          return new BottomBullet(pos, opts);
