@@ -47,6 +47,8 @@ define( [ ], function(){
   var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
 
+  var bonusSpriteSchema = ['images/orbes/bonus.png', [0,0], [40,40], 1, [0]];
+
   //Thanks dr.axel
    if (!Function.prototype.construct) {
       Function.prototype.construct = function(argArray) {
@@ -124,6 +126,14 @@ define( [ ], function(){
     return entity;
   }
 
+  function Bonus(pos,opts){
+    var entity = new Entity(pos,bonusSpriteSchema);
+    entity.speed = opts.speed || 200;
+    entity.dirs = opts.dirs || ['right', 'left', 'upright'];
+    entity.dir = opts.dir || 'downleft';
+    return entity;
+  }
+
   function getEntity(name, pos, opts){
     if(!opts){
       opts = {};
@@ -164,13 +174,19 @@ define( [ ], function(){
         return new Player(pos, opts);
       break;
       case 'bonus':
-        var numberOfBonus = Math.ceil(Math.random(5) * 10);
-        return {
-          pos:pos,
-          number:numberOfBonus,
-          speed: 200,
-          image: 'images/orb'+numberOfBonus+'.png'
+        opts = {
+          numberOfBonus : Math.ceil(Math.random(5) * 10),
+          dirs: [
+            'left',
+            'upright',
+            'downright',
+            'upleft',
+            'down',
+            'upleft'
+          ],
+          speed: 200
         }
+        return new Bonus(pos, opts);
       break;
     }
   }

@@ -87,7 +87,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   resources.load([
       'images/newsprites.png',
       'images/boom.png',
-      'images/background.png'
+      'images/background.png',
+      'images/orbes/bonus.png'
   ]);
 
   //Flag for initialization
@@ -336,8 +337,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     // equation: 1-.993^gameTime
     if(STATE.level < 6 && !STATE.final_stage){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
+      console.log(parseInt(TIMERS.gameTime,10))
       if(value) {
         enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
+      }
+      //TODO: add it only every 5 seconds
+      if(parseInt(TIMERS.gameTime,10)%5 === 0 && parseInt(TIMERS.gameTime,10) > 5){
+        bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]))
       }
     }else if(!STATE.final_stage){
       enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
@@ -355,6 +361,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateBombAreas(dt);
     updateSpecials(dt);
     updateExplosions(dt);
+    updateBonuses(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -368,26 +375,54 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return entity;
     };
   }
-
+  function calculateNextDirection(entity, dt){
+    var pos = [];
+    switch(entity.dir) {
+      case 'up': pos[1] = entity.pos[1] - entity.speed * dt; break;
+      case 'down': pos[1] = entity.pos[1] + entity.speed * dt; break;
+      case 'left': pos[0] = entity.pos[0] - entity.speed * dt; break;
+      case 'right': pos[0] = entity.pos[0] + entity.speed * dt; break;
+      case 'upleft': 
+        pos[1] = entity.pos[1] - entity.speed * dt;
+        pos[0] = entity.pos[0] - entity.speed * dt;
+      break;
+      case 'upright':
+        pos[1] = entity.pos[1] - entity.speed * dt;
+        pos[0] = entity.pos[0] + entity.speed * dt;
+      break;
+      case 'downleft':
+        pos[1] = entity.pos[1] + entity.speed * dt;
+        pos[0] = entity.pos[0] - entity.speed * dt;
+      break;
+      case 'downright':
+        pos[1] = entity.pos[1] + entity.speed * dt;
+        pos[0] = entity.pos[0] + entity.speed * dt;
+      break;
+      default:
+        pos[0] = entity.pos[0] - entity.speed * dt;
+    }
+    return pos;
+  }
   function moveToDirection(dt){
     return function(entity){
-      switch(entity.dir) {
-      case 'up': entity.pos[1] -= entity.speed * dt; break;
-      case 'down': entity.pos[1] += entity.speed * dt; break;
-      case 'left': entity.pos[0] -= entity.speed * dt; break;
-      case 'right': entity.pos[0] += entity.speed * dt; break;
-      default:
-        entity.pos[0] += entity.speed * dt;
-      }
+      var newPos = calculateNextDirection(entity, dt);
+      entity.pos = newPos;
       return entity;
     }  
   }
 
+  function isOutsideScreen(pos, sprite){
+    return(pos[1] + sprite.size[1] < 0 || pos[1] - sprite.size[1] > canvas.height ||
+       pos[0] - sprite.size[0] > canvas.width);
+  }
+
+  function isOnTheScreenEdges(pos,sprite){
+    return(pos[1] - sprite.size[1] <= 0 || pos[1] + sprite.size[1] >= canvas.height ||
+       pos[0] + sprite.size[0] >= canvas.width);
+  }
+
   function removeIfOutsideScreen(entity){
-    if(entity.pos[1] < 0 || entity.pos[1] > canvas.height ||
-       entity.pos[0] > canvas.width) {
-        return void 0;
-    }else{
+    if(!isOutsideScreen(entity.pos ,entity.sprite)){
       return entity;
     }
   }
@@ -415,6 +450,18 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       entities.map(updateSprite(dt))
         .map(removeIfDone)
     ); 
+  }
+
+  function changeDirectionIfAvailable(dt){
+    return function(entity){
+      var nextDirection = calculateNextDirection(entity,dt);
+      if(isOnTheScreenEdges(nextDirection, entity.sprite)){
+        if(entity.dirs && entity.dirs.length > 0){
+          entity.dir = entity.dirs.pop();  
+        }
+      }
+      return entity;
+    }
   }
 
   /* Updates */
@@ -451,6 +498,12 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   
   function updateExplosions(dt){
     explosions = updateNormalEntities(explosions, dt);        
+  }
+  function updateBonuses(dt){
+    console.log(bonuses);
+    bonuses = hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
+      .map(moveToDirection(dt))
+      .map(removeIfOutsideScreen));
   }
 
 
@@ -565,6 +618,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     renderEntities(enemies);
     renderEntities(explosions);
     renderEntities(specials);
+    renderEntities(bonuses);
   };
 
   function renderEntities(list) {
