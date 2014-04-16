@@ -34,6 +34,7 @@ define( [ ], function(){
   var normalBulletSpriteSchema = ['images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]];
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
+  var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
 
   //Enemies
   var level1SpriteSchema = ['images/newsprites.png', [4,186], [28,30], 6, [0, 1, 2,3,4]];
@@ -48,6 +49,7 @@ define( [ ], function(){
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
 
   var bonusSpriteSchema = ['images/orbes/bonus.png', [0,0], [40,40], 1, [0]];
+  var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Thanks dr.axel
    if (!Function.prototype.construct) {
@@ -91,7 +93,14 @@ define( [ ], function(){
 
   function Bullet(pos, opts){
     var entity = new Entity(pos, normalBulletSpriteSchema);
-    entity.dir = 'forward';
+    entity.dir = 'right';
+    entity.damage = opts.damage || 50;
+    entity.speed = opts.speed || 500;
+    return entity;
+  } 
+  function BlueBullet(pos, opts){
+    var entity = new Entity(pos, blueBulletSpriteSchema);
+    entity.dir = 'right';
     entity.damage = opts.damage || 50;
     entity.speed = opts.speed || 500;
     return entity;
@@ -133,6 +142,11 @@ define( [ ], function(){
     entity.dir = opts.dir || 'downleft';
     return entity;
   }
+  function BonusWeapon(pos,opts){
+    var entity = new Entity(pos,bonusWeaponSpriteSchema);
+    entity.speed = opts.speed || 20;
+    return entity;
+  }
 
   function getEntity(name, pos, opts){
     if(!opts){
@@ -153,6 +167,9 @@ define( [ ], function(){
       break;
       case 'bullet':
         return new Bullet(pos, opts);
+      break;
+      case 'bulletBlue':
+        return new BlueBullet(pos, opts);
       break;
       case 'bottomBullet':
          return new BottomBullet(pos, opts);
@@ -187,6 +204,9 @@ define( [ ], function(){
           speed: 200
         }
         return new Bonus(pos, opts);
+      break;
+      case 'bonusWeapon':
+        return new BonusWeapon(pos, opts);
       break;
     }
   }

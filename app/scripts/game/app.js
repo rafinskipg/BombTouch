@@ -45,6 +45,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = [],
     specials = [],
     bonuses = [],
+    bonusWeapons = [],
     player = {};
 
   var canvas, ctx, power = 0;
@@ -88,7 +89,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       'images/newsprites.png',
       'images/boom.png',
       'images/background.png',
-      'images/orbes/bonus.png'
+      'images/orbes/bonus.png',
+      'images/bonusWeapon.png'
   ]);
 
   //Flag for initialization
@@ -154,6 +156,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = [];
     specials = [];
     bonuses = [];
+    bonusWeapons = [];
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
     TIMERS = {
@@ -166,10 +169,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function suscribeToEvents(){
     suscribeMaxPower(function(bool){
       if(bool){
-
-        player = EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
+        var superPlayerOptions =  EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
+        player.sprite = superPlayerOptions.sprite;
+        player.speed = superPlayerOptions.speed;
+        player.damage = superPlayerOptions.damage;
       }else{
-        player = EL.getEntity('player', player.pos ,{life:player.life, totalLife: player.totalLife});
+        var normalPlayerOptions =  EL.getEntity('player', player.pos, {life:player.life, totalLife: player.totalLife});
+        player.sprite = normalPlayerOptions.sprite;
+        player.speed = normalPlayerOptions.speed;
+        player.damage = normalPlayerOptions.damage;
       }
     });
   }
@@ -243,6 +251,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = Date.now();
     }
+  }
+
+  function simpleShoot(pos){
+    bullets.push(EL.getEntity('bulletBlue', pos, {damage: 15}));
+    playSound(SOUNDS.shoot);
   }
 
   function megaShoot(){
@@ -327,7 +340,24 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     Entity update
   ****************************
   ****************************/
+  var throttle = function(lambda, ms){
+    var allow = true;
+    return function(){
+      if(allow){
+        allow = false,
+        lambda();
 
+        setTimeout(function(){
+          allow = true;
+        },ms);
+      }
+    }
+  }
+  var createBonus = throttle(function(){
+     console.log(bonuses);
+    console.log('creating boinus', bonuses.length);
+    bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
+  }, 5000);
   function update(dt) {
     TIMERS.gameTime += dt;
     handleInput(dt);
@@ -337,14 +367,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     // equation: 1-.993^gameTime
     if(STATE.level < 6 && !STATE.final_stage){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
-      console.log(parseInt(TIMERS.gameTime,10))
+      //console.log(parseInt(TIMERS.gameTime,10))
       if(value) {
         enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
       }
       //TODO: add it only every 5 seconds
       if(parseInt(TIMERS.gameTime,10)%5 === 0 && parseInt(TIMERS.gameTime,10) > 5){
-        bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]))
+       // createBonus();
       }
+
+      createBonus();
     }else if(!STATE.final_stage){
       enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
       STATE.final_stage = true;
@@ -362,6 +394,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
+    updateBonusWeapons(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -376,9 +409,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     };
   }
   function calculateNextDirection(entity, dt){
-    var pos = [];
+    var pos = [entity.pos[0], entity.pos[1]];
     switch(entity.dir) {
-      case 'up': pos[1] = entity.pos[1] - entity.speed * dt; break;
+      case 'up': 
+        pos[1] = entity.pos[1] - entity.speed * dt; break;
       case 'down': pos[1] = entity.pos[1] + entity.speed * dt; break;
       case 'left': pos[0] = entity.pos[0] - entity.speed * dt; break;
       case 'right': pos[0] = entity.pos[0] + entity.speed * dt; break;
@@ -413,12 +447,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function isOutsideScreen(pos, sprite){
     return(pos[1] + sprite.size[1] < 0 || pos[1] - sprite.size[1] > canvas.height ||
-       pos[0] - sprite.size[0] > canvas.width);
+       pos[0] - sprite.size[0] > canvas.width || pos[0] + sprite.size[0] < 0);
   }
 
   function isOnTheScreenEdges(pos,sprite){
-    return(pos[1] - sprite.size[1] <= 0 || pos[1] + sprite.size[1] >= canvas.height ||
-       pos[0] + sprite.size[0] >= canvas.width);
+
+    return(pos[1] <= 0 || pos[1] >= canvas.height ||
+       pos[0] >= canvas.width);
   }
 
   function removeIfOutsideScreen(entity){
@@ -464,6 +499,56 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function moveInCircleAround(around, dt){
+    var dt = dt;
+    var radius = around.height > around.width ? around.height : around.width;
+    return function(entity){ 
+      var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+      var phi = velocityPerSeconds * TIMERS.gameTime;
+      var angleInRadians = Math.atan(entity.pos[0], entity.pos[1]) + phi;
+
+      var xC = radius * Math.cos(angleInRadians)+phi;
+      var yC = radius * Math.sin(angleInRadians)+phi;
+
+      xC = xC + around.pos[0];
+      yC = yC + around.pos[1];
+      entity.pos =[xC,yC]
+      return entity;
+    }
+  }
+
+  function updateTimeCounter(dt){
+    return function(entity){
+      var previousTime = entity.timeAlive || 0;
+      previousTime+=dt;
+      entity.timeAlive = previousTime;
+      return entity;
+    }
+  }
+
+  function removeIfTimeCounterGreaterThan(time){
+    return function(entity){
+      if(!entity.timeAlive){
+        return entity;
+      }
+
+      if(entity.timeAlive && parseInt(entity.timeAlive,10) <= time){
+        return entity;
+      }
+    }
+  }
+
+  function shootIfHavePassedThatSecondsFromLastFire(time, dt){
+    return function(entity){
+      if(!entity.lastFire || ((entity.lastFire + dt) > time)){
+        simpleShoot(entity.pos);
+        entity.lastFire = dt;
+      }else{
+        entity.lastFire += dt;
+      }
+      return entity;
+    }
+  }
   /* Updates */
   function movePlayer(dir,dt){
     player.dir =dir;
@@ -500,12 +585,19 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     explosions = updateNormalEntities(explosions, dt);        
   }
   function updateBonuses(dt){
-    console.log(bonuses);
-    bonuses = hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
+    bonuses = hu.compact(hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
       .map(moveToDirection(dt))
-      .map(removeIfOutsideScreen));
+      .map(ifCollidesApplyBonusTo(player))
+      .map(removeIfOutsideScreen))
+      .map(removeIfCollideWith(player)));
   }
 
+  function updateBonusWeapons(dt){
+    bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
+      .map(updateTimeCounter(dt))
+      .map(shootIfHavePassedThatSecondsFromLastFire(0.5, dt))
+      .map(removeIfTimeCounterGreaterThan(10)));
+  }
 
   /****************************
   ****************************
@@ -527,6 +619,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     return boxCollides(a.pos, a.sprite.size, b.pos, b.sprite.size);
   }
 
+  
+  function ifCollidesApplyBonusTo(entity){
+    return function(bonus){
+      if(entitiesCollide(entity,bonus)){
+        entity.hasBonus = true;
+        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
+      }
+      return bonus;
+    }
+  }
   function ifCollidesApplyDamageTo(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
@@ -548,9 +650,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     checkPlayerBounds();
     
     enemies = hu.compact(enemies.map(function(enemy){
-      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy)).map(removeIfCollideWith(enemy)));
-      bombareas.map(ifCollidesApplyDamageTo(enemy));
-      specials.map(ifCollidesApplyDamageTo(enemy));
+
+      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+        .map(removeIfCollideWith(enemy)));
+
+      bombareas
+        .map(ifCollidesApplyDamageTo(enemy));
+        
+      specials
+        .map(ifCollidesApplyDamageTo(enemy));
 
       if(entitiesCollide(enemy, player)){
         player.life -= enemy.damage;
@@ -609,6 +717,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   
     if(!isGameOver()) {
       renderEntity(player);
+      if(player.hasBonus){
+        renderEntities(bonusWeapons);
+      }
     }else{
       console.log(STATE);
     }
