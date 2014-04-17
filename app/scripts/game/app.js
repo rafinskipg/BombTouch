@@ -262,9 +262,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function megaShoot(){
-    setPower(0);
-    playSound(SOUNDS.nyan);
-    specials.push(EL.getEntity('special', [player.pos[0] + player.width, player.pos[1] - player.height/2]));
+    if(STATE.power == STATE.max_power){
+      setPower(0);
+      playSound(SOUNDS.nyan);
+      specials.push(EL.getEntity('special', [player.pos[0] + player.width, player.pos[1] - player.height/2]));
+    }
   }
  
   function addExplosion(pos){
@@ -331,6 +333,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
       movePlayer('right', dt);
+    } 
+
+    if(input.isDown('f')) {
+      megaShoot();
     }
 
     if(input.isDown('SPACE') ){
