@@ -42,7 +42,8 @@ define( [ ], function(){
   var level3SpriteSchema = ['images/newsprites.png', [175,185], [23,45], 7, [0,1,2,3,4,5,6]];
   var level4SpriteSchema = ['images/newsprites.png', [175,230], [33,40], 8, [0,1,2,3,4,3,2,1]];
   var level5SpriteSchema = ['images/newsprites.png', [172,0], [72,72],1, [0]];
-  var level6SpriteSchema = ['images/newsprites.png', [557,141], [240,347], 4, [0,1,2,1,2,1]];
+  //Bosses
+  var bossSpriteSchema = ['images/creeper.png', [0,35], [30,30], 4, [0,1,2,1,2,1]];
  
   //Player
   var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
@@ -276,46 +277,48 @@ define( [ ], function(){
     return entity;
   }
 
-  function level6Enemy(pos){
-    var entity = new Entity(pos, level5SpriteSchema);
+  function getEnemy(level, screenWidth, screenHeight){
+    switch(level){
+      case 1:
+        return new level1Enemy([screenWidth, Math.random() * (screenHeight - 39)]);
+      break;
+      case 2:
+        return new level2Enemy([screenWidth, Math.random() * (screenHeight - 39)]);
+      break;
+      case 3: 
+        return new level3Enemy([screenWidth, Math.random() * (screenHeight - 39)]);
+      break;
+      case 4: 
+        return new level4Enemy([screenWidth, Math.random() * (screenHeight - 39)]);
+      break;
+      case 5: 
+        return new level5Enemy([screenWidth, Math.random() * (screenHeight - 39)]);
+      break;
+    }
+  }
+
+  function getBoss(screenWidth, screenHeight){
+    var entity = new Entity([screenWidth, screenHeight / 2], bossSpriteSchema);
+    entity.actions = [
+      'shoot',
+      'launchEnemy',
+      'shoot',
+      'talk'
+    ];
     entity.speed = 25;
     entity.points = 10000;
     entity.totalLife = 10000;
     entity.life = 10000;
-    entity.width = 240;
-    entity.height = 347;
+    entity.width = 30;
+    entity.height = 30;
     entity.damage = 10000;
-    entity.dir = 'left';
     return entity;
   }
 
-
-  function getEnemy(level, width, height){
-
-    switch(level){
-      case 1:
-        return new level1Enemy([width, Math.random() * (height - 39)]);
-      break;
-      case 2:
-        return new level2Enemy([width, Math.random() * (height - 39)]);
-      break;
-      case 3: 
-        return new level3Enemy([width, Math.random() * (height - 39)]);
-      break;
-      case 4: 
-        return new level4Enemy([width, Math.random() * (height - 39)]);
-      break;
-      case 5: 
-        return new level5Enemy([width, Math.random() * (height - 39)]);
-      break;
-      case 6:
-        return new level6Enemy([width, 50]);
-      break;
-    }
-  }
   return {
     getEntity: getEntity,
-    getEnemy: getEnemy
+    getEnemy: getEnemy,
+    getBoss: getBoss
   }
 });
 

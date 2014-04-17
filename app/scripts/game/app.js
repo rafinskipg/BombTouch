@@ -22,7 +22,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   ****************************/
   var STATE = {
     sound_enabled: true,
-    final_stage : false,
+    boss_out : false,
     level: 1,
     points : 0,
     default_power: 0,
@@ -46,6 +46,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     specials = [],
     bonuses = [],
     bonusWeapons = [],
+    bosses = [],
     player = {};
 
   var canvas, ctx, power = 0;
@@ -90,7 +91,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       'images/boom.png',
       'images/background.png',
       'images/orbes/bonus.png',
-      'images/bonusWeapon.png'
+      'images/bonusWeapon.png',
+      'images/creeper.png'
   ]);
 
   //Flag for initialization
@@ -139,7 +141,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function reset() {
     STATE = {
       sound_enabled: true,
-      final_stage : false,
+      boss_out : false,
       level: 1,
       points : 0,
       power: 0,
@@ -157,6 +159,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     specials = [];
     bonuses = [];
     bonusWeapons = [];
+    bosses = [];
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
     TIMERS = {
@@ -353,11 +356,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
     }
   }
+
   var createBonus = throttle(function(){
-     console.log(bonuses);
-    console.log('creating boinus', bonuses.length);
     bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
   }, 5000);
+
   function update(dt) {
     TIMERS.gameTime += dt;
     handleInput(dt);
@@ -365,21 +368,17 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(STATE.level < 6 && !STATE.final_stage){
+    if(false && STATE.level < 6 && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
-      //console.log(parseInt(TIMERS.gameTime,10))
+
       if(value) {
         enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
       }
-      //TODO: add it only every 5 seconds
-      if(parseInt(TIMERS.gameTime,10)%5 === 0 && parseInt(TIMERS.gameTime,10) > 5){
-       // createBonus();
-      }
 
       createBonus();
-    }else if(!STATE.final_stage){
-      enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
-      STATE.final_stage = true;
+    }else if(true && !STATE.boss_out){
+      bosses.push(EL.getBoss(canvas.width, canvas.height));
+      STATE.boss_out = true;
     }
    
     checkCollisions();
@@ -395,6 +394,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateExplosions(dt);
     updateBonuses(dt);
     updateBonusWeapons(dt);
+    updateBosses(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -408,14 +408,34 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return entity;
     };
   }
+
+  function moveLeft(pos, speed, dt){
+    return [pos[0] - speed * dt, pos[1]];
+  }
+  function moveRight(pos, speed, dt){
+    return [pos[0] + speed * dt, pos[1]];
+  }
+  function moveDown(pos, speed, dt){
+    return [pos[0], pos[1] + speed * dt];
+  }
+  function moveUp(pos, speed, dt){
+    return [pos[0], pos[1] - speed * dt];
+  }
   function calculateNextDirection(entity, dt){
     var pos = [entity.pos[0], entity.pos[1]];
     switch(entity.dir) {
       case 'up': 
-        pos[1] = entity.pos[1] - entity.speed * dt; break;
-      case 'down': pos[1] = entity.pos[1] + entity.speed * dt; break;
-      case 'left': pos[0] = entity.pos[0] - entity.speed * dt; break;
-      case 'right': pos[0] = entity.pos[0] + entity.speed * dt; break;
+        pos = moveUp(entity.pos, entity.speed, dt);
+      break;
+      case 'down': 
+        pos = moveDown(entity.pos, entity.speed, dt);
+      break;
+      case 'left': 
+        pos = moveLeft(entity.pos, entity.speed, dt);
+      break;
+      case 'right': 
+        pos = moveRight(entity.pos, entity.speed, dt);
+      break;
       case 'upleft': 
         pos[1] = entity.pos[1] - entity.speed * dt;
         pos[0] = entity.pos[0] - entity.speed * dt;
@@ -447,7 +467,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function isOutsideScreen(pos, sprite){
     return(pos[1] + sprite.size[1] < 0 || pos[1] - sprite.size[1] > canvas.height ||
-       pos[0] - sprite.size[0] > canvas.width || pos[0] + sprite.size[0] < 0);
+       pos[0] + sprite.size[0] >= canvas.width || pos[0] + sprite.size[0] < 0);
   }
 
   function isOnTheScreenEdges(pos,sprite){
@@ -549,6 +569,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return entity;
     }
   }
+
+  function moveToBossPosition(dt){
+    return function(entity){
+      if(isOutsideScreen(entity.pos, entity.sprite)){
+        entity.pos = moveLeft(entity.pos, entity.speed, dt);
+      }
+      return entity;
+    }
+  }
+
   /* Updates */
   function movePlayer(dir,dt){
     player.dir =dir;
@@ -597,6 +627,12 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       .map(updateTimeCounter(dt))
       .map(shootIfHavePassedThatSecondsFromLastFire(0.5, dt))
       .map(removeIfTimeCounterGreaterThan(10)));
+  }
+
+  function updateBosses(dt){
+    bosses = hu.compact(bosses
+      .map(updateSprite(dt))
+      .map(moveToBossPosition(dt)));
   }
 
   /****************************
@@ -730,6 +766,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     renderEntities(explosions);
     renderEntities(specials);
     renderEntities(bonuses);
+    renderEntities(bosses);
   };
 
   function renderEntities(list) {
