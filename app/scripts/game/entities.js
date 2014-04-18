@@ -149,6 +149,24 @@ define( [ ], function(){
     return entity;
   }
 
+  function getRandomDirs(numberOfDirs){
+    var possibleDirs = [
+      'left', 
+      'right', 
+      'up', 
+      'down',
+      'downright',
+      'downleft',
+      'upright',
+      'upleft'
+    ];
+    var dirs = [];
+    for(var i = 0; i < numberOfDirs; i++){
+      dirs.push(possibleDirs[parseInt(Math.random() * numberOfDirs +1, 10)]);
+    }
+    return dirs;
+  }
+
   function getEntity(name, pos, opts){
     if(!opts){
       opts = {};
@@ -194,17 +212,17 @@ define( [ ], function(){
       case 'bonus':
         opts = {
           numberOfBonus : Math.ceil(Math.random(5) * 10),
-          dirs: [
-            'left',
-            'upright',
-            'downright',
-            'upleft',
-            'down',
-            'upleft'
-          ],
+          dirs: getRandomDirs(6),
           speed: 200
         }
         return new Bonus(pos, opts);
+      break;
+      case 'life':
+        opts = {
+          dirs: getRandomDirs(3),
+          speed: 200
+        } 
+        return new Life(pos, opts);
       break;
       case 'bonusWeapon':
         return new BonusWeapon(pos, opts);
@@ -300,9 +318,9 @@ define( [ ], function(){
   function getBoss(screenWidth, screenHeight){
     var entity = new Entity([screenWidth, screenHeight / 2], bossSpriteSchema);
     entity.actions = [
-      'shoot',
+      'enemyShoot',
       'launchEnemy',
-      'shoot',
+      'enemyShoot',
       'talk'
     ];
     entity.speed = 25;

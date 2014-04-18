@@ -47,6 +47,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bonuses = [],
     bonusWeapons = [],
     bosses = [],
+    enemyBullets = [],
     player = {};
 
   var canvas, ctx, power = 0;
@@ -160,6 +161,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bonuses = [];
     bonusWeapons = [];
     bosses = [];
+    enemyBullets = [];
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
     TIMERS = {
@@ -256,8 +258,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  function simpleShoot(pos){
+  function blueShoot(pos){
     bullets.push(EL.getEntity('bulletBlue', pos, {damage: 15}));
+    playSound(SOUNDS.shoot);
+  }
+
+  function enemyShoot(pos, damage){
+    var bullet = EL.getEntity('bullet', pos, { damage: damage });
+    bullet.dir = 'left';
+    enemyBullets.push(bullet);
     playSound(SOUNDS.shoot);
   }
 
@@ -367,6 +376,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
   }, 5000);
 
+  var createLife = throttle(function(){
+    bonuses.push(EL.getEntity('life',[canvas.width, Math.random() * (canvas.height - 39)]));
+  }, 5000);
+
   function update(dt) {
     TIMERS.gameTime += dt;
     handleInput(dt);
@@ -384,6 +397,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       createBonus();
     }else if(true && !STATE.boss_out){
       bosses.push(EL.getBoss(canvas.width, canvas.height));
+      createBonus();
       STATE.boss_out = true;
     }
    
@@ -401,6 +415,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateBonuses(dt);
     updateBonusWeapons(dt);
     updateBosses(dt);
+    updateEnemyBullets(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -492,6 +507,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return entity;
     }
   }
+  function removeIfOutsideScreenAndNoDirectionsAvailable(entity){
+    if(entity.dirs.length > 0 ){
+      return entity;
+    }
+    if(!isOutsideScreen(entity.pos, entity.sprite)){
+      return entity;
+    }
+  }
 
   function pushBombIfDone(entity){
     if(entity.sprite.done){
@@ -506,7 +529,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  function updateNormalEntities(entities, dt){
+  function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
       entities.map(updateSprite(dt))
         .map(removeIfDone)
@@ -564,45 +587,119 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  function shootIfHavePassedThatSecondsFromLastFire(time, dt){
+  function wrapperReadyForActionOnly(fn){
     return function(entity){
-      if(!entity.lastFire || ((entity.lastFire + dt) > time)){
-        simpleShoot(entity.pos);
-        entity.lastFire = dt;
+      if(entity.readyForAction){
+        return fn(entity);
       }else{
-        entity.lastFire += dt;
+        return entity;
       }
-      return entity;
+    }
+  }  
+
+  function wrapperNotReadyForActionOnly(fn){
+    return function(entity){
+      if(!entity.readyForAction){
+        return fn(entity);
+      }else{
+        return entity;
+      }
     }
   }
 
-  function moveToBossPosition(dt){
+  function moveInsideScreen(dt, margin){
+    if(!margin){
+      margin = 0;
+    }
     return function(entity){
-      if(isOutsideScreen(entity.pos, entity.sprite)){
+      if(entity.pos[0] + entity.sprite.size[0] + margin >= canvas.width) {
         entity.pos = moveLeft(entity.pos, entity.speed, dt);
       }
+      if(entity.pos[1] > canvas.height){
+        entity.pos = moveUp(entity.pos, entity.speed, dt);
+      }
+      if(entity.pos[0] + entity.sprite.size[0] < 0){
+        entity.pos = moveRight(entity.pos, entity.speed, dt);
+      }
+      if(entity.pos[1]  + entity.sprite.size[1] < 0){
+        entity.pos = moveDown(entity.pos, entity.speed, dt);
+      }
       return entity;
     }
   }
 
+  function readyForActionIfInsideScreen(margin){
+    if(!margin){
+      margin = 0;
+    }
+    return function(entity){
+      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite)){
+        entity.readyForAction = true;
+      }
+      return entity;
+    }
+  }
+
+  function entityStepsInTime(time, dt){
+    return function(fn){
+      return function(entity){
+        if(!entity.lastStep || (entity.lastStep + dt) >time){
+          entity.lastStep= dt;
+          return fn(entity);
+        }else{
+          entity.lastStep +=dt;
+          return entity;
+        }
+      }
+    }
+  }
+
+  function shootIfHavePassedThatSecondsFromLastFire(time, dt){
+    return entityStepsInTime(time,dt)(function(entity){
+      blueShoot(entity.pos);
+      return entity;
+    });
+  }
+  function playActionIfHavePassedThatSecondsFromLastAction(time, dt){
+    return entityStepsInTime(time,dt)(function(entity){
+      playAction(entity.actions.pop(), entity);
+      return entity;
+    });
+  }
+
+  function playAction(action, entity){
+    switch(action){
+      case 'enemyShoot':
+        enemyShoot(entity.pos, entity.damage);;
+      break;
+    }
+  }
   /* Updates */
   function movePlayer(dir,dt){
     player.dir =dir;
     player = moveToDirection(dt)(player);
   }
-
-  function updateBullets(dt){
-    bullets = hu.compact(
-      bullets.map(updateSprite(dt))
+  function updateableEntitiesThatMoveAndRemoveOutsideScreen(entities, dt){
+    return hu.compact(
+      entities.map(updateSprite(dt))
       .map(moveToDirection(dt))
       .map(removeIfOutsideScreen));
   }
+  function updateBullets(dt){
+    bullets = updateableEntitiesThatMoveAndRemoveOutsideScreen(bullets, dt);
+  }
+
+  function updateEnemyBullets(dt){
+    enemyBullets = updateableEntitiesThatMoveAndRemoveOutsideScreen(enemyBullets, dt);
+  }
+
   function updateEnemies(dt){
     enemies = hu.compact(
-      enemies.map(moveToDirection(dt))
-      .map(updateSprite(dt))
+      enemies.map(updateSprite(dt))
+      .map(moveToDirection(dt))
       .map(removeIfOutsideScreenleft));
   }
+
   function updateBombs(dt){
     bombs = hu.compact(
       bombs.map(updateSprite(dt))
@@ -610,21 +707,26 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       .map(removeIfDone));
   }
   function updateBombAreas(dt){
-    bombareas = updateNormalEntities(bombareas,dt);
+    bombareas = updateEntitiesAndRemoveIfDone(bombareas,dt);
   }
   
   function updateSpecials(dt){
-    specials = updateNormalEntities(specials.map(entityInFrontOfPlayer), dt);
+    specials = updateEntitiesAndRemoveIfDone(specials.map(entityInFrontOfPlayer), dt);
   }
   
   function updateExplosions(dt){
-    explosions = updateNormalEntities(explosions, dt);        
+    explosions = updateEntitiesAndRemoveIfDone(explosions, dt);        
   }
   function updateBonuses(dt){
-    bonuses = hu.compact(hu.compact(bonuses.map(changeDirectionIfAvailable(dt))
-      .map(moveToDirection(dt))
+    bonuses = hu.compact(bonuses
+      .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 10)))
+      .map(wrapperNotReadyForActionOnly(readyForActionIfInsideScreen(10))));
+
+    bonuses = hu.compact(hu.compact(bonuses
+      .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
+      .map(wrapperReadyForActionOnly(moveToDirection(dt)))
       .map(ifCollidesApplyBonusTo(player))
-      .map(removeIfOutsideScreen))
+      .map(removeIfOutsideScreenAndNoDirectionsAvailable))
       .map(removeIfCollideWith(player)));
   }
 
@@ -638,7 +740,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function updateBosses(dt){
     bosses = hu.compact(bosses
       .map(updateSprite(dt))
-      .map(moveToBossPosition(dt)));
+      .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
+      .map(readyForActionIfInsideScreen(50))
+      .map(wrapperReadyForActionOnly(playActionIfHavePassedThatSecondsFromLastAction(0.5,dt))));
   }
 
   /****************************
@@ -768,6 +872,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     renderEntities(bombs);
     renderEntities(bombareas);
     renderEntities(bullets);
+    renderEntities(enemyBullets);
     renderEntities(enemies);
     renderEntities(explosions);
     renderEntities(specials);
