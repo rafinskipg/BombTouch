@@ -7,6 +7,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.gameOver = false;
         $scope.paused = false;
         $scope.megaShootActive = false;
+        $scope.messageSender = 'dog.png';
         var booleanSonido = true;
 
         $scope.isMobile = window.isMobile ? true : false;
@@ -43,12 +44,12 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.pause = function(){
-            $scope.paused = true;
-            GAME.pause();
+          $scope.paused = true;
+          GAME.pause();
         }
         $scope.resume = function(){
-            $scope.paused = false;
-            GAME.resume();
+          $scope.paused = false;
+          GAME.resume();
         }
         //Message for levels
         function showLevel(level){
@@ -57,6 +58,22 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             $timeout( function(){
                 $scope.showLevel = false;
             },1500)
+        }
+
+        function showMessage(message,sender){
+          $scope.message = message;
+          if(sender == 'creeper'){
+            $scope.messageSender = 'creeper.png';
+          }
+          $scope.$apply();
+
+          /*$timeout( function(){
+            $scope.$apply();
+            console.log('mierda')
+              $scope.message = undefined;
+              $scope.messageSender = 'dog.png';
+          },2500)*/
+          
         }
 
         $scope.megaShoot = function(){
@@ -72,6 +89,10 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         GAME.suscribePoints(function(points){
             $scope.puntos = points;
             $scope.$apply();
+        });
+
+        GAME.suscribeMessages(function(message,sender){
+          showMessage(message,sender);
         });
 
         GAME.suscribePower(function(power){

@@ -58,6 +58,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   //Suscribe to events of the game
   var notifyGameEnd = [];
   var notifyPoints = [];
+  var notifyMessages = [];
   var notifyLevelUp = [];
   var notifyPower = [];
   var notifyMaxPower = [];
@@ -77,9 +78,27 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       urls: ['sounds/April_Kisses.mp3'],
       loop: true
     }),
+    yeah: new Howl({
+      urls: ['sounds/oh_yeah_wav_cut.wav']
+    }),
     nyan: new Howl({
       urls: ['sounds/upmid.wav']
+    }),
+    killer: new Howl({
+      urls: ['sounds/killer.mp3']
+    }),
+    grunt: new Howl({
+      urls: ['sounds/grunt.mp3']
+    }),
+    power: new Howl({
+      urls: ['sounds/power.mp3']
     })
+  };
+
+  MESSAGES = {
+    killer: 'I am your killer...!',
+    power: 'BEHOLD MY POWER!',
+    grunt: 'graARRRLL!!!'
   };
 
   /****************************
@@ -143,6 +162,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function restart(){
     reset();
+    playSound(SOUNDS.ambient);
     main();
   }
 
@@ -245,6 +265,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function resume(){
     STATE.paused = false;
     playSound(SOUNDS.ambient);
+    TIMERS.lastTime = Date.now();
+    main();
   }
 
   function playSound(sound){
@@ -270,6 +292,12 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function showMessage(message, sender){
+    for(var i = 0; i < notifyMessages.length; i++){
+      notifyMessages[i](message,sender);
+    }
+  }
+
   function shoot(){
     if(!isGameOver() &&
       Date.now() - TIMERS.lastFire > 100) {
@@ -287,13 +315,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function blueShoot(pos){
-    bullets.push(EL.getEntity('bulletBlue', pos, {damage: 15}));
+    bullets.push(EL.getEntity('bulletBlue', pos, {damage: 200}));
     playSound(SOUNDS.shoot);
   }
 
   function enemyShoot(pos, damage){
     var bullet = EL.getEntity('bullet', pos, { damage: damage });
     bullet.dir = 'left';
+    bullet.speed = 300;
     enemyBullets.push(bullet);
     playSound(SOUNDS.shoot);
   }
@@ -415,7 +444,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(STATE.level < 6 && !STATE.boss_out){
+    if(false && STATE.level < 6 && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
@@ -423,9 +452,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
 
       createBonus();
-    }else if(!STATE.boss_out){
+    }else if(true && !STATE.boss_out){
       bosses.push(EL.getBoss(canvas.width, canvas.height));
       createBonus();
+      //playSound(SOUNDS.creeper);
       STATE.boss_out = true;
     }
    
@@ -707,6 +737,12 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       case 'enemyShoot':
         enemyShoot(entity.pos, entity.damage);;
       break;
+      case 'talk':
+        var phrases = ['killer', 'power','grunt'];
+        var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
+        playSound(SOUNDS[chosenPhrase]);
+        showMessage(MESSAGES[chosenPhrase], 'creeper');
+      break;
     }
   }
 
@@ -840,6 +876,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       if(entitiesCollide(entity,bonus)){
         entity.hasBonus = true;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
+        playSound(SOUNDS.yeah);
       }
       return bonus;
     }
@@ -1019,19 +1056,22 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   ****************************
   ****************************/  
   function suscribeGameOver( fn){
-      notifyGameEnd.push(fn);
+    notifyGameEnd.push(fn);
   }
   function suscribeLevelUp( fn){
-      notifyLevelUp.push(fn);
+    notifyLevelUp.push(fn);
   }
   function suscribePoints(fn){
-      notifyPoints.push(fn);
+    notifyPoints.push(fn);
+  }
+  function suscribeMessages(fn){
+    notifyMessages.push(fn);
   }
   function suscribePower(fn){
-      notifyPower.push(fn);
+    notifyPower.push(fn);
   }
   function suscribeMaxPower(fn){
-      notifyMaxPower.push(fn);
+    notifyMaxPower.push(fn);
   }
   function setSound(bool){
     STATE.sound_enabled = bool;
@@ -1056,6 +1096,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     suscribeLevelUp : suscribeLevelUp,
     suscribePoints : suscribePoints,
     suscribePower : suscribePower,
+    suscribeMessages: suscribeMessages,
     megaShoot : megaShoot,
     setSound : setSound,
     setSoundInGame: setSoundInGame,
