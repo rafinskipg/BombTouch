@@ -29,6 +29,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     max_power :1000,
     game_over: false,
     paused: false,
+    post_game_completed : false,
     resources_loaded: false
   };
 
@@ -48,6 +49,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bonusWeapons = [],
     bosses = [],
     enemyBullets = [],
+    graves = [],
     player = {};
 
   var canvas, ctx, power = 0;
@@ -93,7 +95,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       'images/background.png',
       'images/orbes/bonus.png',
       'images/bonusWeapon.png',
-      'images/creeper.png'
+      'images/creeper.png',
+      'images/grave.png'
   ]);
 
   //Flag for initialization
@@ -108,9 +111,21 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     if(!isGameOver() && !isPaused()){
       update(dt);
       render();
+      TIMERS.lastTime = now;
+      requestAnimFrame(main);
     }
-    TIMERS.lastTime = now;
-    requestAnimFrame(main);
+  };
+
+  var postGame = function(){
+    var now = Date.now();
+    var dt = (now - TIMERS.lastTime) / 1000.0;
+    if(!STATE.post_game_completed){
+      updateGraves(dt);
+      updateExplosions(dt);
+      render();
+      TIMERS.lastTime = now;
+      requestAnimFrame(postGame);
+    }
   };
 
   function start() {
@@ -125,6 +140,11 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     playSound(SOUNDS.ambient);
     main();
   };
+
+  function restart(){
+    reset();
+    main();
+  }
 
   function initCanvas(){
     canvas = document.getElementById("canvas");
@@ -141,13 +161,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function reset() {
     STATE = {
-      sound_enabled: true,
+      sound_enabled: STATE.sound_enabled === false ? false: true,
       boss_out : false,
       level: 1,
       points : 0,
       power: 0,
       max_power :1000,
       game_over: false,
+      post_game_completed : false,
       paused: false,
       resources_loaded: true
     };
@@ -162,6 +183,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bonusWeapons = [];
     bosses = [];
     enemyBullets = [];
+    graves = [];
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
     TIMERS = {
@@ -196,11 +218,17 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function endGame() {
     STATE.game_over = true;
     stopAmbientSound();
+    graves.push(EL.getEntity('grave', player.pos));
+    addExplosion(player.pos);
+    postGame();
+  }
+
+  function endPostGame(){
+    STATE.post_game_completed = true;
     for(var i = 0; i<notifyGameEnd.length; i++){
       notifyGameEnd[i]();
     }
   }
-
   function isGameOver(){
       return STATE.game_over;
   }
@@ -220,7 +248,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function playSound(sound){
-    if(!isPaused() && !isGameOver() && STATE.sound_enabled){
+    if(!isPaused() && STATE.sound_enabled){
       sound.play();
     }
   }
@@ -387,7 +415,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(false && STATE.level < 6 && !STATE.boss_out){
+    if(STATE.level < 6 && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
@@ -395,13 +423,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
 
       createBonus();
-    }else if(true && !STATE.boss_out){
+    }else if(!STATE.boss_out){
       bosses.push(EL.getBoss(canvas.width, canvas.height));
       createBonus();
       STATE.boss_out = true;
     }
    
     checkCollisions();
+    checkGameEndConditions();
   };
 
   function updateEntities(dt) {
@@ -529,6 +558,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function endPostGameIfDone(entity){
+    if(entity.sprite.done){
+      endPostGame();
+    }
+    return entity;
+  }
+
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
       entities.map(updateSprite(dt))
@@ -654,19 +690,18 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  function shootIfHavePassedThatSecondsFromLastFire(time, dt){
+  function shootThrottled(time, dt){
     return entityStepsInTime(time,dt)(function(entity){
       blueShoot(entity.pos);
       return entity;
     });
   }
-  function playActionIfHavePassedThatSecondsFromLastAction(time, dt){
+  function playActionThrottled(time, dt){
     return entityStepsInTime(time,dt)(function(entity){
       playAction(entity.actions.pop(), entity);
       return entity;
     });
   }
-
   function playAction(action, entity){
     switch(action){
       case 'enemyShoot':
@@ -674,23 +709,49 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       break;
     }
   }
+
+  function getBossActions(){
+    var bossTemp = EL.getBoss(canvas.width, canvas.height);
+    return bossTemp.actions;
+  }
+
+  function resetBossActionsIfEmpty(entity){
+    if(entity.actions.length == 0){
+      entity.actions = getBossActions();
+    }
+    return entity;
+  }
+
+  function moveToPlayerVertically(dt){
+    return function(entity){
+      if(player.pos[1] < entity.pos[1]){
+        entity.pos = moveUp(entity.pos, entity.speed, dt);
+      }
+
+      if(player.pos[1] > entity.pos[1]){
+        entity.pos = moveDown(entity.pos, entity.speed, dt);
+      }
+
+      return entity;
+    }
+  }
   /* Updates */
   function movePlayer(dir,dt){
     player.dir =dir;
     player = moveToDirection(dt)(player);
   }
-  function updateableEntitiesThatMoveAndRemoveOutsideScreen(entities, dt){
+  function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
       entities.map(updateSprite(dt))
       .map(moveToDirection(dt))
       .map(removeIfOutsideScreen));
   }
   function updateBullets(dt){
-    bullets = updateableEntitiesThatMoveAndRemoveOutsideScreen(bullets, dt);
+    bullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(bullets, dt);
   }
 
   function updateEnemyBullets(dt){
-    enemyBullets = updateableEntitiesThatMoveAndRemoveOutsideScreen(enemyBullets, dt);
+    enemyBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(enemyBullets, dt);
   }
 
   function updateEnemies(dt){
@@ -733,7 +794,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function updateBonusWeapons(dt){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
-      .map(shootIfHavePassedThatSecondsFromLastFire(0.5, dt))
+      .map(shootThrottled(0.5, dt))
       .map(removeIfTimeCounterGreaterThan(10)));
   }
 
@@ -742,7 +803,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       .map(updateSprite(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionIfHavePassedThatSecondsFromLastAction(0.5,dt))));
+      .map(wrapperReadyForActionOnly(playActionThrottled(0.5,dt)))
+      .map(resetBossActionsIfEmpty)
+      .map(moveToPlayerVertically(dt)));
+  }
+
+  function updateGraves(dt){
+    graves = hu.compact(
+      graves.map(updateSprite(dt))
+      .map(endPostGameIfDone));
   }
 
   /****************************
@@ -809,22 +878,52 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       if(entitiesCollide(enemy, player)){
         player.life -= enemy.damage;
         enemy.life -= player.damage;
-        if(player.life <= 0){
-          console.log(player);
-          endGame();
-        } 
       }
 
       if(enemy.life > 0){
         return enemy;
       }else{
-        console.log('removing enemy', enemies.length);
         addPoints(enemy.points);
         addPower(enemy.points);
         playSound(SOUNDS.death);
         addExplosion(enemy.pos);    
       }
     }));
+
+    enemyBullets = hu.compact(enemyBullets.map(ifCollidesApplyDamageTo(player))
+        .map(removeIfCollideWith(player)));
+
+    bosses = hu.compact(bosses.map(function(enemy){
+      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+        .map(removeIfCollideWith(enemy)));
+
+      bombareas
+        .map(ifCollidesApplyDamageTo(enemy));
+        
+      specials
+        .map(ifCollidesApplyDamageTo(enemy));
+
+      if(entitiesCollide(enemy, player)){
+        player.life -= enemy.damage;
+        enemy.life -= player.damage;
+      }
+
+      if(enemy.life > 0){
+        return enemy;
+      }else{
+        addPoints(enemy.points);
+        addPower(enemy.points);
+        playSound(SOUNDS.death);
+        addExplosion(enemy.pos);    
+      }
+    }));
+   
+  }
+
+  function checkGameEndConditions(){
+     if(player.life <= 0){
+      endGame();
+    } 
   }
 
   function checkPlayerBounds() {
@@ -867,7 +966,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         renderEntities(bonusWeapons);
       }
     }else{
-      console.log(STATE);
+      renderEntities(graves);
     }
     renderEntities(bombs);
     renderEntities(bombareas);
@@ -962,6 +1061,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     setSoundInGame: setSoundInGame,
     endGame : endGame,
     start : start,
+    restart : restart,
     pause: pause,
     resume : resume,
     shoot: shoot

@@ -48,6 +48,7 @@ define( [ ], function(){
   //Player
   var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
+  var graveSpriteSheet = ['images/grave.png', [0,0], [30,30], 4 , [0,1,2,0,1,2], null, true]
 
   var bonusSpriteSchema = ['images/orbes/bonus.png', [0,0], [40,40], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
@@ -136,6 +137,10 @@ define( [ ], function(){
     return entity;
   }
 
+  function Grave(pos){
+    return new Entity(pos, graveSpriteSheet);
+  }
+
   function Bonus(pos,opts){
     var entity = new Entity(pos,bonusSpriteSchema);
     entity.speed = opts.speed || 200;
@@ -208,6 +213,9 @@ define( [ ], function(){
           totalLife: opts.totalLife
         };
         return new Player(pos, opts);
+      break;
+      case 'grave': 
+        return new Grave(pos);
       break;
       case 'bonus':
         opts = {
@@ -319,6 +327,7 @@ define( [ ], function(){
     var entity = new Entity([screenWidth, screenHeight / 2], bossSpriteSchema);
     entity.actions = [
       'enemyShoot',
+      'move',
       'launchEnemy',
       'enemyShoot',
       'talk'
