@@ -52,5 +52,6 @@
   },
   "_source": "git://github.com/h2non/hu.git",
   "_target": "~0.1.0-rc.2",
-  "_originalSource": "hu"
+  "_originalSource": "hu",
+  "_direct": true
 }

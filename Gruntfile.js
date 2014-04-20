@@ -283,10 +283,10 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             'bower_components/**/*',
-            'images/{,*/}*.{gif,webp,bmp}',
+            'images/{,**/}**.{gif,webp,bmp}',
             'styles/fonts/*',
             'fonts/*',
-            'sounds/*',
+            'sounds/**/**.**',
             'scripts/**/**.js',
             '!scripts/main.js'
           ]
@@ -373,6 +373,10 @@ module.exports = function (grunt) {
     ]);
   });
 
+  grunt.registerTask('serverdist', [
+    'connect:dist:keepalive',
+    'open'
+    ]);
   grunt.registerTask('test', [
     'clean:server',
     'concurrent:test',

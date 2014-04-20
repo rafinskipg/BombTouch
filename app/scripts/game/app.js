@@ -30,7 +30,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     game_over: false,
     paused: false,
     post_game_completed : false,
-    resources_loaded: false
+    resources_loaded: false,
+    background_speed: 0.3
   };
 
   var TIMERS = {
@@ -98,7 +99,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   MESSAGES = {
     killer: 'I am your killer...!',
     power: 'BEHOLD MY POWER!',
-    grunt: 'graARRRLL!!!'
+    grunt: 'graARRRLL!!!',
+    wow: 'WOW! Such bonus...  Very power, much shoot'
   };
 
   /****************************
@@ -154,6 +156,32 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return;
     }
     initCanvas();
+    window.addEventListener('deviceorientation',function(e){
+      if(e.gamma &&  e.gamma > 0){
+        input.addKey('d');
+        input.removeKey('a');
+      }
+      if(e.gamma &&  e.gamma < 0){
+        input.addKey('a');
+        input.removeKey('d');
+      }    
+      if(e.beta &&  e.beta > 0){
+        input.addKey('s');
+        input.removeKey('w');
+      }
+      if(e.beta &&  e.beta < 0){
+        input.addKey('w');
+        input.removeKey('s');
+      }
+      if(!e.beta){
+        input.removeKey('s');
+        input.removeKey('w');
+      }
+      if(!e.gamma){
+        input.removeKey('a');
+        input.removeKey('d');
+      }
+    });
     reset();
     suscribeToEvents();
     playSound(SOUNDS.ambient);
@@ -190,7 +218,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       game_over: false,
       post_game_completed : false,
       paused: false,
-      resources_loaded: true
+      resources_loaded: true,
+      background_speed: 0.3
     };
 
     bullets = [];
@@ -341,17 +370,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function addPoints(pts){
-    if((STATE.points < 3000 && STATE.points + pts >= 3000)
-     ||(STATE.points < 10000 && STATE.points + pts >= 10000)
-     ||(STATE.points < 50000 && STATE.points + pts >= 50000)
-     ||(STATE.points < 100000 && STATE.points + pts >= 100000)
-     ||(STATE.points < 200000 && STATE.points + pts >= 200000)
-    ){
-      changeLevel();
-    }
-
     STATE.points += pts;
-
     for(var i = 0; i<notifyPoints.length; i++){
       notifyPoints[i](STATE.points);
     }
@@ -444,27 +463,30 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(false && STATE.level < 6 && !STATE.boss_out){
+    if( STATE.level < 6 && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
-        enemies.push(EL.getEnemy(STATE.level, canvas.width, canvas.height));
+        enemies.push(EL.getEnemy([canvas.width, Math.random() * (canvas.height - 39)], STATE.level));
       }
 
       createBonus();
-    }else if(true && !STATE.boss_out){
+    }else if(!STATE.boss_out){
       bosses.push(EL.getBoss(canvas.width, canvas.height));
       createBonus();
-      //playSound(SOUNDS.creeper);
+      stopAmbientSound();
+      STATE.background_speed = 1.6;
       STATE.boss_out = true;
     }
    
     checkCollisions();
+    checkLevelUpConditions();
     checkGameEndConditions();
   };
 
   function updateEntities(dt) {
     player.sprite.update(dt);
+    updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
     updateBombs(dt);
@@ -472,8 +494,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
-    updateBonusWeapons(dt);
-    updateBosses(dt);
+    updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
   }
   /* Helpers */
@@ -743,6 +764,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         playSound(SOUNDS[chosenPhrase]);
         showMessage(MESSAGES[chosenPhrase], 'creeper');
       break;
+      case 'launchEnemy':
+        enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
+      break;
     }
   }
 
@@ -877,6 +901,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         entity.hasBonus = true;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
+        showMessage(MESSAGES.wow, 'dog');
       }
       return bonus;
     }
@@ -957,6 +982,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
    
   }
 
+  function checkLevelUpConditions(){
+    if(TIMERS.gameTime > 30 && STATE.level === 1
+      || TIMERS.gameTime > 60 && STATE.level === 2
+      || TIMERS.gameTime > 90 && STATE.level === 3
+      || TIMERS.gameTime > 120 && STATE.level === 4
+      || TIMERS.gameTime > 160 && STATE.level === 5){
+      changeLevel();
+    }
+  }
+
   function checkGameEndConditions(){
      if(player.life <= 0){
       endGame();
@@ -987,7 +1022,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   var BGx = 0;
 
   function render() {
-    BGx -= 0.3;
+    BGx -= STATE.background_speed;
     ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
     ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
     ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);

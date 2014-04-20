@@ -40,6 +40,12 @@
     window.input = {
         isDown: function(key) {
             return pressedKeys[key.toUpperCase()];
+        },
+        addKey : function(code){
+            pressedKeys[code.toUpperCase()] = true;
+        },
+        removeKey: function(code){
+            pressedKeys[code.toUpperCase()] =  false;
         }
     };
 })();

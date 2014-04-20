@@ -67,12 +67,12 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           }
           $scope.$apply();
 
-          /*$timeout( function(){
+          $timeout( function(){
             $scope.$apply();
             console.log('mierda')
               $scope.message = undefined;
               $scope.messageSender = 'dog.png';
-          },2500)*/
+          },2500)
           
         }
 
