@@ -463,7 +463,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if( STATE.level < 6 && !STATE.boss_out){
+    if(false && STATE.level < 6 && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
@@ -471,10 +471,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
 
       createBonus();
-    }else if(!STATE.boss_out){
+    }else if(true && !STATE.boss_out){
       bosses.push(EL.getBoss(canvas.width, canvas.height));
       createBonus();
-      stopAmbientSound();
       STATE.background_speed = 1.6;
       STATE.boss_out = true;
     }
