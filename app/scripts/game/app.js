@@ -157,30 +157,27 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
     initCanvas();
     window.addEventListener('deviceorientation',function(e){
-      if(e.gamma &&  e.gamma > 0){
+      if(e.gamma &&  e.gamma > 10){
         input.addKey('d');
         input.removeKey('a');
-      }
-      if(e.gamma &&  e.gamma < 0){
+      }else if(e.gamma &&  e.gamma < -10){
         input.addKey('a');
         input.removeKey('d');
-      }    
-      if(e.beta &&  e.beta > 0){
-        input.addKey('s');
-        input.removeKey('w');
-      }
-      if(e.beta &&  e.beta < 0){
-        input.addKey('w');
-        input.removeKey('s');
-      }
-      if(!e.beta){
-        input.removeKey('s');
-        input.removeKey('w');
-      }
-      if(!e.gamma){
+      }else{
         input.removeKey('a');
         input.removeKey('d');
+      }    
+      if(e.beta &&  e.beta > 10){
+        input.addKey('s');
+        input.removeKey('w');
+      }else if(e.beta &&  e.beta < -10){
+        input.addKey('w');
+        input.removeKey('s');
+      }else{
+        input.removeKey('s');
+        input.removeKey('w');
       }
+      
     });
     reset();
     suscribeToEvents();
