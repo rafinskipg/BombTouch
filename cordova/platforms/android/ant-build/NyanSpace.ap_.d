@@ -26,6 +26,8 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/favicon.png \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/ole.zip \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/main.html \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/views \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/sounds/grunt.mp3 \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/sounds/monstruo.wma \
@@ -487,13 +489,10 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/es5-sham.js \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/LICENSE \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/CHANGES \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/fastclick-amd \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/es5-shim.min.js \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/tests \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/es5-shim.map \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/es5-shim.js \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/fastclick-amd/fastclick.js \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/fastclick-amd/bower.json \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/tests/index.min.html \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/tests/helpers \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/es5-shim/tests/spec \
@@ -547,7 +546,10 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/orbes/orb4.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/orbes/orb7.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/orbes/bonus.png \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/54664.png \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/52254.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/bananas.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/creeper1.png \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/fireball_0.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/views/main.html \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/AndroidManifest.xml \

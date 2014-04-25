@@ -60,20 +60,31 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             },1500)
         }
 
-        function showMessage(message,sender){
-          $scope.message = message;
-          if(sender == 'creeper'){
-            $scope.messageSender = 'creeper.png';
+        function showMessage(message,sender,timeout){
+          if(!timeout){
+            timeout = 2500;
           }
+          $scope.message = message;
+          $scope.messageSender = sender ?  sender + '.png' : 'dog.png';
           $scope.$apply();
 
           $timeout( function(){
             $scope.$apply();
-            console.log('mierda')
               $scope.message = undefined;
               $scope.messageSender = 'dog.png';
-          },2500)
+          },timeout)
           
+        }
+
+        function showMessages(messages, senders, timeoutMessage, timeoutBetweenMessages){
+          var message = messages.shift();
+          var sender = senders.shift();
+          showMessage(message, sender, timeoutMessage);
+          if(messages.length > 0){
+            setTimeout(function() {
+              showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages);
+            }, timeoutMessage+timeoutBetweenMessages);
+          }
         }
 
         $scope.megaShoot = function(){
@@ -91,8 +102,8 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             $scope.$apply();
         });
 
-        GAME.suscribeMessages(function(message,sender){
-          showMessage(message,sender);
+        GAME.suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
+          showMessages(messages,senders,timeoutMessage,timeoutBetweenMessages);
         });
 
         GAME.suscribePower(function(power){

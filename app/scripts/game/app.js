@@ -93,6 +93,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }),
     power: new Howl({
       urls: ['sounds/power.mp3']
+    }),
+    ouch:  new Howl({
+      urls: ['sounds/power.mp3']
     })
   };
 
@@ -100,7 +103,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     killer: 'I am your killer...!',
     power: 'BEHOLD MY POWER!',
     grunt: 'graARRRLL!!!',
-    wow: 'WOW! Such bonus...  Very power, much shoot'
+    wow: 'WOW! Such bonus...  Very power, much shoot',
+    saiyan : 'Yaaaaaaay! Super saiyan!',
+    nosaiyan: 'Tss... my power',
+    init: "It's time, for other adventure, for other trip to the unknown...",
+    not: 'Your trip will know a deadly end... B**CH',
+    tst: 'Tstsk... You will have to pass over my rainbow',
+    ouch: 'Ouch @#¡%%!! :('
   };
 
   /****************************
@@ -179,6 +188,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
       
     });
+    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
     reset();
     suscribeToEvents();
     playSound(SOUNDS.ambient);
@@ -195,7 +205,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight - 43
 
     $(canvas).on('vclick',function(e){
       var x = e.pageX - $(canvas).offset().left;
@@ -246,11 +256,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         player.sprite = superPlayerOptions.sprite;
         player.speed = superPlayerOptions.speed;
         player.damage = superPlayerOptions.damage;
+        player.isSaiyan = true;
+        showMessages([MESSAGES.saiyan], ['saiyancat']);
       }else{
         var normalPlayerOptions =  EL.getEntity('player', player.pos, {life:player.life, totalLife: player.totalLife});
         player.sprite = normalPlayerOptions.sprite;
         player.speed = normalPlayerOptions.speed;
         player.damage = normalPlayerOptions.damage;
+        player.isSaiyan = false;
+        showMessages([MESSAGES.nosaiyan], ['cat']);
       }
     });
   }
@@ -318,9 +332,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  function showMessage(message, sender){
+  function showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages){
     for(var i = 0; i < notifyMessages.length; i++){
-      notifyMessages[i](message,sender);
+      notifyMessages[i](messages,senders, timeoutMessage,timeoutBetweenMessages);
     }
   }
 
@@ -460,7 +474,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(false && STATE.level < 6 && !STATE.boss_out){
+    if(STATE.level < 6 && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
@@ -468,7 +482,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
 
       createBonus();
-    }else if(true && !STATE.boss_out){
+    }else if( !STATE.boss_out){
       bosses.push(EL.getBoss(canvas.width, canvas.height));
       createBonus();
       STATE.background_speed = 1.6;
@@ -568,9 +582,8 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function isOnTheScreenEdges(pos,sprite){
-
-    return(pos[1] <= 0 || pos[1] >= canvas.height ||
-       pos[0] >= canvas.width);
+    return(pos[1] <= 0 || pos[1] + sprite.size[1] >= canvas.height ||
+       pos[0] + sprite.size[0] >= canvas.width);
   }
 
   function removeIfOutsideScreen(entity){
@@ -758,7 +771,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         var phrases = ['killer', 'power','grunt'];
         var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
         playSound(SOUNDS[chosenPhrase]);
-        showMessage(MESSAGES[chosenPhrase], 'creeper');
+        showMessages([MESSAGES[chosenPhrase]], ['creeper']);
       break;
       case 'launchEnemy':
         enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
@@ -897,7 +910,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         entity.hasBonus = true;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
-        showMessage(MESSAGES.wow, 'dog');
+        showMessages([MESSAGES.wow], ['dog']);
       }
       return bonus;
     }
@@ -919,6 +932,20 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function removeIfCollideWithAndPlaySound(entity){
+    return function(item){
+      var shouldReturnItem = removeIfCollideWith(entity)(item);
+      if(!shouldReturnItem){
+        playerDamaged();
+      }else{
+        return item;
+      }
+    }
+  }
+  function playerDamaged(){
+    playSound(SOUNDS.ouch);
+    showMessages([MESSAGES.ouch], [(player.isSaiyan ? 'saiyancat': 'catdamaged')]);
+  }
   function checkCollisions() {
     checkPlayerBounds();
     
@@ -934,6 +961,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         .map(ifCollidesApplyDamageTo(enemy));
 
       if(entitiesCollide(enemy, player)){
+        playerDamaged();
         player.life -= enemy.damage;
         enemy.life -= player.damage;
       }
@@ -949,7 +977,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }));
 
     enemyBullets = hu.compact(enemyBullets.map(ifCollidesApplyDamageTo(player))
-        .map(removeIfCollideWith(player)));
+        .map(removeIfCollideWithAndPlaySound(player)));
 
     bosses = hu.compact(bosses.map(function(enemy){
       bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
@@ -962,6 +990,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
         .map(ifCollidesApplyDamageTo(enemy));
 
       if(entitiesCollide(enemy, player)){
+        playerDamaged();
         player.life -= enemy.damage;
         enemy.life -= player.damage;
       }
