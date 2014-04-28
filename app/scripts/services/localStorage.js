@@ -4,31 +4,19 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     factory('localStorageSrv', ['$http', '$q', function($http, $q) {
 
     var __APP_NAME = 'nyanspace';
+    
     var save = function(data){
-      var commandsSaved = getLocals(); 
-      if(command.checked){
-        commandsSaved.push(command.id);
-      }else{
-        itemsFound = commandsSaved.filter(function(com){
-          return com != command.id;
-        });
-        console.log(itemsFound);
-        commandsSaved = itemsFound;
-      }
-      saveLocals(commandsSaved);
-      
-    }
-    var saveLocals = function(locals){
-      localStorage.setItem(__APP_NAME, JSON.stringify(locals));
+      localStorage.setItem(__APP_NAME, JSON.stringify(data));
     }
     var getData = function(){
-      var commands =  JSON.parse(localStorage.getItem(__APP_NAME));
-      if(!commands){
-        commands = {
-          maxScore :0
+      var data =  JSON.parse(localStorage.getItem(__APP_NAME));
+      if(!data){
+        data = {
+          maxScore :0,
+          badges : []
         };
       }
-      return commands;
+      return data;
     }
 
     var saveBestScore = function(score){
@@ -37,17 +25,30 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       if(score > bestScore){
         data.maxScore = score;
       }
-      saveLocals(data);
+      save(data);
     }
     var getBestScore = function(){
       var data = getData();
       return data.maxScore;
     }
-
+    var addBadges = function(listOfBadges){
+      var data = getData();
+      listOfBadges.map(function(item){
+        data.badges.push(item);
+      });
+      save(data);
+    }
+    
+    var getCompletedBadges = function(){
+      var data = getData();
+      return data.badges;
+    }
     return {
         getData: getData,
+        getCompletedBadges:getCompletedBadges,
         save: save,
         saveBestScore: saveBestScore,
+        addBadges: addBadges,
         getBestScore: getBestScore
       };
   }]);

@@ -26,7 +26,3 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
 
       }]);
 });
-
-
-
-

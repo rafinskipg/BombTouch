@@ -55,6 +55,7 @@ require( [
     'controllers/home',
     'controllers/main',
     'controllers/gameover',
+    'controllers/badges',
     'services/social',
     'services/localStorage',
     'services/settings',
