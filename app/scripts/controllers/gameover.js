@@ -6,7 +6,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.bestScore = localStorageSrv.getBestScore();
 
         $scope.isMobile = window.isMobile ? true : false;
-        
+
         $scope.playAgain = function(){
           $scope.home = false;
           $scope.juego = true; 

@@ -1,30 +1,5 @@
 <div class="container">
-  <header>
-      <div class="row">
-          <div class="col-xs-4 " id="Logo"><img src="images/cat.gif"/></div>
-          <div class="col-xs-8 " id="Logo">
-            <h1>The adventures of nyan cat</h1>
-            <p>Now presenting: <b>A cat in the space</b></p>
-          </div>
-      </div>
-      <div class="row score">
-        <div class="col-xs-8 col-xs-offset-4">
-          <p class="">Your best score is <span class="badge">{{bestScore}}</span></p>
-        </div>
-      </div>
-  </header>
-  <div class="inicio" ng-show="home">
-    <div class="row" >
-      <div class="col-xs-4 col-md-4">
-        <button class="btn btn-success" ng-click="start()">Start</button>
-      </div>
-      <div class="col-xs-4 col-md-4">
-        <button class="btn btn-info"  ng-click="setSonido()">Sound: <span><b>{{getSonido()}}</b></span></button>
-      </div>
-    </div>
-    
-  </div>
-  <div class="juego" ng-show="juego">
+  <div class="juego" >
       <div id="top_menu" class="top_menu row">
         <div class="col-xs-2">
           <div id="pause" class="btn btn-info" ng-click="pause()" ng-show="paused == false"> Pause </div>
@@ -42,35 +17,13 @@
         </div>
         <div class="col-xs-2">
           <div class="btn btn-info" ng-click="setSoundInGame()">
-            <span ng-show="getSonido() == 'OFF'" class="glyphicon glyphicon-volume-off"></span>
-            <span ng-show="getSonido() == 'ON'" class="glyphicon glyphicon-volume-up"></span>
+            <span ng-show="getSound() == true" class="glyphicon glyphicon-volume-off"></span>
+            <span ng-show="getSound() == false" class="glyphicon glyphicon-volume-up"></span>
           </div>
         </div>
       </div>
 
-      <div id="game-over-overlay" ng-show="gameOver">
-      </div>
-
-      <div id="game-over" ng-show="gameOver" class="row">
-        <div class="col-xs-offset-4 col-xs-4 game-retry">
-          <h1>Yay! Game ended</h1>
-          <div>Your score is {{puntos}}</div>
-          <div class="sharer">
-
-            <a ng-show="!isMobile" title="send to Facebook" onclick="return !window.open(this.href, 'Facebook', 'width=640,height=300')"
-              href="http://www.facebook.com/sharer.php?s=100&title=Nyan Cat adventures&summary=I've completed {{puntos}} points on NyanSpace!&p[url]=http://nyanspace.herokuapp.com"
-              data-desc="This is a description of the page" data-img="http://rvpg.me/experiments/BombTouch/images/cat.gif"
-              target="_blank">
-              <span>
-                <img width="14" height="14" src="images/facebook.png" alt="Facebook" /> Share it! 
-              </span>
-            </a>
-           
-          </div>
-          <button id="play-again" class="btn btn-success" ng-click="restart()">Play Again</button>
-        </div>
-      </div>
-
+      
       <div id="level" ng-show="showLevel">
         <div class="thumbnail">
           <span class="glyphicon glyphicon-info-sign"></span>

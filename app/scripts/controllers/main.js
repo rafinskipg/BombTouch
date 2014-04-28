@@ -1,29 +1,28 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
-    return BombTouchApp.controller('MainCtrl',['$scope', '$timeout', 'socialSrv', 'localStorageSrv',function ($scope, $timeout,socialSrv, localStorageSrv) {
-        $scope.home = true;
-        $scope.juego = false;
+    return BombTouchApp.controller('MainCtrl',
+      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv',
+      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv) {
         $scope.puntos = 0;
-        $scope.gameOver = false;
         $scope.paused = false;
         $scope.megaShootActive = false;
         $scope.messageSender = 'dog.png';
-        var booleanSonido = true;
 
-        $scope.bestScore = localStorageSrv.getBestScore();
-        
-        $scope.getSonido = function(){
-            return booleanSonido == true ? 'ON' : 'OFF';
+        var nyanGame = new GAME();
+
+        $scope.getSound = function(){
+          return settingsSrv.getSound();
         }
-        $scope.setSonido = function(){ 
-            GAME.setSound(booleanSonido = (booleanSonido == true ? false : true));
-        }
+
         $scope.setSoundInGame = function(){ 
-            GAME.setSoundInGame(booleanSonido = (booleanSonido == true ? false : true));
+          var toSet = settingsSrv.getSound() ? false : true;
+          settingsSrv.setSound(toSet);
+
+          nyanGame.setSoundInGame(toSet);
         }
         
         $scope.shoot = function(){
-            GAME.shoot();
+          nyanGame.shoot();
         }
 
         $scope.start = function(){
@@ -31,32 +30,26 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           $scope.juego = true; 
           $scope.puntos = 0;
           $scope.gameOver = false;
-          GAME.start();
+          nyanGame.setSound(settingsSrv.getSound());
+          nyanGame.start();
         } 
-
-        $scope.restart = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.restart();
-        }
 
         $scope.pause = function(){
           $scope.paused = true;
-          GAME.pause();
+          nyanGame.pause();
         }
         $scope.resume = function(){
           $scope.paused = false;
-          GAME.resume();
+          nyanGame.resume();
         }
+
         //Message for levels
         function showLevel(level){
-            $scope.level = level;
-            $scope.showLevel = true;
-            $timeout( function(){
-                $scope.showLevel = false;
-            },1500)
+          $scope.level = level;
+          $scope.showLevel = true;
+          $timeout( function(){
+              $scope.showLevel = false;
+          },1500)
         }
 
         function showMessage(message,sender,timeout){
@@ -87,24 +80,24 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.megaShoot = function(){
-            GAME.megaShoot();
+          nyanGame.megaShoot();
         }
         //Observer of the game
-        GAME.suscribeGameOver(function(){
+        nyanGame.suscribeGameOver(function(){
             localStorageSrv.saveBestScore($scope.puntos);
-            window.location.href = '/#gameover';
+            window.location.href = '/#/gameover';
         });
 
-        GAME.suscribePoints(function(points){
+        nyanGame.suscribePoints(function(points){
             $scope.puntos = points;
             $scope.$apply();
         });
 
-        GAME.suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
+        nyanGame.suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
           showMessages(messages,senders,timeoutMessage,timeoutBetweenMessages);
         });
 
-        GAME.suscribePower(function(power){
+        nyanGame.suscribePower(function(power){
             $scope.power = power;
             if(power == 100){
                 $scope.megaShootActive = true;
@@ -114,9 +107,11 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             //TODO applyhere
         });
 
-        GAME.suscribeLevelUp(function(level){
-            showLevel(level);
+        nyanGame.suscribeLevelUp(function(level){
+          showLevel(level);
         });
+
+        $scope.start();
 
       }]);
 });

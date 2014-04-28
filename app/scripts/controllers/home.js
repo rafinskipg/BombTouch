@@ -1,25 +1,25 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
     return BombTouchApp.controller('HomeCtrl',
-      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv',
-      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv) {
-        
-        $scope.playAgain = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.start();
-        } 
+      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv', 'settingsSrv',
+      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv, settingsSrv) {
 
-        $scope.share = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.restart();
+        $scope.bestScore = localStorageSrv.getBestScore();
+                
+        $scope.getSound = function(){
+          return settingsSrv.getSound() ? 'ON': 'Off';
+        }
+        $scope.setSound = function(){ 
+          settingsSrv.getSound() ? settingsSrv.setSound(false): settingsSrv.setSound(true);
         }
 
+        $scope.play = function(){
+          window.location.href = '/#/main';
+        }
+
+        $scope.badges = function(){
+          window.location.href = '/#/badges';
+        }
 
       }]);
 });

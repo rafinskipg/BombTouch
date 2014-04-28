@@ -52,10 +52,12 @@ require( [
 	'angular',
 	'jquery',
 	'app',
+    'controllers/home',
     'controllers/main',
     'controllers/gameover',
     'services/social',
     'services/localStorage',
+    'services/settings',
     'routes',
     'howler',
     'fastclick'

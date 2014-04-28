@@ -165,6 +165,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return;
     }
     initCanvas();
+    //TODO: this is being added many times
     window.addEventListener('deviceorientation',function(e){
       if(e.gamma &&  e.gamma > 10){
         input.addKey('d');
@@ -1151,22 +1152,24 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     GAME API
   ****************************
   ****************************/
-  var GAME = {
-    suscribeGameOver : suscribeGameOver,
-    suscribeLevelUp : suscribeLevelUp,
-    suscribePoints : suscribePoints,
-    suscribePower : suscribePower,
-    suscribeMessages: suscribeMessages,
-    megaShoot : megaShoot,
-    setSound : setSound,
-    setSoundInGame: setSoundInGame,
-    endGame : endGame,
-    start : start,
-    restart : restart,
-    pause: pause,
-    resume : resume,
-    shoot: shoot
-   };
+  var GAME = function() {
+    return {
+      suscribeGameOver : suscribeGameOver,
+      suscribeLevelUp : suscribeLevelUp,
+      suscribePoints : suscribePoints,
+      suscribePower : suscribePower,
+      suscribeMessages: suscribeMessages,
+      megaShoot : megaShoot,
+      setSound : setSound,
+      setSoundInGame: setSoundInGame,
+      endGame : endGame,
+      start : start,
+      restart : restart,
+      pause: pause,
+      resume : resume,
+      shoot: shoot
+    };
+  }
 
   return  GAME;
 
