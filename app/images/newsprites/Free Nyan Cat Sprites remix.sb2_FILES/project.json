@@ -1,0 +1,693 @@
+{
+	"objName": "Stage",
+	"scripts": [[10, 139, [["whenGreenFlag"], ["doForever", [["doPlaySoundAndWait", "Nyan_Cat_origina"]]]]]],
+	"sounds": [{
+			"soundName": "Nyan_Cat_origina",
+			"soundID": 1,
+			"md5": "d874726bcc4a7f0896e58ad4c4eef602.wav",
+			"sampleCount": 4779900,
+			"rate": 22050,
+			"format": "adpcm"
+		}],
+	"costumes": [{
+			"costumeName": "backdrop1",
+			"baseLayerID": 33,
+			"baseLayerMD5": "77e283d1ec82f9ae433a33e9c0554758.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 480,
+			"rotationCenterY": 360
+		}],
+	"currentCostumeIndex": 0,
+	"penLayerMD5": "5c81a336fab8be57adc039a8a2b33ca9.png",
+	"penLayerID": 0,
+	"tempoBPM": 60,
+	"videoAlpha": 0.5,
+	"children": [{
+			"objName": "Nyan Cat",
+			"scripts": [[10,
+					10,
+					[["whenGreenFlag"], ["lookLike:", "costume1"], ["doForever", [["wait:elapsed:from:", 0.05], ["nextCostume"]]]]]],
+			"sounds": [{
+					"soundName": "Nyan_Cat_origina",
+					"soundID": 0,
+					"md5": "782f2ae5f564085a1934d6e6e1fb1e1d.wav",
+					"sampleCount": 4779900,
+					"rate": 22050,
+					"format": "adpcm"
+				}],
+			"costumes": [{
+					"costumeName": "costume1",
+					"baseLayerID": 1,
+					"baseLayerMD5": "a027b020232573bc1031fa602efaf917.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 25,
+					"rotationCenterY": 23
+				},
+				{
+					"costumeName": "costume2",
+					"baseLayerID": 2,
+					"baseLayerMD5": "35b681b1e1b777220b34da6234eaee30.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 25,
+					"rotationCenterY": 23
+				},
+				{
+					"costumeName": "costume3",
+					"baseLayerID": 3,
+					"baseLayerMD5": "99f78f05bef4536382348bf76b3e8a13.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 25,
+					"rotationCenterY": 21
+				},
+				{
+					"costumeName": "costume4",
+					"baseLayerID": 4,
+					"baseLayerMD5": "ecc4a03af7f0a6a25a2841df09532970.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 25,
+					"rotationCenterY": 21
+				},
+				{
+					"costumeName": "costume5",
+					"baseLayerID": 2,
+					"baseLayerMD5": "35b681b1e1b777220b34da6234eaee30.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 25,
+					"rotationCenterY": 23
+				}],
+			"currentCostumeIndex": 2,
+			"scratchX": -62,
+			"scratchY": -26,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 1,
+			"visible": true,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyaninja",
+			"scripts": [[10,
+					10,
+					[["whenGreenFlag"], ["lookLike:", "costume1"], ["doForever", [["wait:elapsed:from:", 0.05], ["nextCostume"]]]]]],
+			"sounds": [{
+					"soundName": "Nyan_Cat_origina",
+					"soundID": 1,
+					"md5": "d874726bcc4a7f0896e58ad4c4eef602.wav",
+					"sampleCount": 4779900,
+					"rate": 22050,
+					"format": "adpcm"
+				}],
+			"costumes": [{
+					"costumeName": "costume1",
+					"baseLayerID": 5,
+					"baseLayerMD5": "9d6a232b83b25efa9e192068849ca59d.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume2",
+					"baseLayerID": 6,
+					"baseLayerMD5": "e4e19d2568b0c960e01da4a87e2358dc.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume3",
+					"baseLayerID": 7,
+					"baseLayerMD5": "77f0ee1ed286bdaf916dc3b28c94fa45.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume4",
+					"baseLayerID": 8,
+					"baseLayerMD5": "e88f92c67885696cbb43ff54d901ef77.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume5",
+					"baseLayerID": 6,
+					"baseLayerMD5": "e4e19d2568b0c960e01da4a87e2358dc.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				}],
+			"currentCostumeIndex": 4,
+			"scratchX": 79,
+			"scratchY": -96,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 3,
+			"visible": true,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyan Cow",
+			"scripts": [[10,
+					10,
+					[["whenGreenFlag"], ["lookLike:", "costume1"], ["doForever", [["wait:elapsed:from:", 0.05], ["nextCostume"]]]]]],
+			"sounds": [{
+					"soundName": "Nyan_Cat_origina",
+					"soundID": 1,
+					"md5": "d874726bcc4a7f0896e58ad4c4eef602.wav",
+					"sampleCount": 4779900,
+					"rate": 22050,
+					"format": "adpcm"
+				}],
+			"costumes": [{
+					"costumeName": "costume1",
+					"baseLayerID": 9,
+					"baseLayerMD5": "c99f5d3a44f4e1da06e92ffe10eb2845.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume2",
+					"baseLayerID": 10,
+					"baseLayerMD5": "3280e722992dbce26dc8f085b0b557e3.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume3",
+					"baseLayerID": 11,
+					"baseLayerMD5": "583c351a9fdd2326424b18cae8245a52.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume4",
+					"baseLayerID": 12,
+					"baseLayerMD5": "9892ad92716525d59990a00df2374869.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume5",
+					"baseLayerID": 10,
+					"baseLayerMD5": "3280e722992dbce26dc8f085b0b557e3.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				}],
+			"currentCostumeIndex": 4,
+			"scratchX": 39,
+			"scratchY": 105,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 5,
+			"visible": true,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyan Cat Rainbow",
+			"scripts": [[36,
+					68,
+					[["whenGreenFlag"],
+						["gotoSpriteOrMouse:", "Nyan Cat"],
+						["show"],
+						["doUntil",
+							["touching:", "_edge_"],
+							[["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", 6],
+								["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", -6]]],
+						["hide"]]]],
+			"sounds": [{
+					"soundName": "meow",
+					"soundID": 2,
+					"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+					"sampleCount": 18688,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "Nyan Cat Rainbow",
+					"baseLayerID": 13,
+					"baseLayerMD5": "ae2b3e7a5b75968498bd68b3ef6bc89f.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 10,
+					"rotationCenterY": 18
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -240,
+			"scratchY": -26,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 2,
+			"visible": false,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyaninja Rainbow",
+			"scripts": [[36,
+					68,
+					[["whenGreenFlag"],
+						["gotoSpriteOrMouse:", "Nyaninja"],
+						["show"],
+						["doUntil",
+							["touching:", "_edge_"],
+							[["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", 6],
+								["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", -6]]],
+						["hide"]]]],
+			"sounds": [{
+					"soundName": "meow",
+					"soundID": 2,
+					"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+					"sampleCount": 18688,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "Nyan Cat Rainbow",
+					"baseLayerID": 14,
+					"baseLayerMD5": "6b6411a56009400f91df7821fbe9678a.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 20,
+					"rotationCenterY": 36
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -240,
+			"scratchY": -96,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 4,
+			"visible": false,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyan Cow Rainbow",
+			"scripts": [[36,
+					68,
+					[["whenGreenFlag"],
+						["gotoSpriteOrMouse:", "Nyan Cow"],
+						["show"],
+						["doUntil",
+							["touching:", "_edge_"],
+							[["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", 6],
+								["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", -6]]],
+						["hide"]]]],
+			"sounds": [{
+					"soundName": "meow",
+					"soundID": 2,
+					"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+					"sampleCount": 18688,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "Nyan Cat Rainbow",
+					"baseLayerID": 15,
+					"baseLayerMD5": "186994dbc6cab264731b3f2c50b8d98d.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 20,
+					"rotationCenterY": 36
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -240,
+			"scratchY": 105,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 6,
+			"visible": false,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Rainbowy Nyan Cat",
+			"scripts": [[10,
+					10,
+					[["whenGreenFlag"], ["lookLike:", "costume1"], ["doForever", [["wait:elapsed:from:", 0.05], ["nextCostume"]]]]]],
+			"sounds": [{
+					"soundName": "Nyan_Cat_origina",
+					"soundID": 1,
+					"md5": "d874726bcc4a7f0896e58ad4c4eef602.wav",
+					"sampleCount": 4779900,
+					"rate": 22050,
+					"format": "adpcm"
+				}],
+			"costumes": [{
+					"costumeName": "costume1",
+					"baseLayerID": 16,
+					"baseLayerMD5": "c8417afc3f42c8812ca3e93822ecd923.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume2",
+					"baseLayerID": 17,
+					"baseLayerMD5": "051068143dddb54cf125ea6f4869c7f3.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume3",
+					"baseLayerID": 18,
+					"baseLayerMD5": "641b069145d6d913ac92d0b12d71e236.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume4",
+					"baseLayerID": 19,
+					"baseLayerMD5": "d21fbb0d07de66bd3a1fb29c366f0b33.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume5",
+					"baseLayerID": 20,
+					"baseLayerMD5": "414ad2d7d27d2d07f136726466721a92.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				}],
+			"currentCostumeIndex": 4,
+			"scratchX": 116,
+			"scratchY": 40,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 7,
+			"visible": true,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Rainbowy Nyan Cat Rainbow",
+			"scripts": [[36,
+					68,
+					[["whenGreenFlag"],
+						["gotoSpriteOrMouse:", "Rainbowy Nyan Cat"],
+						["show"],
+						["doUntil",
+							["touching:", "_edge_"],
+							[["createCloneOf", "_myself_"],
+								["changeXposBy:", -20],
+								["changeYposBy:", 6],
+								["createCloneOf", "_myself_"],
+								["changeXposBy:", -20],
+								["changeYposBy:", -6]]],
+						["hide"]]],
+				[79,
+					346,
+					[["whenCloned"],
+						["doForever", [["goBackByLayers:", 1], ["wait:elapsed:from:", 0.05], ["changeGraphicEffect:by:", "color", 25]]]]]],
+			"sounds": [{
+					"soundName": "meow",
+					"soundID": 2,
+					"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+					"sampleCount": 18688,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "Nyan Cat Rainbow",
+					"baseLayerID": 13,
+					"baseLayerMD5": "ae2b3e7a5b75968498bd68b3ef6bc89f.png",
+					"bitmapResolution": 1,
+					"rotationCenterX": 10,
+					"rotationCenterY": 18
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -240,
+			"scratchY": 40,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 8,
+			"visible": false,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyalien",
+			"scripts": [[10,
+					10,
+					[["whenGreenFlag"], ["lookLike:", "costume1"], ["doForever", [["wait:elapsed:from:", 0.05], ["nextCostume"]]]]]],
+			"sounds": [{
+					"soundName": "Nyan_Cat_origina",
+					"soundID": 1,
+					"md5": "d874726bcc4a7f0896e58ad4c4eef602.wav",
+					"sampleCount": 4779900,
+					"rate": 22050,
+					"format": "adpcm"
+				}],
+			"costumes": [{
+					"costumeName": "costume1",
+					"baseLayerID": 21,
+					"baseLayerMD5": "e71b92bbad65607fb760bcc0800164b8.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume2",
+					"baseLayerID": 22,
+					"baseLayerMD5": "c83f0966f2e8dc93952781a161074d24.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume3",
+					"baseLayerID": 23,
+					"baseLayerMD5": "c5019bc18f380cead76e615f31d5728f.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume4",
+					"baseLayerID": 24,
+					"baseLayerMD5": "5026b9832ab051b1580ad988edd981d3.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume5",
+					"baseLayerID": 25,
+					"baseLayerMD5": "079143e0ac748cdf24c34b27a5d1d1fd.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				}],
+			"currentCostumeIndex": 4,
+			"scratchX": 113,
+			"scratchY": -141,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 9,
+			"visible": true,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Nyalien Rainbow",
+			"scripts": [[36,
+					68,
+					[["whenGreenFlag"],
+						["gotoSpriteOrMouse:", "Nyalien"],
+						["show"],
+						["doUntil",
+							["touching:", "_edge_"],
+							[["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", 6],
+								["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", -6]]],
+						["hide"]]]],
+			"sounds": [{
+					"soundName": "meow",
+					"soundID": 2,
+					"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+					"sampleCount": 18688,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "Nyan Cat Rainbow",
+					"baseLayerID": 26,
+					"baseLayerMD5": "a16e34cf571c98ace703b5c67e29c231.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 20,
+					"rotationCenterY": 36
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -240,
+			"scratchY": -141,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 10,
+			"visible": false,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Flyan Cat Rainbow",
+			"scripts": [[36,
+					68,
+					[["whenGreenFlag"],
+						["gotoSpriteOrMouse:", "Flyan Cat"],
+						["show"],
+						["doUntil",
+							["touching:", "_edge_"],
+							[["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", 6],
+								["stampCostume"],
+								["changeXposBy:", -20],
+								["changeYposBy:", -6]]],
+						["hide"]]]],
+			"sounds": [{
+					"soundName": "meow",
+					"soundID": 2,
+					"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+					"sampleCount": 18688,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "Nyan Cat Rainbow",
+					"baseLayerID": 27,
+					"baseLayerMD5": "6a4decdf3576b3c1fa67175c66504e9b.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 20,
+					"rotationCenterY": 36
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -240,
+			"scratchY": 154,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 12,
+			"visible": false,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Flyan Cat",
+			"scripts": [[10,
+					10,
+					[["whenGreenFlag"], ["lookLike:", "costume1"], ["doForever", [["wait:elapsed:from:", 0.05], ["nextCostume"]]]]]],
+			"sounds": [{
+					"soundName": "Nyan_Cat_origina",
+					"soundID": 1,
+					"md5": "d874726bcc4a7f0896e58ad4c4eef602.wav",
+					"sampleCount": 4779900,
+					"rate": 22050,
+					"format": "adpcm"
+				}],
+			"costumes": [{
+					"costumeName": "costume1",
+					"baseLayerID": 28,
+					"baseLayerMD5": "b8c2712d7cbba6513347d91aff18583d.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume2",
+					"baseLayerID": 29,
+					"baseLayerMD5": "d3f1df14c7dc601099c041f0171f7791.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				},
+				{
+					"costumeName": "costume3",
+					"baseLayerID": 30,
+					"baseLayerMD5": "b98f1507262ddd2989b378db83d2fcd4.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume4",
+					"baseLayerID": 31,
+					"baseLayerMD5": "d1cfe846170b5be412586e7ea4912671.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 42
+				},
+				{
+					"costumeName": "costume5",
+					"baseLayerID": 32,
+					"baseLayerMD5": "2d945d04dc7589c713fee9665327424e.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 50,
+					"rotationCenterY": 46
+				}],
+			"currentCostumeIndex": 4,
+			"scratchX": 149,
+			"scratchY": 154,
+			"scale": 1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 11,
+			"visible": true,
+			"spriteInfo": {
+			}
+		}],
+	"info": {
+		"flashVersion": "LNX 12,0,0,77",
+		"scriptCount": 14,
+		"projectID": "19923553",
+		"videoOn": false,
+		"swfVersion": "v401",
+		"spriteCount": 12,
+		"hasCloudData": false,
+		"userAgent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/33.0.1750.152 Safari\/537.36"
+	}
+}

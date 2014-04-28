@@ -172,6 +172,33 @@ define( [ ], function(){
     return dirs;
   }
 
+  function getFixedDirs(pattern, numberOfDirs){
+    var possibleDirs = [
+      [
+        'downleft', 
+        'up',
+        'downleft',
+        'upleft',
+        'downright',
+        'upright',
+        'down' ],
+      [ 
+      'upleft', 
+      'down', 
+      'up', 
+      'down',
+      'up',
+      'left',
+      'down',
+      'up']
+    ];
+    var dirs = [];
+    for(var i = 0; i < numberOfDirs; i++){
+      dirs.push(possibleDirs[pattern].pop());
+    }
+    return dirs;
+  }
+
   function getEntity(name, pos, opts){
     if(!opts){
       opts = {};
@@ -220,7 +247,7 @@ define( [ ], function(){
       case 'bonus':
         opts = {
           numberOfBonus : Math.ceil(Math.random(5) * 10),
-          dirs: getRandomDirs(6),
+          dirs: getFixedDirs(1,6),
           speed: 200
         }
         return new Bonus(pos, opts);

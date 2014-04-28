@@ -1,0 +1,44 @@
+{
+	"objName": "Nyan Cat Rainbow",
+	"scripts": [[36,
+			68,
+			[["whenGreenFlag"],
+				["gotoSpriteOrMouse:", "Nyan Cat"],
+				["show"],
+				["doUntil",
+					["touching:", "_edge_"],
+					[["stampCostume"],
+						["changeXposBy:", -20],
+						["changeYposBy:", 6],
+						["stampCostume"],
+						["changeXposBy:", -20],
+						["changeYposBy:", -6]]],
+				["hide"]]]],
+	"sounds": [{
+			"soundName": "meow",
+			"soundID": 0,
+			"md5": "83c36d806dc92327b9e7049a565c6bff.wav",
+			"sampleCount": 18688,
+			"rate": 22050,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "Nyan Cat Rainbow",
+			"baseLayerID": 0,
+			"baseLayerMD5": "ae2b3e7a5b75968498bd68b3ef6bc89f.png",
+			"bitmapResolution": 1,
+			"rotationCenterX": 10,
+			"rotationCenterY": 18
+		}],
+	"currentCostumeIndex": 0,
+	"scratchX": 0,
+	"scratchY": 0,
+	"scale": 1,
+	"direction": 90,
+	"rotationStyle": "normal",
+	"isDraggable": false,
+	"indexInLibrary": 100000,
+	"visible": true,
+	"spriteInfo": {
+	}
+}

@@ -43,7 +43,7 @@ img {
 canvas {
     margin: auto;
     position: absolute;
-    top: 0;
+    top: 43px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -87,7 +87,8 @@ canvas {
     position: absolute;
     bottom: 20px;
     z-index: 2000;
-    background: rgba(28, 65, 213, 0.6);
+    border-radius: 100%;
+    background: red;
     color:white;
     font-size: 19px;
     &[disabled]{
