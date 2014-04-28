@@ -53,6 +53,7 @@ require( [
 	'jquery',
 	'app',
     'controllers/main',
+    'controllers/gameover',
     'services/social',
     'services/localStorage',
     'routes',

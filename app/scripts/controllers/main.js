@@ -10,7 +10,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.messageSender = 'dog.png';
         var booleanSonido = true;
 
-        $scope.isMobile = window.isMobile ? true : false;
         $scope.bestScore = localStorageSrv.getBestScore();
         
         $scope.getSonido = function(){
@@ -69,7 +68,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
 
           $timeout( function(){
             $scope.$apply();
-            console.log('mierda')
               $scope.message = undefined;
               $scope.messageSender = 'dog.png';
           },2500)
@@ -81,9 +79,8 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
         //Observer of the game
         GAME.suscribeGameOver(function(){
-            $scope.gameOver = true;
-            $scope.$apply();
             localStorageSrv.saveBestScore($scope.puntos);
+            window.location.href = '/#gameover';
         });
 
         GAME.suscribePoints(function(points){

@@ -1,0 +1,15 @@
+<div class="page">
+Play again?
+ <h1>Yay! Game ended</h1>
+          <div>Your score is {{puntos}}</div>
+          <div class="sharer">
+
+            <a ng-show="!isMobile" title="send to Facebook" onclick="return !window.open(this.href, 'Facebook', 'width=640,height=300')"
+              href="http://www.facebook.com/sharer.php?s=100&title=Nyan Cat adventures&summary=I've completed {{puntos}} points on NyanSpace!&p[url]=http://nyanspace.herokuapp.com"
+              data-desc="This is a description of the page" data-img="http://rvpg.me/experiments/BombTouch/images/cat.gif"
+              target="_blank">
+              <span>
+                <img width="14" height="14" src="images/facebook.png" alt="Facebook" /> Share it! 
+              </span>
+            </a>
+</div>
