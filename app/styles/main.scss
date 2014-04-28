@@ -8,20 +8,17 @@ html, body {
   margin: 20px;
 }
 
+*, *::before, *::after {
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
 body {
     background: white;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: black;
-
 }
-header{
-    color: black;
 
-    #logo{
-       //  background: url('../images/cat.gif');
-       // height: 50px;
-    }
-}
 .inicio {
         margin: 50px auto 0 auto;
         width: 500px;
@@ -115,6 +112,91 @@ canvas {
     color: #aaffdd;
 }
 
+.home{
+    background: url('../images/bg/starts.jpeg');
+    background-size:cover;
+    border: 2px solid rgba(128, 50, 50, 0.86);
+    color: white;
+    font-family: 'Comfortaa', 'cursive';
+    
+    #logo{
+        img{
+            max-height:200px;
+        }
+        margin-bottom: 10px;
+    }
+
+    .intro-text{
+        font-size: 15px;
+        h1{
+            font-family: 'Comfortaa', 'cursive';
+            font-size: 30px;
+        }
+        background: rgba(128, 50, 50, 0.86);
+
+        .score{
+            float: right;
+            .badge{
+                background: rgb(24, 135, 197);
+            }
+        }
+    }
+
+    .controls{
+        margin-top: 10px;
+        ul.menu{
+            min-height: 200px;
+            font-family: 'Julius Sans One', 'sans-serif';
+            color:black;
+            background: rgba(36, 161, 172, 0.74);
+            padding: 0;
+            list-style: none;
+            li {
+                padding:10px;
+                font-size: 18px;
+                text-align: center;
+                width: 100%;
+                text-transform: uppercase;
+                position: relative;
+            }
+            li a{
+                text-decoration: none;
+                color: white;
+                font-weight: bold;
+                transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            li a:after{
+                position: absolute;
+                top: 50%;
+                right: 0px;
+                left: auto;
+                -webkit-transform: translate(0, -50%);
+                -moz-transform: translate(0, -50%);
+                -ms-transform: translate(0, -50%);
+                -o-transform: translate(0, -50%);
+                transform: translate(0, -50%);
+                display: block;
+                content: "";
+                width: 0%;
+                height: 4px;
+                background: #ee1848;
+                -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                -moz-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            li:hover {
+                a{
+                     zoom: 150%
+                }
+                a:after{
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+}
+
 .gameover{
     h1{
         font-size: 30px;
@@ -160,5 +242,16 @@ canvas {
     }
 
 
+}
+
+@media (max-width: 500px) {
+    .home{
+        .intro-text{
+            h1{
+                font-size: 20px;
+            }
+        }
+       
+    }
 }
 @import "mobile";

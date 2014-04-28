@@ -1,30 +1,35 @@
-<div class="container">
+<div class="container home">
   <header>
       <div class="row">
-          <div class="col-xs-4 " id="Logo"><img src="images/cat.gif"/></div>
-          <div class="col-xs-8 " id="Logo">
+          <div class="col-xs-12 text-center " id="logo">
+            <img src="images/cat.gif"/>
+          </div>
+          <div class="col-xs-12 intro-text">
             <h1>The adventures of nyan cat</h1>
             <p>Now presenting: <b>A cat in the space</b></p>
-          </div>
-      </div>
-      <div class="row score">
-        <div class="col-xs-8 col-xs-offset-4">
-          <p class="">Your best score is <span class="badge">{{bestScore}}</span></p>
-        </div>
+            <p class="score">Your best score is <span class="badge">{{bestScore}}</span></p>
+         </div>
       </div>
   </header>
-  <div class="inicio">
-    <div class="row" >
-      <div class="col-xs-4 col-md-4">
-        <button class="btn btn-success" ng-click="play()">Play</button>
-      </div>
-      <div class="col-xs-4 col-md-4">
-        <button class="btn btn-info"  ng-click="setSound()">Sound: <span><b>{{getSound()}}</b></span></button>
-      </div>
-      <div class="col-xs-4 col-md-4">
-        <button class="btn btn-success" ng-click="badges()">Badges :D</button>
-      </div>
+  <div class="controls row">
+    <div class="col-xs-12">
+      <ul class="menu">
+        <li ng-click="play()">
+          <a href="">Play</a>
+        </li>
+        <li ng-click="setSound()">
+          <a href="">Sound: <span><b>{{getSound()}}</b></a>
+        </li>
+        <li ng-click="highScores()">
+          <a href="">High Scores</a></li>
+        </li>
+        <li ng-click="badges()">
+          <a href="">Badges :D</a>
+        </li>
+      </ul>
     </div>
+    
+
     
   </div>
 
