@@ -19,8 +19,8 @@ box-sizing: border-box;
 }
 
 body {
-    background: white;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: url('../images/bg/starts.jpeg');
+    background-size:cover;
 }
 
 .container{
@@ -30,7 +30,8 @@ a {
     color: white;
 }
 .btn-nyan{
-    margin: 10px;
+    margin-left:5px; 
+    margin-right:5px;
     background: rgba(36, 161, 172, 0.74);
     font-size: 15px;
     .glyphicon{
@@ -47,21 +48,17 @@ img {
 }
 
 .page{
-    background: url('../images/bg/starts.jpeg');
-    background-size:cover;
-    border: 2px solid rgba(128, 50, 50, 0.86);
     color: white;
     font-family: 'Comfortaa', 'cursive';
-    
+}
 
-    .intro-text{
-        font-size: 15px;
-        h1{
-            font-family: 'Comfortaa', 'cursive';
-            font-size: 30px;
-        }
-        background: rgba(128, 50, 50, 0.86);
+.intro-text{
+    font-size: 15px;
+    h1{
+        font-family: 'Comfortaa', 'cursive';
+        font-size: 30px;
     }
+    background: rgba(128, 50, 50, 0.86);
 }
 
 .home{
@@ -108,16 +105,12 @@ img {
                 top: 50%;
                 right: 0px;
                 left: auto;
-                -webkit-transform: translate(0, -50%);
-                -moz-transform: translate(0, -50%);
-                -ms-transform: translate(0, -50%);
-                -o-transform: translate(0, -50%);
-                transform: translate(0, -50%);
+               
                 display: block;
                 content: "";
                 width: 0%;
                 height: 4px;
-                background: #ee1848;
+                background: #0FE7AB;
                 -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 -moz-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -140,7 +133,8 @@ img {
     }
     .badge{
         border-radius: 100%;
-        margin: 25px;
+        margin-bottom: 20px;
+        margin-top: 20px;
         width: 90px;
         height:90px;
         position: relative;
@@ -254,10 +248,10 @@ img {
         width: 100%;
         top: 0;
         left: 15px;
+        color: white;
         padding-top: 5px;
         background: url("../images/hud/images.jpg");
-        padding-left: 45px;
-        height: 39px;
+        height: 44px;
         background-repeat: repeat-x;
         z-index: 2222;
         overflow: visible;
@@ -272,9 +266,8 @@ img {
         }
         .btn {
             font-weight: bold;
-            text-shadow: 3px 3px 8px rgb(0, 0, 0);
             font-size: 15px;
-            border: 2px solid white;
+            border: 1px solid rgba(252, 252, 252, 0.58);
         }
     }
     
@@ -285,6 +278,7 @@ img {
         background: url("../images/hud/images.jpg");
         position: absolute;
         bottom: 20px;
+        box-shadow:2px 2px 8px rgba(22, 22, 22, 0.58);
         z-index: 2000;
         border-radius: 100%;
         color:white;
@@ -341,34 +335,18 @@ img {
     }
 }
 
-
-
-@media (max-width: 600px) {
-    #message{
-        height: 50px;
-        width: 56%;
-        img{
-            margin-left: 5px;
-        }
-        .messageBody{
-            padding-left: 5px;
-            font-size: 10px;
-            padding-top: 5px;
-            width: 56%;
-        }
-    }
-
-
-}
-
 @media (max-width: 500px) {
-    .home{
-        .intro-text{
-            h1{
-                font-size: 20px;
+    .game{
+        .top_menu{
+            .btn{
+                font-size: 10px;
             }
         }
-       
+    }
+    .intro-text{
+        h1{
+            font-size: 20px;
+        }
     }
 
     .badges{
@@ -376,7 +354,6 @@ img {
             font-size: 15px;
         }
         .badge{
-            margin: 15px;
             width: 70px;
             height:70px;
         }
@@ -386,22 +363,86 @@ img {
             height: 65px;
         }
     }
+
+    .game{
+        #message{
+            min-height: 25px;
+            height: auto;
+            width: 56%;
+            .picture{
+                width: 50px;
+                img{
+                    margin-left: 5px;
+                    height: 30px;
+                    width: 30px;
+                }
+            }
+            
+            .messageBody{
+                padding-left: 5px;
+                font-size: 10px;
+                padding-top: 5px;
+                width: 100%;
+                min-height: 25px;
+            }
+        }
+    }
+    
 }
 
-@media (min-width: 600px) {
+@media (max-width: 400px) {
+    
+    .intro-text{
+        h1{
+            font-size: 15px;
+        }
+    }
+
+    .badges{
+        .description{
+            font-size: 10px;
+            height: 60px;
+        }
+        .badge{
+            width: 50px;
+            height:50px;
+        }
+        
+        .cover{
+            width: 45px;
+            height: 45px;
+        }
+    }
+}
+/*Tablet*/
+@media (min-width: 600px) and (max-width: 800px){
+
+    .home{
+        .intro-text{
+            padding: 30px;
+        }
+        #logo{
+            margin-bottom: 20px;
+        }
+
+        .controls{
+           margin-top: 25px;
+        }   
+    }
+}
+@media (min-width: 800px) {
 
     .home{
         .intro-text{
             padding: 60px;
         }
         #logo{
-            margin-bottom: 5%;
+            margin-bottom: 20px;
         }
 
         .controls{
            margin-top: 50px;
-        }
-       
+        }   
     }
 }
 @import "mobile";

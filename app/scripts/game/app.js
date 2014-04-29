@@ -126,6 +126,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       'images/orbes/bonus3.png',
       'images/bonusWeapon.png',
       'images/creeper.png',
+      'images/weapons/twitter.png',
       'images/grave.png'
   ]);
 
@@ -343,10 +344,10 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     if(!isGameOver() &&
       Date.now() - TIMERS.lastFire > 100) {
 
-      var x = player.pos[0] + player.sprite.size[0] / 2;
-      var y = player.pos[1] + player.sprite.size[1] / 2;
+      var x = player.pos[0] + player.sprite.getSize()[0] / 2;
+      var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity('bullet', [x,y], { damage: player.damage }));
+      bullets.push(EL.getEntity('twitterbullet', [x,y], { damage: player.damage }));
       bullets.push(EL.getEntity('topBullet', [x,y], { damage: player.damage/2 }));
       bullets.push(EL.getEntity('bottomBullet', [x,y], { damage: player.damage/2 }));
     
@@ -578,13 +579,13 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function isOutsideScreen(pos, sprite){
-    return(pos[1] + sprite.size[1] < 0 || pos[1] - sprite.size[1] > canvas.height ||
-       pos[0] + sprite.size[0] >= canvas.width || pos[0] + sprite.size[0] < 0);
+    return(pos[1] + sprite.getSize()[1] < 0 || pos[1] - sprite.getSize()[1] > canvas.height ||
+       pos[0] + sprite.getSize()[0] >= canvas.width || pos[0] + sprite.getSize()[0] < 0);
   }
 
   function isOnTheScreenEdges(pos,sprite){
-    return(pos[1] <= 0 || pos[1] + sprite.size[1] >= canvas.height ||
-       pos[0] + sprite.size[0] >= canvas.width);
+    return(pos[1] <= 0 || pos[1] + sprite.getSize()[1] >= canvas.height ||
+       pos[0] + sprite.getSize()[0] >= canvas.width);
   }
 
   function removeIfOutsideScreen(entity){
@@ -593,7 +594,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
   function removeIfOutsideScreenleft(entity){
-    if(! (entity.pos[0] + entity.sprite.size[0] < 0) ) {
+    if(! (entity.pos[0] + entity.sprite.getSize()[0] < 0) ) {
       return entity;
     }
   }
@@ -709,16 +710,16 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       margin = 0;
     }
     return function(entity){
-      if(entity.pos[0] + entity.sprite.size[0] + margin >= canvas.width) {
+      if(entity.pos[0] + entity.sprite.getSize()[0] + margin >= canvas.width) {
         entity.pos = moveLeft(entity.pos, entity.speed, dt);
       }
       if(entity.pos[1] > canvas.height){
         entity.pos = moveUp(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[0] + entity.sprite.size[0] < 0){
+      if(entity.pos[0] + entity.sprite.getSize()[0] < 0){
         entity.pos = moveRight(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[1]  + entity.sprite.size[1] < 0){
+      if(entity.pos[1]  + entity.sprite.getSize()[1] < 0){
         entity.pos = moveDown(entity.pos, entity.speed, dt);
       }
       return entity;
@@ -901,7 +902,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
 
   function entitiesCollide(a,b){
-    return boxCollides(a.pos, a.sprite.size, b.pos, b.sprite.size);
+    return boxCollides(a.pos, a.sprite.getSize(), b.pos, b.sprite.getSize());
   }
 
   
@@ -909,7 +910,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
         entity.hasBonus = true;
-        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.size[0] , entity.pos[1]])];
+        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.getSize()[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
         showMessages([MESSAGES.wow], ['dog']);
       }
@@ -1028,15 +1029,15 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     if(player.pos[0] < 0) {
       player.pos[0] = 0;
     }
-    else if(player.pos[0] > canvas.width - player.sprite.size[0]) {
-      player.pos[0] = canvas.width - player.sprite.size[0];
+    else if(player.pos[0] > canvas.width - player.sprite.getSize()[0]) {
+      player.pos[0] = canvas.width - player.sprite.getSize()[0];
     }
 
     if(player.pos[1] < 0) {
       player.pos[1] = 0;
     }
-    else if(player.pos[1] > canvas.height - player.sprite.size[1]) {
-      player.pos[1] = canvas.height - player.sprite.size[1];
+    else if(player.pos[1] > canvas.height - player.sprite.getSize()[1]) {
+      player.pos[1] = canvas.height - player.sprite.getSize()[1];
     }
   }
 

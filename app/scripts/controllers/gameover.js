@@ -1,10 +1,12 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
     return BombTouchApp.controller('GameOverCtrl',
-      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv',
-      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv) {
+      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv','$location',
+      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv, $location) {
         $scope.bestScore = localStorageSrv.getBestScore();
-
+        $scope.goHome  = function(){
+          $location.path("/");
+        }
         $scope.isMobile = window.isMobile ? true : false;
 
         $scope.playAgain = function(){

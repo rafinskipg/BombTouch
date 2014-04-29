@@ -1,8 +1,8 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
     return BombTouchApp.controller('MainCtrl',
-      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv',
-      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv) {
+      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location',
+      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv, $location) {
         $scope.puntos = 0;
         $scope.paused = false;
         $scope.megaShootActive = false;
@@ -85,7 +85,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         //Observer of the game
         nyanGame.suscribeGameOver(function(){
             localStorageSrv.saveBestScore($scope.puntos);
-            window.location.href = '/#/gameover';
+            $location.path('/gameover');
         });
 
         nyanGame.suscribePoints(function(points){

@@ -1,14 +1,13 @@
 <div class="container-full game">
   <div class="" >
       <div id="top_menu" class="top_menu row">
-        <div class="col-xs-2">
-          <div id="pause" class="btn btn-info" ng-click="pause()" ng-show="paused == false"> Pause </div>
-          <div id="resume" ng-click="resume()"  class="btn btn-info"  ng-show="paused"> Resume </div>
-        </div>
-        <div class="col-xs-2">
-          <div id="score"  class="btn btn-warning" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
-        </div>
         <div class="col-xs-6">
+          <div id="pause" class="btn btn-nyan" ng-click="pause()" ng-show="paused == false"> Pause </div>
+          <div id="resume" ng-click="resume()"  class="btn btn-nyan"  ng-show="paused"> Resume </div>
+        
+          <div id="score"  class="btn btn-nyan" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
+        </div>
+        <div class="col-xs-4">
           <div class="progress progress-striped active">
             <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
               <span class="">{{power}}% of CAT POWER</span>
