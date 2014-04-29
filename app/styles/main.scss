@@ -204,6 +204,9 @@ canvas {
 }
 
 .badges{
+    .badge-container{
+        
+    }
     .badge{
         border-radius: 100%;
         margin: 15px;
@@ -217,6 +220,56 @@ canvas {
         border: 3px solid rgb(72, 197, 24);
         background: rgba(182, 0, 0, 0.5);
     }
+
+    .social{
+        background-image: url('../images/badges/social.png');
+    }
+    .complete{
+        background-image: url('../images/badges/complete.png');
+    }
+    .badass{
+        background-image: url('../images/badges/badass.png');
+    }
+    .level1{
+        background-image: url('../images/badges/level1.png');
+    }
+    .level2{
+        background-image: url('../images/badges/level2.png');
+    }
+    .level3{
+        background-image: url('../images/badges/level3.png');
+    }
+    .level4{
+        background-image: url('../images/badges/level4.png');
+    }
+    .level5{
+        background-image: url('../images/badges/level5.png');
+    }
+    .level6{
+        background-image: url('../images/badges/level6.png');
+    }
+    .dogs25 {
+        background-image: url('../images/badges/25dogs.png');
+    }
+
+    .dogs50{
+        background-image: url('../images/badges/50dogs.png');
+    }
+    .dogs100{
+        background-image: url('../images/badges/100dogs.png');
+    }
+    .dogs500{
+        background-image: url('../images/badges/500dogs.png');
+    }
+
+    .chaos{
+        background-image: url('../images/badges/chaos.png');
+    }
+    .badge{
+        background-size: cover;
+    }
+
+
 }
 
 .gameover{
@@ -272,6 +325,23 @@ canvas {
             h1{
                 font-size: 20px;
             }
+        }
+       
+    }
+}
+
+@media (min-width: 600px) {
+
+    .home{
+        .intro-text{
+            padding: 60px;
+        }
+        #logo{
+            margin-bottom: 100px;
+        }
+
+        .controls{
+           margin-top: 50px;
         }
        
     }
