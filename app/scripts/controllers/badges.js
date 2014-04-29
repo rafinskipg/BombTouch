@@ -19,6 +19,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           {
             name: 'social',
             alias: '',
+            completed: true,
             text: 'Share your best score'
           },
           {

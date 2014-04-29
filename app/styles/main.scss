@@ -3,6 +3,8 @@ $iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
 
 @import "sass-bootstrap/lib/bootstrap";
 
+
+
 /* Put your CSS here */
 html, body {
   margin: 0;
@@ -24,6 +26,17 @@ body {
 .container{
     height: 100%;
 }
+a {
+    color: white;
+}
+.btn-nyan{
+    margin: 10px;
+    background: rgba(36, 161, 172, 0.74);
+    font-size: 15px;
+}
+.glyphicon{
+    margin-right: 10px;
+}
 
 .inicio {
         margin: 50px auto 0 auto;
@@ -35,8 +48,6 @@ body {
 .juego{
     overflow: hidden;
 }
-
-
 
 img {
     max-width:  100%;
@@ -118,19 +129,13 @@ canvas {
     color: #aaffdd;
 }
 
-.home, .badges{
+.page{
     background: url('../images/bg/starts.jpeg');
     background-size:cover;
     border: 2px solid rgba(128, 50, 50, 0.86);
     color: white;
     font-family: 'Comfortaa', 'cursive';
     
-    #logo{
-        img{
-            max-height:200px;
-        }
-        margin-bottom: 10px;
-    }
 
     .intro-text{
         font-size: 15px;
@@ -139,12 +144,22 @@ canvas {
             font-size: 30px;
         }
         background: rgba(128, 50, 50, 0.86);
+    }
+}
 
-        .score{
-            float: right;
-            .badge{
-                background: rgb(24, 135, 197);
-            }
+.home{
+
+    #logo{
+        img{
+            max-height:200px;
+        }
+        margin-bottom: 10px;
+    }
+
+    .score{
+        float: right;
+        .badge{
+            background: rgb(24, 135, 197);
         }
     }
 
@@ -200,25 +215,50 @@ canvas {
             }
         }
     }
-
 }
 
 .badges{
     .badge-container{
-        
+
     }
     .badge{
         border-radius: 100%;
-        margin: 15px;
-        padding: 15px;
+        margin: 25px;
         width: 90px;
         height:90px;
+        position: relative;
         border: 3px solid rgb(182, 165, 165);
         background: rgba(104, 51, 51, 0.5);
+        box-shadow: 2px 3px 11px black;
     }
-    .badge.enabled{
+    .badge.completed{
         border: 3px solid rgb(72, 197, 24);
-        background: rgba(182, 0, 0, 0.5);
+        background-color: rgba(182, 0, 0, 0.5);
+        box-shadow: 2px 10px 11px black;
+    }
+
+    .cover{
+        display: block;
+        background: rgba(139, 132, 132, 0.86);
+        width: 85px;
+        height: 85px;
+        border-radius: 100%;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .completed .cover{
+        display: none;
+    }
+
+    .description{
+        background: rgba(36, 161, 172, 1);
+        font-size: 18px;
+        padding: 15px;
+        box-shadow: 5px 4px 5px rgba(0, 0, 0, 0.55);
+        height: 100px;
+        border-radius: 10px;
     }
 
     .social{
@@ -273,10 +313,7 @@ canvas {
 }
 
 .gameover{
-    h1{
-        font-size: 30px;
-        text-align: center;
-    }
+    
 }
 
 #message{
@@ -327,6 +364,22 @@ canvas {
             }
         }
        
+    }
+
+    .badges{
+        .description{
+            font-size: 15px;
+        }
+        .badge{
+            margin: 15px;
+            width: 70px;
+            height:70px;
+        }
+        
+        .cover{
+            width: 65px;
+            height: 65px;
+        }
     }
 }
 
