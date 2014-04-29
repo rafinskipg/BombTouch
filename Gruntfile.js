@@ -208,11 +208,14 @@ module.exports = function (grunt) {
       }
     },
     imagemin: {
+      options:{
+        //cache: false
+      },
       dist: {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/images',
-          src: '{,*/}*.{png,jpg,jpeg}',
+          src: '{,**/}*.{png,jpg,jpeg}',
           dest: '<%= yeoman.dist %>/images'
         }]
       }
@@ -283,10 +286,10 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             'bower_components/**/*',
-            'images/{,*/}*.{gif,webp,bmp}',
+            'images/{,**/}**.{gif,webp,bmp}',
             'styles/fonts/*',
             'fonts/*',
-            'sounds/*',
+            'sounds/**/**.**',
             'scripts/**/**.js',
             '!scripts/main.js'
           ]
@@ -372,6 +375,11 @@ module.exports = function (grunt) {
       'watch'
     ]);
   });
+
+  grunt.registerTask('serverdist', [
+    'connect:dist:keepalive',
+    'open'
+  ]);
 
   grunt.registerTask('test', [
     'clean:server',

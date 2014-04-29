@@ -4,6 +4,13 @@ Nyancat is a super sayan!
 
 [DEMO](http://rvpg.me/experiments/BombTouch/)
 
+TODO :
+- Adjust life / damage of enemies.
+- Add a animation when you are hit
+- Make boss bullets go faster
+- Add sounds when you are hit
+- add sounds when the boss enters
+- Add lifes like bonuses
 
 
 ## Contribute!!

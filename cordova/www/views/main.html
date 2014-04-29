@@ -64,7 +64,7 @@
             </a>
            
           </div>
-          <button id="play-again" class="btn btn-success" ng-click="start()">Play Again</button>
+          <button id="play-again" class="btn btn-success" ng-click="restart()">Play Again</button>
         </div>
       </div>
 
@@ -72,6 +72,13 @@
         <div class="thumbnail">
           <span class="glyphicon glyphicon-info-sign"></span>
           Prepare your anus for level {{level}}!
+        </div>
+      </div>
+
+      <div id="message" ng-show="message">
+        <div class="picture"><img src="images/messages/{{messageSender}}"></div>
+        <div class="messageBody">
+          {{message}}
         </div>
       </div>
       <button id="megashoot" class="btn btn-success" ng-disabled="!megaShootActive" ng-click="megaShoot()"><span class="glyphicon glyphicon-random"></span></button>
