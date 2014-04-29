@@ -33,96 +33,13 @@ a {
     margin: 10px;
     background: rgba(36, 161, 172, 0.74);
     font-size: 15px;
-}
-.glyphicon{
-    margin-right: 10px;
-}
-
-.inicio {
-        margin: 50px auto 0 auto;
-        width: 500px;
-    .score{
-        margin-top:10px;
+    .glyphicon{
+        margin-right: 10px;
     }
-}
-.juego{
-    overflow: hidden;
 }
 
 img {
     max-width:  100%;
-}
-
-
-canvas {
-    margin: auto;
-    position: absolute;
-    top: 43px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-.wrapper {
-    width: 512px;
-    margin: 0 auto;
-    margin-top: 2em;
-}
-
-#instructions {
-    float: left;
-    font-family: sans-serif;
-    color: #757575;
-}
-
-.top_menu{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2999;
-    color: black;
-    font-size: 1.5em;
-    background: white;
-    padding: 5px;
-    margin-left: 0px;
-    .progress{
-        margin-left: 30px;
-        margin-top: 5px;
-        margin-bottom: 0px;
-    }
-}
-
-
-#pause, #resume{
-    float: left;
-}
-#megashoot, #shoot{
-    position: absolute;
-    bottom: 20px;
-    z-index: 2000;
-    border-radius: 100%;
-    background: red;
-    color:white;
-    font-size: 19px;
-    &[disabled]{
-        background: rgba(131, 131, 138, 0.56)
-    }
-}
-#megashoot{
-    right: 80px;
-}
-#shoot{
-    right: 20px;
-}
-
-#level{
-    position: absolute;
-    top: 44%;
-    left: 39%;
-    z-index: 2000;
-    padding: 30px;
-    font-size: 19px;
 }
 
 .key {
@@ -313,30 +230,118 @@ canvas {
 }
 
 .gameover{
-    
+    .intro-text{
+        padding-bottom: 20px;
+    }
+}
+.container-full {
+  margin: 0 auto;
+  width: 100%;
 }
 
-#message{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 50px;
-    width: 50%;
-    background: white;
-    z-index: 2;
-    img{
-        height: 50px;
-        width: 50px;
-        float: left;
-        margin-left: 20px;
+.game{
+    overflow: hidden;
+     
+    canvas {
+        margin: auto;
+        position: absolute;
+        top: 43px;
+        bottom: 0;
+        left: 0;
+        right: 0;
     }
-    .messageBody{
+    .top_menu{
+        width: 100%;
+        top: 0;
+        left: 15px;
+        padding-top: 5px;
+        background: url("../images/hud/images.jpg");
+        padding-left: 45px;
+        height: 39px;
+        background-repeat: repeat-x;
+        z-index: 2222;
+        overflow: visible;
+        position: absolute;
+        .progress{
+            height: 30px;
+        }
+        .progress.max{
+            .progress-bar{
+                background-color: #E62929;
+            }
+        }
+        .btn {
+            font-weight: bold;
+            text-shadow: 3px 3px 8px rgb(0, 0, 0);
+            font-size: 15px;
+            border: 2px solid white;
+        }
+    }
+    
+    #pause, #resume{
         float: left;
-        padding-left: 30px;
-        font-size: 15px;
-        padding-top: 15px;
+    }
+    #megashoot, #shoot{
+        background: url("../images/hud/images.jpg");
+        position: absolute;
+        bottom: 20px;
+        z-index: 2000;
+        border-radius: 100%;
+        color:white;
+        font-size: 19px;
+        &[disabled]{
+            background: rgba(131, 131, 138, 0.56)
+        }
+    }
+    #megashoot{
+        right: 80px;
+    }
+    #shoot{
+        right: 20px;
+    }
+
+    #level{
+        position: absolute;
+        top: 44%;
+        left: 39%;
+        z-index: 2000;
+        padding: 30px;
+        font-size: 19px;
+    }
+
+    #message{
+        position: absolute;
+        bottom: 5px;
+        left: 0;
+        height: 50px;
+        background: url('../images/hud/circuits.png');
+        width: 50%;
+        /* background: white; */
+        z-index: 2;
+        border: 1px solid white;
+        color: white;
+        .picture{
+            width: 85px;
+            float: left;
+            img{
+                height: 50px;
+                width: 50px;
+                margin-left: 20px;
+            }
+        }
+        
+        .messageBody{
+            padding-left: 100px;
+            padding-top: 15px;
+            background: rgba(253, 95, 95, 0.18);
+            font-weight: bold;
+            /* letter-spacing: 1px; */
+            text-transform: uppercase;
+        }
     }
 }
+
+
 
 @media (max-width: 600px) {
     #message{
@@ -390,7 +395,7 @@ canvas {
             padding: 60px;
         }
         #logo{
-            margin-bottom: 100px;
+            margin-bottom: 5%;
         }
 
         .controls{

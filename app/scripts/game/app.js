@@ -123,7 +123,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       'images/newsprites.png',
       'images/boom.png',
       'images/background.png',
-      'images/orbes/bonus.png',
+      'images/orbes/bonus3.png',
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/grave.png'

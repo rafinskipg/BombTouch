@@ -50,7 +50,7 @@ define( [ ], function(){
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
   var graveSpriteSheet = ['images/grave.png', [0,0], [30,30], 4 , [0,1,2,0,1,2], null, true]
 
-  var bonusSpriteSchema = ['images/orbes/bonus.png', [0,0], [40,40], 1, [0]];
+  var bonusSpriteSchema = ['images/orbes/bonus3.png', [0,0], [45,45], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Thanks dr.axel
