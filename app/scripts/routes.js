@@ -1,4 +1,4 @@
-define(['angular', 'app'], function(angular, BombTouchApp){
+define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers/main'], function(angular, BombTouchApp){
     
   BombTouchApp.config(['$routeProvider', function($routeProvider) {
     

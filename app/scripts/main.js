@@ -2,27 +2,20 @@ requirejs.config({
     baseUrl: 'scripts',
     paths: {
         angular : '../bower_components/angular/angular',
-        jquery : '../bower_components/jquery/jquery',
         maingame : 'game/app',
         input : 'game/input',
         resources : 'game/resources',
         sprite : 'game/sprite',
-        jqmobile : 'game/jquery.mobile.custom.min',
         ngresource : '../bower_components/angular-resource/angular-resource',
         ngcookies : '../bower_components/angular-cookies/angular-cookies',
         ngsanitize : '../bower_components/angular-sanitize/angular-sanitize',
         ngroute : '../bower_components/angular-route/angular-route',
         howler : 'howler.min',
         fastclick: '../bower_components/fastclick-amd/fastclick',
+        hammerjs: '../bower_components/hammerjs/hammer',
         hu: '../bower_components/hu/hu'
     },
     shim: {
-        jquery: {
-            exports: 'jquery'
-        },
-        jqmobile: {
-            deps: ['jquery']
-        },
 		angular: {
 			exports: 'angular'
 		},
@@ -40,7 +33,8 @@ requirejs.config({
             deps: ['app' ]
         },
         maingame : {
-            exports: 'GAME'
+            exports: 'GAME',
+            deps:['hammerjs']
         }
     },
 	priority: [
@@ -50,7 +44,6 @@ requirejs.config({
 
 require( [
 	'angular',
-	'jquery',
 	'app',
     'controllers/home',
     'controllers/main',
@@ -62,23 +55,23 @@ require( [
     'routes',
     'howler',
     'fastclick'
-], function(angular, $, app) {
+], function(angular, app) {
 	'use strict';
-    $(document).ready(function(){
 
-        var $html = angular.element(document.getElementsByTagName('html')[0]);
+    document.addEventListener( "DOMContentLoaded", function(){
+        document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
+            
+    }, false );
+    var $html = angular.element(document.getElementsByTagName('html')[0]);
 
-        angular.element().ready(function() {
-            $html.addClass('ng-app');
-            angular.bootstrap($html, [app['name']]);
-            angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
-              return function (exception, cause) {
-                exception.message += ' (caused by "' + cause + '")';
-                throw exception;
-              };
-            });
+    angular.element().ready(function() {
+        $html.addClass('ng-app');
+        angular.bootstrap($html, [app['name']]);
+        angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
+          return function (exception, cause) {
+            exception.message += ' (caused by "' + cause + '")';
+            throw exception;
+          };
         });
-        
     });
-	
 });

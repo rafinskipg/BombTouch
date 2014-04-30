@@ -1,8 +1,8 @@
-define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
+define(['angular', 'app'], function(angular, BombTouchApp ){
     'use strict';
     return BombTouchApp.controller('HomeCtrl',
-      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv', 'settingsSrv',
-      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv, settingsSrv) {
+      ['$scope', 'localStorageSrv', 'settingsSrv', '$location',
+      function ($scope, localStorageSrv, settingsSrv, $location) {
 
         $scope.bestScore = localStorageSrv.getBestScore();
                 
@@ -14,11 +14,11 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.play = function(){
-          window.location.href = '/#/main';
+          $location.path('/main');
         }
 
         $scope.badges = function(){
-          window.location.href = '/#/badges';
+           $location.path('/badges');
         }
 
       }]);

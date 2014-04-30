@@ -1,8 +1,8 @@
-define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
+define(['angular', 'app'], function(angular, BombTouchApp ){
     'use strict';
     return BombTouchApp.controller('BadgesCtrl',
-      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv','$location',
-      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv, $location) {
+      ['$scope','$routeParams', 'localStorageSrv','$location',
+      function ($scope,$routeParams, localStorageSrv, $location) {
         $scope.completedBadges = localStorageSrv.getCompletedBadges();
         $scope.goHome  = function(){
           $location.path("/");

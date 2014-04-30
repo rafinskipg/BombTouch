@@ -1,4 +1,4 @@
-define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'], function($,hu, EL){
+define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   /****************************
   ****************************
     Cross browser animation frame
@@ -208,11 +208,19 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 43
-
-    $(canvas).on('vclick',function(e){
+    //TODO add gestoure detection
+    /*$(canvas).on('vclick',function(e){
       var x = e.pageX - $(canvas).offset().left;
       var y = e.pageY - $(canvas).offset().top;
       bombs.push(EL.getEntity('bomb', [x, y]));                             
+    });*/
+    var options = {
+      dragLockToAxis: true,
+      dragBlockHorizontal: true
+    };
+    var hammertime = new Hammer(canvas, options);
+    hammertime.on("dragleft dragright swipeleft swiperight", function(ev){ 
+      console.log(ev);
     });
   };
 
