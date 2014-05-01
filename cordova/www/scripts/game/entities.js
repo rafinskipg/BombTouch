@@ -32,6 +32,9 @@ define( [ ], function(){
     true];
 
   var normalBulletSpriteSchema = ['images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]];
+  var nyanBulletSpriteSchema = ['images/newsprites.png', [555, 5], [30, 30], 15, [0,1,2, 3]];
+  var bananaBulletSpriteSchema = ['images/newsprites.png', [670, 70], [40, 70], 15, [0,1,2, 3,4,5,6]];
+  var twitterBulletSpriteSchema = ['images/weapons/twitter.png', [0, 0], [150, 150], 4, [0,1,2, 3]];
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
@@ -50,7 +53,7 @@ define( [ ], function(){
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
   var graveSpriteSheet = ['images/grave.png', [0,0], [30,30], 4 , [0,1,2,0,1,2], null, true]
 
-  var bonusSpriteSchema = ['images/orbes/bonus.png', [0,0], [40,40], 1, [0]];
+  var bonusSpriteSchema = ['images/orbes/bonus3.png', [0,0], [45,45], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Thanks dr.axel
@@ -69,6 +72,7 @@ define( [ ], function(){
   function Entity(pos, spriteSchema){
     this.pos = pos;
     this.sprite = Sprite.construct(spriteSchema);
+    return this;
   }
 
   function Bombarea(pos){
@@ -102,6 +106,30 @@ define( [ ], function(){
   } 
   function BlueBullet(pos, opts){
     var entity = new Entity(pos, blueBulletSpriteSchema);
+    entity.dir = 'right';
+    entity.damage = opts.damage || 50;
+    entity.speed = opts.speed || 500;
+    return entity;
+  }
+
+  function NyanBullet(pos, opts){
+    var entity = new Entity(pos, nyanBulletSpriteSchema);
+    entity.dir = 'right';
+    entity.damage = opts.damage || 50;
+    entity.speed = opts.speed || 500;
+    return entity;
+  }  
+  function BananaBullet(pos, opts){
+    var entity = new Entity(pos, bananaBulletSpriteSchema);
+    entity.dir = 'right';
+    entity.damage = opts.damage || 50;
+    entity.speed = opts.speed || 500;
+    return entity;
+  }  
+
+  function TwitterBullet(pos, opts){
+    var entity = new Entity(pos, twitterBulletSpriteSchema);
+    entity.sprite.resize(30,30);
     entity.dir = 'right';
     entity.damage = opts.damage || 50;
     entity.speed = opts.speed || 500;
@@ -172,6 +200,33 @@ define( [ ], function(){
     return dirs;
   }
 
+  function getFixedDirs(pattern, numberOfDirs){
+    var possibleDirs = [
+      [
+        'downleft', 
+        'up',
+        'downleft',
+        'upleft',
+        'downright',
+        'upright',
+        'down' ],
+      [ 
+      'upleft', 
+      'down', 
+      'up', 
+      'down',
+      'up',
+      'left',
+      'down',
+      'up']
+    ];
+    var dirs = [];
+    for(var i = 0; i < numberOfDirs; i++){
+      dirs.push(possibleDirs[pattern].pop());
+    }
+    return dirs;
+  }
+
   function getEntity(name, pos, opts){
     if(!opts){
       opts = {};
@@ -191,6 +246,15 @@ define( [ ], function(){
       break;
       case 'bullet':
         return new Bullet(pos, opts);
+      break;
+      case 'nyanbullet':
+        return new NyanBullet(pos, opts);
+      break;     
+      case 'bananabullet':
+        return new BananaBullet(pos, opts);
+      break; 
+      case 'twitterbullet':
+        return new TwitterBullet(pos, opts);
       break;
       case 'bulletBlue':
         return new BlueBullet(pos, opts);
@@ -220,7 +284,7 @@ define( [ ], function(){
       case 'bonus':
         opts = {
           numberOfBonus : Math.ceil(Math.random(5) * 10),
-          dirs: getRandomDirs(6),
+          dirs: getFixedDirs(1,6),
           speed: 200
         }
         return new Bonus(pos, opts);

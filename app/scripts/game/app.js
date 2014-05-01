@@ -210,7 +210,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 43;
   };
-
+  var touchInputs;
   function addEventListeners(){
     canvas = document.getElementById("canvas");
     var options = {
@@ -219,38 +219,26 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     };
     var hammertime = new Hammer(canvas, options);
     hammertime.on("drag swipe", function(ev){ 
-      console.log(ev);
-
+      ev.gesture.preventDefault();
+      console.log(ev.gesture); 
+      var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
+      var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
+        touchInputs = {
+          vel: {
+            x : signX * ev.gesture.velocityX,
+            y : signY * ev.gesture.velocityY
+          }
+        }
       shoot();
-      switch(ev.gesture.direction){
-        case 'right':
-          input.addKey('d');
-        break;
-          
-        case 'left': 
-          input.addKey('a');
-        break;
-
-        case 'up': 
-          input.addKey('w');
-        break;
-
-        case 'down': 
-          input.addKey('s');
-        break;
-      }
+      
     });
     hammertime.on('tap hold', function(ev){
+      ev.gesture.preventDefault();
       shoot();
     });
     hammertime.on('dragend swipeend', function(ev){
-        var removeKeys = function(){
-        input.removeKey('a');
-        input.removeKey('w');
-        input.removeKey('s');
-        input.removeKey('d');
-      }
-      removeKeys();
+      ev.gesture.preventDefault();
+      touchInputs = null;
     });
   }
 
@@ -535,7 +523,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   };
 
   function updateEntities(dt) {
-    player.sprite.update(dt);
+    updatePlayer(dt);
     updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
@@ -845,6 +833,13 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     }
   }
   /* Updates */
+  function updatePlayer(dt){
+    if(touchInputs){
+      player.pos[0] += touchInputs.vel.x * player.speed * dt;
+      player.pos[1] += touchInputs.vel.y * player.speed * dt;
+    }
+    player.sprite.update(dt);
+  }
   function movePlayer(dir,dt){
     player.dir =dir;
     player = moveToDirection(dt)(player);

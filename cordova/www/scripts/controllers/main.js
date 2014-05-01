@@ -1,30 +1,24 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
-    return BombTouchApp.controller('MainCtrl',['$scope', '$timeout', 'socialSrv', 'localStorageSrv',function ($scope, $timeout,socialSrv, localStorageSrv) {
-        $scope.home = true;
-        $scope.juego = false;
+    return BombTouchApp.controller('MainCtrl',
+      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location',
+      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv, $location) {
         $scope.puntos = 0;
-        $scope.gameOver = false;
         $scope.paused = false;
         $scope.megaShootActive = false;
         $scope.messageSender = 'dog.png';
-        var booleanSonido = true;
 
-        $scope.isMobile = window.isMobile ? true : false;
-        $scope.bestScore = localStorageSrv.getBestScore();
-        
-        $scope.getSonido = function(){
-            return booleanSonido == true ? 'ON' : 'OFF';
+        var nyanGame = new GAME();
+
+        $scope.getSound = function(){
+          return settingsSrv.getSound();
         }
-        $scope.setSonido = function(){ 
-            GAME.setSound(booleanSonido = (booleanSonido == true ? false : true));
-        }
+
         $scope.setSoundInGame = function(){ 
-            GAME.setSoundInGame(booleanSonido = (booleanSonido == true ? false : true));
-        }
-        
-        $scope.shoot = function(){
-            GAME.shoot();
+          var toSet = settingsSrv.getSound() ? false : true;
+          settingsSrv.setSound(toSet);
+
+          nyanGame.setSoundInGame(toSet);
         }
 
         $scope.start = function(){
@@ -32,82 +26,81 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           $scope.juego = true; 
           $scope.puntos = 0;
           $scope.gameOver = false;
-          GAME.start();
+          nyanGame.setSound(settingsSrv.getSound());
+          nyanGame.start();
         } 
-
-        $scope.restart = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.restart();
-        }
 
         $scope.pause = function(){
           $scope.paused = true;
-          GAME.pause();
+          nyanGame.pause();
         }
         $scope.resume = function(){
           $scope.paused = false;
-          GAME.resume();
-        }
-        //Message for levels
-        function showLevel(level){
-            $scope.level = level;
-            $scope.showLevel = true;
-            $timeout( function(){
-                $scope.showLevel = false;
-            },1500)
+          nyanGame.resume();
         }
 
-        function showMessage(message,sender){
-          $scope.message = message;
-          if(sender == 'creeper'){
-            $scope.messageSender = 'creeper.png';
+        //Message for levels
+        function showLevel(level){
+          $scope.level = level;
+          $scope.showLevel = true;
+          $timeout( function(){
+              $scope.showLevel = false;
+          },1500)
+        }
+
+        function showMessage(message,sender,timeout){
+          if(!timeout){
+            timeout = 2500;
           }
+          $scope.message = message;
+          $scope.messageSender = sender ?  sender + '.png' : 'dog.png';
           $scope.$apply();
 
           $timeout( function(){
             $scope.$apply();
-            console.log('mierda')
               $scope.message = undefined;
               $scope.messageSender = 'dog.png';
-          },2500)
+          },timeout)
           
         }
 
-        $scope.megaShoot = function(){
-            GAME.megaShoot();
+        function showMessages(messages, senders, timeoutMessage, timeoutBetweenMessages){
+          var message = messages.shift();
+          var sender = senders.shift();
+          showMessage(message, sender, timeoutMessage);
+          if(messages.length > 0){
+            setTimeout(function() {
+              showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages);
+            }, timeoutMessage+timeoutBetweenMessages);
+          }
         }
+
+        
         //Observer of the game
-        GAME.suscribeGameOver(function(){
-            $scope.gameOver = true;
-            $scope.$apply();
+        nyanGame.suscribeGameOver(function(){
             localStorageSrv.saveBestScore($scope.puntos);
+            $location.path('/gameover');
         });
 
-        GAME.suscribePoints(function(points){
+        nyanGame.suscribePoints(function(points){
             $scope.puntos = points;
             $scope.$apply();
         });
 
-        GAME.suscribeMessages(function(message,sender){
-          showMessage(message,sender);
+        nyanGame.suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
+          showMessages(messages,senders,timeoutMessage,timeoutBetweenMessages);
         });
 
-        GAME.suscribePower(function(power){
+        nyanGame.suscribePower(function(power){
             $scope.power = power;
-            if(power == 100){
-                $scope.megaShootActive = true;
-            }else{
-                $scope.megaShootActive = false;
-            }
             //TODO applyhere
         });
 
-        GAME.suscribeLevelUp(function(level){
-            showLevel(level);
+        nyanGame.suscribeLevelUp(function(level){
+          showLevel(level);
         });
+
+        $scope.start();
 
       }]);
 });
