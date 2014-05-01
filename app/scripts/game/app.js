@@ -166,9 +166,89 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       return;
     }
     initCanvas();
-    addEventListeners();
+    toMouseListeners();
+    
+
+    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
+    reset();
+    suscribeToEvents();
+    playSound(SOUNDS.ambient);
+    main();
+  };
+
+  function restart(){
+    reset();
+    playSound(SOUNDS.ambient);
+    main();
+  }
+
+  function initCanvas(){
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 43;
+  };
+
+  var touchInputs;
+  
+  function toMouseListeners(){
+    canvas = document.getElementById("canvas");
+    canvas.addEventListener('touchmove', function(ev){
+      shoot();
+      ev.preventDefault();
+    });
+    canvas.addEventListener('touchstart', function(ev){
+      var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
+      var y = ev.targetTouches[0].pageY - canvas.offsetTop;
+      
+      touchInputs = {
+          vel: {
+            x : x ,
+            y : y
+          }
+        }
+       
+    });
+
+    canvas.addEventListener('touchend', function(){
+      touchInputs = null;
+    })
+    
+  }
+  function dragListeners(){
+    canvas = document.getElementById("canvas");
+    var options = {
+      dragLockToAxis: true,
+      dragBlockHorizontal: true
+    };
+    var hammertime = new Hammer(canvas, options);
+    hammertime.on("drag swipe", function(ev){ 
+      ev.gesture.preventDefault();
+      console.log(ev.gesture); 
+      var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
+      var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
+        touchInputs = {
+          vel: {
+            x : signX * ev.gesture.velocityX * 2,
+            y : signY * ev.gesture.velocityY * 2
+          }
+        }
+      shoot();
+      
+    });
+    hammertime.on('tap hold', function(ev){
+      ev.gesture.preventDefault();
+      shoot();
+    });
+    hammertime.on('dragend swipeend', function(ev){
+      ev.gesture.preventDefault();
+      touchInputs = null;
+    });
+  }
+
+  function orientationListeners(){
     //TODO: this is being added many times
-    /*window.addEventListener('deviceorientation',function(e){
+    window.addEventListener('deviceorientation',function(e){
       if(e.gamma &&  e.gamma > 10){
         input.addKey('d');
         input.removeKey('a');
@@ -190,55 +270,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
         input.removeKey('w');
       }
       
-    });*/
-    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
-    reset();
-    suscribeToEvents();
-    playSound(SOUNDS.ambient);
-    main();
-  };
-
-  function restart(){
-    reset();
-    playSound(SOUNDS.ambient);
-    main();
-  }
-
-  function initCanvas(){
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43;
-  };
-  var touchInputs;
-  function addEventListeners(){
-    canvas = document.getElementById("canvas");
-    var options = {
-      dragLockToAxis: true,
-      dragBlockHorizontal: true
-    };
-    var hammertime = new Hammer(canvas, options);
-    hammertime.on("drag swipe", function(ev){ 
-      ev.gesture.preventDefault();
-      console.log(ev.gesture); 
-      var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
-      var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
-        touchInputs = {
-          vel: {
-            x : signX * ev.gesture.velocityX,
-            y : signY * ev.gesture.velocityY
-          }
-        }
-      shoot();
-      
-    });
-    hammertime.on('tap hold', function(ev){
-      ev.gesture.preventDefault();
-      shoot();
-    });
-    hammertime.on('dragend swipeend', function(ev){
-      ev.gesture.preventDefault();
-      touchInputs = null;
     });
   }
 
@@ -835,8 +866,18 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   /* Updates */
   function updatePlayer(dt){
     if(touchInputs){
-      player.pos[0] += touchInputs.vel.x * player.speed * dt;
-      player.pos[1] += touchInputs.vel.y * player.speed * dt;
+      var signX = touchInputs.vel.x  > player.pos[0] ? 1 :  -1;
+      var signY = touchInputs.vel.y > player.pos[1]  ? 1 :  -1;
+      var diffX = touchInputs.vel.x - signX * player.pos[0];
+      var diffY = touchInputs.vel.y - signY * player.pos[1];
+
+      if(diffX > 5){
+        player.pos[0] += signX * player.speed * dt;
+      }
+      if(diffY > 5){
+        player.pos[1] += signY * player.speed * dt;
+      }
+      
     }
     player.sprite.update(dt);
   }
