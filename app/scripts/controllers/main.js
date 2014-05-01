@@ -20,10 +20,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
 
           nyanGame.setSoundInGame(toSet);
         }
-        
-        $scope.shoot = function(){
-          nyanGame.shoot();
-        }
 
         $scope.start = function(){
           $scope.home = false;
@@ -79,9 +75,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           }
         }
 
-        $scope.megaShoot = function(){
-          nyanGame.megaShoot();
-        }
+        
         //Observer of the game
         nyanGame.suscribeGameOver(function(){
             localStorageSrv.saveBestScore($scope.puntos);
@@ -99,11 +93,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
 
         nyanGame.suscribePower(function(power){
             $scope.power = power;
-            if(power == 100){
-                $scope.megaShootActive = true;
-            }else{
-                $scope.megaShootActive = false;
-            }
             //TODO applyhere
         });
 

@@ -166,8 +166,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       return;
     }
     initCanvas();
+    addEventListeners();
     //TODO: this is being added many times
-    window.addEventListener('deviceorientation',function(e){
+    /*window.addEventListener('deviceorientation',function(e){
       if(e.gamma &&  e.gamma > 10){
         input.addKey('d');
         input.removeKey('a');
@@ -189,7 +190,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
         input.removeKey('w');
       }
       
-    });
+    });*/
     showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
     reset();
     suscribeToEvents();
@@ -207,22 +208,51 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43
-    //TODO add gestoure detection
-    /*$(canvas).on('vclick',function(e){
-      var x = e.pageX - $(canvas).offset().left;
-      var y = e.pageY - $(canvas).offset().top;
-      bombs.push(EL.getEntity('bomb', [x, y]));                             
-    });*/
+    canvas.height = window.innerHeight - 43;
+  };
+
+  function addEventListeners(){
+    canvas = document.getElementById("canvas");
     var options = {
       dragLockToAxis: true,
       dragBlockHorizontal: true
     };
     var hammertime = new Hammer(canvas, options);
-    hammertime.on("dragleft dragright swipeleft swiperight", function(ev){ 
+    hammertime.on("drag swipe", function(ev){ 
       console.log(ev);
+
+      shoot();
+      switch(ev.gesture.direction){
+        case 'right':
+          input.addKey('d');
+        break;
+          
+        case 'left': 
+          input.addKey('a');
+        break;
+
+        case 'up': 
+          input.addKey('w');
+        break;
+
+        case 'down': 
+          input.addKey('s');
+        break;
+      }
     });
-  };
+    hammertime.on('tap hold', function(ev){
+      shoot();
+    });
+    hammertime.on('dragend swipeend', function(ev){
+        var removeKeys = function(){
+        input.removeKey('a');
+        input.removeKey('w');
+        input.removeKey('s');
+        input.removeKey('d');
+      }
+      removeKeys();
+    });
+  }
 
   function reset() {
     STATE = {

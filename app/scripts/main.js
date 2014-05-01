@@ -12,7 +12,7 @@ requirejs.config({
         ngroute : '../bower_components/angular-route/angular-route',
         howler : 'howler.min',
         fastclick: '../bower_components/fastclick-amd/fastclick',
-        hammerjs: '../bower_components/hammerjs/hammer',
+       // 'lib/hammer': '../bower_components/hammerjs/hammer.min',
         hu: '../bower_components/hu/hu'
     },
     shim: {
@@ -33,8 +33,9 @@ requirejs.config({
             deps: ['app' ]
         },
         maingame : {
-            exports: 'GAME',
-            deps:['hammerjs']
+            exports: 'GAME'
+            //,
+           // deps:['lib/hammer']
         }
     },
 	priority: [
