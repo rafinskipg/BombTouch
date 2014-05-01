@@ -10,7 +10,7 @@ requirejs.config({
         ngcookies : '../bower_components/angular-cookies/angular-cookies',
         ngsanitize : '../bower_components/angular-sanitize/angular-sanitize',
         ngroute : '../bower_components/angular-route/angular-route',
-        howler : 'howler.min',
+        howler : '../bower_components/howler/howler.min',
         fastclick: '../bower_components/fastclick-amd/fastclick',
        // 'lib/hammer': '../bower_components/hammerjs/hammer.min',
         hu: '../bower_components/hu/hu'

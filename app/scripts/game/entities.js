@@ -40,7 +40,8 @@ define( [ ], function(){
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
 
   //Enemies
-  var level1SpriteSchema = ['images/newsprites.png', [4,186], [28,30], 6, [0, 1, 2,3,4]];
+  var level1SpriteSchema = ['images/Tacnayn.gif', [0,0], [250,300], 0, [0]];
+  //var level1SpriteSchema = ['images/newsprites.png', [4,186], [28,30], 6, [0, 1, 2,3,4]];
   var level2SpriteSchema = ['images/newsprites.png', [0,216], [35,50], 8, [0, 1, 2,3]];
   var level3SpriteSchema = ['images/newsprites.png', [175,185], [23,45], 7, [0,1,2,3,4,5,6]];
   var level4SpriteSchema = ['images/newsprites.png', [175,230], [33,40], 8, [0,1,2,3,4,3,2,1]];
@@ -53,7 +54,7 @@ define( [ ], function(){
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
   var graveSpriteSheet = ['images/grave.png', [0,0], [30,30], 4 , [0,1,2,0,1,2], null, true]
 
-  var bonusSpriteSchema = ['images/orbes/bonus3.png', [0,0], [45,45], 1, [0]];
+  var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Thanks dr.axel
@@ -171,6 +172,7 @@ define( [ ], function(){
 
   function Bonus(pos,opts){
     var entity = new Entity(pos,bonusSpriteSchema);
+    entity.sprite.resize(50,50);
     entity.speed = opts.speed || 200;
     entity.dirs = opts.dirs || ['right', 'left', 'upright'];
     entity.dir = opts.dir || 'downleft';
@@ -284,7 +286,7 @@ define( [ ], function(){
       case 'bonus':
         opts = {
           numberOfBonus : Math.ceil(Math.random(5) * 10),
-          dirs: getFixedDirs(1,6),
+          dirs: getFixedDirs(parseInt(Math.random()*2),6),
           speed: 200
         }
         return new Bonus(pos, opts);
@@ -309,6 +311,7 @@ define( [ ], function(){
     entity.points = 100;
     entity.totalLife = 100;
     entity.life = 100;
+    entity.sprite.resize(50,50)
     entity.width = 28;
     entity.height = 30;
     entity.damage = 100;

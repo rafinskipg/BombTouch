@@ -66,17 +66,17 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   var SOUNDS = {
     death: new Howl({
-      urls: ['sounds/cut_grunt2.wav']
+      urls: ['sounds/cut_grunt2.wav'],
+      volume: 0.1
     }),
     shoot: new Howl({
       urls: ['sounds/laser5.wav'],
-      volumme: 0.1
-    }),
-    explosion: new Howl({
-      urls: ['sounds/atari_boom2.wav']
+      volume: 0.1
     }),
     ambient: new Howl({
-      urls: ['sounds/April_Kisses.mp3'],
+     //urls: ['sounds/April_Kisses.mp3'],
+      urls: ['sounds/songs/intro.mp3'],
+      volume: 0.5,
       loop: true
     }),
     yeah: new Howl({
@@ -95,8 +95,22 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       urls: ['sounds/power.mp3']
     }),
     ouch:  new Howl({
-      urls: ['sounds/power.mp3']
-    })
+      urls: ['sounds/ohmy.wav']
+    }),
+    explosions: [
+      new Howl({
+          urls: ['sounds/explosions/atari_boom2.wav']
+      }),
+      new Howl({
+          urls: ['sounds/explosions/explodemini.wav'],
+          volume: 0.3
+      }),
+      new Howl({
+          urls: ['sounds/explosions/explode.wav'],
+          volume: 0.3
+      })
+
+    ]
   };
 
   MESSAGES = {
@@ -123,7 +137,8 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       'images/newsprites.png',
       'images/boom.png',
       'images/background.png',
-      'images/orbes/bonus3.png',
+      'images/orbes/coin.png',
+      'images/Tacnayn.gif',
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/weapons/twitter.png',
@@ -404,7 +419,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity('twitterbullet', [x,y], { damage: player.damage }));
+      bullets.push(EL.getEntity('nyanbullet', [x,y], { damage: player.damage }));
       bullets.push(EL.getEntity('topBullet', [x,y], { damage: player.damage/2 }));
       bullets.push(EL.getEntity('bottomBullet', [x,y], { damage: player.damage/2 }));
     
@@ -436,7 +451,8 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
  
   function addExplosion(pos){
     explosions.push(EL.getEntity('explosion',pos));
-    playSound(SOUNDS.explosion);
+    var number = parseInt(Math.random()*SOUNDS.explosions.length);
+    playSound(SOUNDS.explosions[number]);
   }
 
   function addPoints(pts){
