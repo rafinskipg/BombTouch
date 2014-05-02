@@ -20,9 +20,7 @@
             return this.expectedSize;
         },
         resize: function(width, height){
-            console.log(this.expectedSize);
             this.expectedSize = [width,height];
-            console.log(this.expectedSize);
         },
 
         render: function(ctx) {

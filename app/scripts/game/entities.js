@@ -57,17 +57,17 @@ define( [ ], function(){
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
-  //Thanks dr.axel
-   if (!Function.prototype.construct) {
-      Function.prototype.construct = function(argArray) {
-          if (! Array.isArray(argArray)) {
-              throw new TypeError("Argument must be an array");
-          }
-          var constr = this;
-          var nullaryFunc = Function.prototype.bind.apply(
-              constr, [null].concat(argArray));
-          return new nullaryFunc();
-      };
+  //Thanks dr.axel. 
+  if (!Function.prototype.construct) {
+    Function.prototype.construct = function(argArray) {
+      if (! Array.isArray(argArray)) {
+        throw new TypeError("Argument must be an array");
+      }
+      var constr = this;
+      var nullaryFunc = Function.prototype.bind.apply(
+          constr, [null].concat(argArray));
+      return new nullaryFunc();
+    };
   }
 
   function Entity(pos, spriteSchema){
@@ -158,10 +158,14 @@ define( [ ], function(){
     var entity  = new Entity(pos, sprite);
     entity.life = opts.life || 1000;
     entity.totalLife = opts.totalLife || 1000;
-    entity.isSuperSaiyan = opts.isSuperSaiyan;
+    entity.isSuperSaiyan = opts.isSuperSaiyan || false;
+    entity.bullet = opts.bullet || 'bullet';
+    entity.topBullet = opts.topBullet || 'topBullet';
+    entity.bottomBullet = opts.bottomBullet || 'bottomBullet';
     entity.height = 35;
     entity.width = 88;
     entity.damage = opts.damage || 80;
+    entity.baseDamage = opts.damage || 80;
     entity.speed = opts.speed || 200;
     return entity;
   }

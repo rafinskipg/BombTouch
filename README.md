@@ -6,19 +6,12 @@ Nyancat is a super sayan!
 
 TODO :
 - Adjust life / damage of enemies.
-- Add a animation when you are hit
-- Make boss bullets go faster
-- Add sounds when you are hit
-- add sounds when the boss enters
+- Make a menu appear when you hit Esc key
+- Make it respond to back button on android
 - Add lifes like bonuses
-
-
-## Contribute!!
-- Add new levels
-- Add better sprites for the boss
-- New shooting modes
-- Add flying bonuses that changes your shoot 
-- Add wathever you want!!
+- Add points when you get bonuses
+- Rething the top menu
+- Add that movement equation i saw on goo create.
 
 ### Installation 
 

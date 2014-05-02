@@ -31,11 +31,12 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     paused: false,
     post_game_completed : false,
     resources_loaded: false,
-    background_speed: 0.3
+    background_speed: 0.3,
+    game_speed: 1.0
   };
 
   var TIMERS = {
-    lastFire : Date.now(),
+    lastFire : 0,
     lastTime: Date.now(),
     gameTime: 0
   };
@@ -63,6 +64,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   var notifyLevelUp = [];
   var notifyPower = [];
   var notifyMaxPower = [];
+
+  //Touch inputs
+  var touchInputs;
 
   var SOUNDS = {
     death: new Howl({
@@ -154,6 +158,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   var main = function() {
     var now = Date.now();
     var dt = (now - TIMERS.lastTime) / 1000.0;
+    dt = STATE.game_speed * dt;
     if(!isGameOver() && !isPaused()){
       update(dt);
       render();
@@ -182,11 +187,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     }
     initCanvas();
     toMouseListeners();
-    
-
-    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
     reset();
     suscribeToEvents();
+    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
     playSound(SOUNDS.ambient);
     main();
   };
@@ -204,11 +207,20 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     canvas.height = window.innerHeight - 43;
   };
 
-  var touchInputs;
   
   function toMouseListeners(){
     canvas = document.getElementById("canvas");
     canvas.addEventListener('touchmove', function(ev){
+      var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
+      var y = ev.targetTouches[0].pageY - canvas.offsetTop;
+      
+      touchInputs = {
+        pos: {
+          x : x ,
+          y : y
+        }
+      }
+
       shoot();
       ev.preventDefault();
     });
@@ -217,11 +229,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       var y = ev.targetTouches[0].pageY - canvas.offsetTop;
       
       touchInputs = {
-          vel: {
-            x : x ,
-            y : y
-          }
+        pos: {
+          x : x ,
+          y : y
         }
+      }
        
     });
 
@@ -239,7 +251,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     var hammertime = new Hammer(canvas, options);
     hammertime.on("drag swipe", function(ev){ 
       ev.gesture.preventDefault();
-      console.log(ev.gesture); 
+
       var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
       var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
         touchInputs = {
@@ -300,7 +312,8 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       post_game_completed : false,
       paused: false,
       resources_loaded: true,
-      background_speed: 0.3
+      background_speed: 0.3,
+      game_speed: 1.0
     };
 
     bullets = [];
@@ -317,30 +330,40 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
     TIMERS = {
-      lastFire : Date.now(),
+      lastFire :0,
       lastTime: Date.now(),
       gameTime: 0
     };
   };
 
   function suscribeToEvents(){
+
     suscribeMaxPower(function(bool){
       if(bool){
         var superPlayerOptions =  EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
         player.sprite = superPlayerOptions.sprite;
         player.speed = superPlayerOptions.speed;
         player.damage = superPlayerOptions.damage;
-        player.isSaiyan = true;
+        player.isSuperSaiyan = true;
         showMessages([MESSAGES.saiyan], ['saiyancat']);
       }else{
         var normalPlayerOptions =  EL.getEntity('player', player.pos, {life:player.life, totalLife: player.totalLife});
         player.sprite = normalPlayerOptions.sprite;
         player.speed = normalPlayerOptions.speed;
+        player.isSuperSaiyan = false;
         player.damage = normalPlayerOptions.damage;
-        player.isSaiyan = false;
         showMessages([MESSAGES.nosaiyan], ['cat']);
       }
     });
+
+    suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
+      STATE.game_speed = 0.4;
+      
+      window.setTimeout(function(){
+        STATE.game_speed = 1.0;
+      }, messages.length * (timeoutMessage+timeoutBetweenMessages));
+    });
+    
   }
 
   /****************************
@@ -407,24 +430,29 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages){
+    timeoutMessage = timeoutMessage ? timeoutMessage : 2000;
+    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 500;
+
     for(var i = 0; i < notifyMessages.length; i++){
-      notifyMessages[i](messages,senders, timeoutMessage,timeoutBetweenMessages);
+      var messagesClone = messages.map(function(item){ return item });
+      var sendersClone = senders.map(function(item){ return item });
+      notifyMessages[i](messagesClone,sendersClone, timeoutMessage,timeoutBetweenMessages);
     }
   }
 
   function shoot(){
     if(!isGameOver() &&
-      Date.now() - TIMERS.lastFire > 100) {
+      TIMERS.gameTime - TIMERS.lastFire > 0.100) {
 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity('nyanbullet', [x,y], { damage: player.damage }));
-      bullets.push(EL.getEntity('topBullet', [x,y], { damage: player.damage/2 }));
-      bullets.push(EL.getEntity('bottomBullet', [x,y], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity(player.bullet, [x,y], { damage: player.damage }));
+      bullets.push(EL.getEntity(player.topBullet, [x,y], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity(player.bottomBullet, [x,y], { damage: player.damage/2 }));
     
       playSound(SOUNDS.shoot);
-      TIMERS.lastFire = Date.now();
+      TIMERS.lastFire = TIMERS.gameTime ;
     }
   }
 
@@ -758,6 +786,17 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     }
   }
 
+  function removeBonusIfTImeGreaterThan(time){
+    return function(entity){
+      var returned = removeIfTimeCounterGreaterThan(time)(entity);
+      if(!returned){
+        player.bullet = 'bullet';
+        player.damage = player.baseDamage;
+      }else{
+        return returned;
+      }
+    }
+  }
   function wrapperReadyForActionOnly(fn){
     return function(entity){
       if(entity.readyForAction){
@@ -827,7 +866,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function shootThrottled(time, dt){
     return entityStepsInTime(time,dt)(function(entity){
-      blueShoot(entity.pos);
+      blueShoot([entity.pos[0] + entity.sprite.getSize()[0], entity.pos[1] + entity.sprite.getSize()[1]/2]);
       return entity;
     });
   }
@@ -882,10 +921,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   /* Updates */
   function updatePlayer(dt){
     if(touchInputs){
-      var signX = touchInputs.vel.x  > player.pos[0] ? 1 :  -1;
-      var signY = touchInputs.vel.y > player.pos[1]  ? 1 :  -1;
-      var diffX = touchInputs.vel.x - signX * player.pos[0];
-      var diffY = touchInputs.vel.y - signY * player.pos[1];
+      var signX = touchInputs.pos.x  > player.pos[0] ? 1 :  -1;
+      var signY = touchInputs.pos.y > player.pos[1]  ? 1 :  -1;
+      var diffX = touchInputs.pos.x - signX * player.pos[0];
+      var diffY = touchInputs.pos.y - signY * player.pos[1];
 
       if(diffX > 5){
         player.pos[0] += signX * player.speed * dt;
@@ -898,7 +937,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     player.sprite.update(dt);
   }
   function movePlayer(dir,dt){
-    player.dir =dir;
+    player.dir = dir;
     player = moveToDirection(dt)(player);
   }
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
@@ -956,7 +995,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
       .map(shootThrottled(0.5, dt))
-      .map(removeIfTimeCounterGreaterThan(10)));
+      .map(removeBonusIfTImeGreaterThan(10)));
   }
 
   function updateBosses(dt){
@@ -1000,7 +1039,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
         entity.hasBonus = true;
-        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.getSize()[0] , entity.pos[1]])];
+        entity.bullet = 'nyanbullet';
+        entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
+        entity.damage = entity.baseDamage + 50;
+        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
         showMessages([MESSAGES.wow], ['dog']);
       }
@@ -1036,7 +1078,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
   function playerDamaged(){
     playSound(SOUNDS.ouch);
-    showMessages([MESSAGES.ouch], [(player.isSaiyan ? 'saiyancat': 'catdamaged')]);
+    showMessages([MESSAGES.ouch], [(player.isSuperSaiyan ? 'saiyancatdamaged': 'catdamaged')]);
   }
   function checkCollisions() {
     checkPlayerBounds();
@@ -1139,7 +1181,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   var BGx = 0;
 
   function render() {
-    BGx -= STATE.background_speed;
+    BGx -= STATE.background_speed * STATE.game_speed;
     ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
     ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
     ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
