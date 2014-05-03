@@ -49,10 +49,12 @@ require( [
     'controllers/home',
     'controllers/main',
     'controllers/gameover',
+    'controllers/scores',
     'controllers/badges',
     'services/social',
     'services/localStorage',
     'services/settings',
+    'services/quotes',
     'routes',
     'howler',
     'fastclick'

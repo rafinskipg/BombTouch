@@ -78,7 +78,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         
         //Observer of the game
         nyanGame.suscribeGameOver(function(){
-            localStorageSrv.saveBestScore($scope.puntos);
+            localStorageSrv.saveLastScore($scope.puntos);
             $location.path('/gameover');
         });
 

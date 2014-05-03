@@ -16,4 +16,7 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <feature name="SocialMessage">
+        <param name="android-package" value="uk.co.ilee.socialmessage.SocialMessage" />
+    </feature>
 </widget>

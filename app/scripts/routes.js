@@ -20,6 +20,11 @@ define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers
       controller: 'GameOverCtrl'
     });
 
+    $routeProvider.when('/scores', {
+      templateUrl: 'views/scores.html',
+      controller: 'ScoresCtrl'
+    });
+
 		$routeProvider.otherwise({redirectTo: '/'});
 	}]);
     

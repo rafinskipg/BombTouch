@@ -8,10 +8,10 @@ TODO :
 - Adjust life / damage of enemies.
 - Make a menu appear when you hit Esc key
 - Make it respond to back button on android
-- Add lifes like bonuses
-- Add points when you get bonuses
-- Rething the top menu
+- Rethink the top menu
 - Add that movement equation i saw on goo create.
+- Add the social sharer on the gameover screen, add the points
+- Implement the badges logic.
 
 ### Installation 
 

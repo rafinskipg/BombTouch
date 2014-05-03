@@ -4,34 +4,17 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     factory('socialSrv', ['$http', '$q', function($http, $q) {
 
 
-    var save = function(command){
-      var commandsSaved = getLocals(); 
-      if(command.checked){
-        commandsSaved.push(command.id);
-      }else{
-        itemsFound = commandsSaved.filter(function(com){
-          return com != command.id;
-        });
-        console.log(itemsFound);
-        commandsSaved = itemsFound;
-      }
-      saveLocals(commandsSaved);
-      
-    }
-    var saveLocals = function(locals){
-      localStorage.setItem("gitella", JSON.stringify(locals));
-    }
-    var getData = function(){
-      var commands =  JSON.parse(localStorage.getItem("nyanspace"));
-      if(!commands || !commands.length > 0){
-        commands = [];
-      }
-      return commands;
+    var share = function(text){
+      var message = {
+          url: 'http://rvpg.me',
+          image: 'http://rvpg.me/experiments/bombtouchtouch/images/cat.gif',
+          text:text
+      };
+      window.socialmessage.send(message);
     }
 
     return {
-        getData: getData,
-        save: save
+        share: share
       };
   }]);
 });

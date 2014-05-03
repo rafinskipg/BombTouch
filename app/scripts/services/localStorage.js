@@ -13,10 +13,23 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       if(!data){
         data = {
           maxScore :0,
-          badges : []
+          badges : [],
+          scores : []
         };
       }
+      if(!data.badges){
+        data.badges =[];
+      }
+      if(!data.scores){
+        data.scores = [];
+      }
       return data;
+    }
+    var saveLastScore = function(score){
+      var data = getData();
+      data.scores.push(score);
+      save(data);
+      saveBestScore(score);
     }
 
     var saveBestScore = function(score){
@@ -30,6 +43,14 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     var getBestScore = function(){
       var data = getData();
       return data.maxScore;
+    }   
+    var getLastScore = function(){
+      var data = getData();
+      return data.scores[data.scores.length -1];
+    }
+    var getScores = function(){
+      var data = getData();
+      return data.scores;
     }
     var addBadges = function(listOfBadges){
       var data = getData();
@@ -48,8 +69,11 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         getCompletedBadges:getCompletedBadges,
         save: save,
         saveBestScore: saveBestScore,
+        saveLastScore: saveLastScore,
         addBadges: addBadges,
-        getBestScore: getBestScore
+        getBestScore: getBestScore,
+        getLastScore: getLastScore,
+        getScores: getScores
       };
   }]);
 });

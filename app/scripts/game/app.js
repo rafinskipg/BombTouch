@@ -422,7 +422,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function changeLevel(){
     STATE.level++;
-    TIMERS.gameTime = 10 * STATE.level;
     
     for(var i = 0; i<notifyLevelUp.length; i++){
       notifyLevelUp[i](STATE.level);
@@ -1040,6 +1039,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       if(entitiesCollide(entity,bonus)){
         entity.hasBonus = true;
         entity.bullet = 'nyanbullet';
+        addPoints(200);
         entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
         entity.damage = entity.baseDamage + 50;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];

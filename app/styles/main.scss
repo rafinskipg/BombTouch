@@ -296,9 +296,9 @@ img {
 
     #level{
         position: absolute;
-        top: 44%;
-        left: 39%;
-        z-index: 2000;
+        top: -26px;
+        left: -10px;
+        z-index: 3000;
         padding: 30px;
         font-size: 19px;
     }
@@ -388,6 +388,21 @@ img {
         }
     }
     
+}
+
+.scores{
+    .list-group{
+        margin-top: 30px;
+        color: black;
+    }
+}
+
+.sharer {
+    margin-top: 20px;
+    .social-icon{
+        height: 40px;
+        width: 75px;
+    }
 }
 
 @media (max-width: 400px) {
