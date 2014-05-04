@@ -1,25 +1,25 @@
 <div class="container-full game">
   <div class="" >
       <div id="top_menu" class="top_menu row">
-        <div class="col-xs-6">
+        <div class="col-xs-12">
           <div id="pause" class="btn btn-nyan" ng-click="pause()" ng-show="paused == false"> Pause </div>
           <div id="resume" ng-click="resume()"  class="btn btn-nyan"  ng-show="paused"> Resume </div>
         
           <div id="score"  class="btn btn-nyan" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
-        </div>
-        <div class="col-xs-4">
-          <div class="progress progress-striped active">
-            <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
-              <span class="">{{power}}% of CAT POWER</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-2">
+
           <div class="btn btn-info" ng-click="setSoundInGame()">
             <span ng-show="getSound() == true" class="glyphicon glyphicon-volume-off"></span>
             <span ng-show="getSound() == false" class="glyphicon glyphicon-volume-up"></span>
           </div>
         </div>
+        <!--<div class="col-xs-4">
+          <div class="progress progress-striped active">
+            <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
+              <span class="">{{power}}% of CAT POWER</span>
+            </div>
+          </div>
+        </div>-->
+       
       </div>
 
       

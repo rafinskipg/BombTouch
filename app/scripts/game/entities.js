@@ -40,7 +40,7 @@ define( [ ], function(){
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
 
   //Enemies
-  var level1SpriteSchema = ['images/Tacnayn.gif', [0,0], [250,300], 0, [0]];
+  var level1SpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
   //var level1SpriteSchema = ['images/newsprites.png', [4,186], [28,30], 6, [0, 1, 2,3,4]];
   var level2SpriteSchema = ['images/newsprites.png', [0,216], [35,50], 8, [0, 1, 2,3]];
   var level3SpriteSchema = ['images/newsprites.png', [175,185], [23,45], 7, [0,1,2,3,4,5,6]];
@@ -315,7 +315,7 @@ define( [ ], function(){
     entity.points = 100;
     entity.totalLife = 100;
     entity.life = 100;
-    entity.sprite.resize(50,50)
+    entity.sprite.resize(50,30)
     entity.width = 28;
     entity.height = 30;
     entity.damage = 100;

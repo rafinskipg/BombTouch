@@ -313,6 +313,8 @@ img {
         /* background: white; */
         z-index: 2;
         border: 1px solid white;
+        overflow: hidden;
+        text-overflow: ellipsis;
         color: white;
         .picture{
             width: 85px;
@@ -325,8 +327,9 @@ img {
         }
         
         .messageBody{
-            padding-left: 100px;
-            padding-top: 15px;
+            padding-left: 75px;
+            padding-top: 5px;
+            font-size: 12px;
             background: rgba(253, 95, 95, 0.18);
             font-weight: bold;
             /* letter-spacing: 1px; */

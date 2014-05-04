@@ -142,7 +142,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       'images/boom.png',
       'images/background.png',
       'images/orbes/coin.png',
-      'images/Tacnayn.gif',
+      'images/enemies/tacnyan.png',
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/weapons/twitter.png',
@@ -241,7 +241,22 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       touchInputs = null;
     })
     
+    var options = {
+      dragLockToAxis: true,
+      dragBlockHorizontal: true
+    };
+
+    var hammertime = new Hammer(canvas, options);
+
+    hammertime.on("swipe", function(ev){ 
+      ev.gesture.preventDefault();
+      console.log(ev);
+      var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
+      var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
+    });
+
   }
+
   function dragListeners(){
     canvas = document.getElementById("canvas");
     var options = {
@@ -752,8 +767,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     return function(entity){ 
       var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
       var phi = velocityPerSeconds * TIMERS.gameTime;
-      var angleInRadians = Math.atan(entity.pos[0], entity.pos[1]) + phi;
-
+      //We add 1000 to ensure the calculus is allways done for positive values
+      ////It gets a weird behaviour with negative values on the x axis
+      var angleInRadians = Math.atan(entity.pos[0]+1000, entity.pos[1]) + phi;
       var xC = radius * Math.cos(angleInRadians)+phi;
       var yC = radius * Math.sin(angleInRadians)+phi;
 
