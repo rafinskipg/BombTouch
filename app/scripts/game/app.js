@@ -15,6 +15,19 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       };
   })();
 
+  var throttle = function(lambda, ms){
+    var allow = true;
+    return function(){
+      if(allow){
+        allow = false,
+        lambda();
+
+        setTimeout(function(){
+          allow = true;
+        },ms);
+      }
+    }
+  }
   /****************************
   ****************************
     GAME Variables
@@ -89,6 +102,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     nyan: new Howl({
       urls: ['sounds/upmid.wav']
     }),
+    rick: new Howl({
+      urls: ['sounds/rickcut2.wav'],
+      volume: 0.3
+    }),
     killer: new Howl({
       urls: ['sounds/killer.mp3']
     }),
@@ -146,7 +163,8 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/weapons/twitter.png',
-      'images/grave.png'
+      'images/grave.png',
+      'images/rick/rickrollsprite.png'
   ]);
 
   //Flag for initialization
@@ -251,6 +269,8 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     hammertime.on("swipe", function(ev){ 
       ev.gesture.preventDefault();
       console.log(ev);
+      megaShoot(ev.gesture.deltaX, ev.gesture.deltaY);
+      
       var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
       var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
     });
@@ -367,7 +387,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
         player.speed = normalPlayerOptions.speed;
         player.isSuperSaiyan = false;
         player.damage = normalPlayerOptions.damage;
-        showMessages([MESSAGES.nosaiyan], ['cat']);
+        //showMessages([MESSAGES.nosaiyan], ['cat']);
       }
     });
 
@@ -483,14 +503,41 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     playSound(SOUNDS.shoot);
   }
 
-  function megaShoot(){
-    if(STATE.power == STATE.max_power){
-      setPower(0);
-      playSound(SOUNDS.nyan);
-      specials.push(EL.getEntity('special', [player.pos[0] + player.width, player.pos[1] - player.height/2]));
+  function randomFromArray(array){
+    var randomPos = parseInt(Math.random() * array.length)
+    return array[randomPos];
+  }
+  var createRick = throttle(function(){
+    var possibleRickSizes = [
+      [70,110],
+      [140,220],
+      [35,65]
+    ];
+    var opts  = {
+      size : randomFromArray(possibleRickSizes)
+    }
+     specials.push(EL.getEntity('rick', [0, Math.random()* (canvas.height -39)], opts));
+  }, 300);
+  
+  var createRicks = function(ammount){
+    return function(){
+      createRick();
+
+      if(specials.length < ammount){
+        requestAnimFrame(createRicks(ammount))
+      }  
     }
   }
- 
+
+  function megaShootUntrottled(){
+    if(STATE.power == STATE.max_power){
+      setPower(0);
+      playSound(SOUNDS.rick);
+      createRicks(9)();
+    }
+  }
+  var megaShoot = throttle(megaShootUntrottled, 1000);
+
   function addExplosion(pos){
     explosions.push(EL.getEntity('explosion',pos));
     var number = parseInt(Math.random()*SOUNDS.explosions.length);
@@ -562,19 +609,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     Entity update
   ****************************
   ****************************/
-  var throttle = function(lambda, ms){
-    var allow = true;
-    return function(){
-      if(allow){
-        allow = false,
-        lambda();
 
-        setTimeout(function(){
-          allow = true;
-        },ms);
-      }
-    }
-  }
 
   var createBonus = throttle(function(){
     bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
@@ -987,7 +1022,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
   
   function updateSpecials(dt){
-    specials = updateEntitiesAndRemoveIfDone(specials.map(entityInFrontOfPlayer), dt);
+    specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
   }
   
   function updateExplosions(dt){

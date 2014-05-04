@@ -31,6 +31,12 @@ define( [ ], function(){
     null,
     true];
 
+  var rickrollSpriteSchema = ['images/rick/rickrollsprite.png', 
+  [0,0],
+  [138,220],
+  10,
+  [0,1,2,3,4,5,6,7,8,9,10,11,12,13]];
+
   var normalBulletSpriteSchema = ['images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]];
   var nyanBulletSpriteSchema = ['images/newsprites.png', [555, 5], [30, 30], 15, [0,1,2, 3]];
   var bananaBulletSpriteSchema = ['images/newsprites.png', [670, 70], [40, 70], 15, [0,1,2, 3,4,5,6]];
@@ -85,6 +91,15 @@ define( [ ], function(){
   function Special(pos){
     var entity = new Entity(pos, specialSpriteSchema);
     entity.damage = 100;
+    return entity;
+  }
+
+  function Rick(pos,opts){
+    var entity = new Entity(pos, rickrollSpriteSchema);
+    entity.sprite.resize(opts.size[0], opts.size[1])
+    entity.damage = opts.damage || 100;
+    entity.speed = opts.speed || 300;
+    entity.dir = 'right';
     return entity;
   }
 
@@ -249,6 +264,10 @@ define( [ ], function(){
       break;
       case 'bomb':
         return new Bomb(pos);
+      break;
+      case 'rick':
+        opts.size = opts.size || [70,110];
+        return new Rick(pos, opts);
       break;
       case 'bullet':
         return new Bullet(pos, opts);
