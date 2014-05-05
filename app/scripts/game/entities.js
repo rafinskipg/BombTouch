@@ -46,11 +46,11 @@ define( [ ], function(){
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
 
   //Enemies
-  var level1SpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
+  var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
   var dolanSpriteSchema = ['images/newsprites.png', [350,100], [85,73], 8, [0, 1, 2,3]];
   var flappySpriteSchema = ['images/newsprites.png', [4,450], [125,117], 7, [0,1,2,3,4]];
-  var level4SpriteSchema = ['images/newsprites.png', [175,230], [33,40], 8, [0,1,2,3,4,3,2,1]];
-  var level5SpriteSchema = ['images/newsprites.png', [172,0], [72,72],1, [0]];
+  var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,1,2,3,4,5,6,7,8,9]];
+  var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7]];
   //Bosses
   var bossSpriteSchema = ['images/creeper.png', [0,35], [30,30], 4, [0,1,2,1,2,1]];
  
@@ -326,7 +326,7 @@ define( [ ], function(){
 
   //Enemies
   function level1Enemy(pos){
-    var entity = new Entity(pos, level1SpriteSchema);
+    var entity = new Entity(pos, tacnyanSpriteSchema);
     entity.speed = 50;
     entity.points = 100;
     entity.totalLife = 100;
@@ -361,11 +361,12 @@ define( [ ], function(){
   }  
 
   function level4Enemy(pos){
-    var entity = new Entity(pos, level4SpriteSchema);
+    var entity = new Entity(pos, dramaticSpriteSchema);
     entity.speed = 25;
     entity.points = 400;
     entity.totalLife = 400;
     entity.life = 400;
+    entity.sprite.resize(50,45);
     entity.damage = 400;
     entity.dir = 'left';
     return entity;
