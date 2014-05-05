@@ -391,13 +391,13 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       }
     });
 
-    suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
+    /*suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
       STATE.game_speed = 0.4;
       
       window.setTimeout(function(){
         STATE.game_speed = 1.0;
       }, messages.length * (timeoutMessage+timeoutBetweenMessages));
-    });
+    });*/
     
   }
 
@@ -626,7 +626,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(STATE.level < 6 && !STATE.boss_out){
+    if(STATE.level < 6 && !STATE.boss_out && false){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
@@ -661,7 +661,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
-    entity.pos = [player.pos[0]+ player.width,player.pos[1]- player.height/2];
+    entity.pos = [player.pos[0]+ player.sprite.getSize()[0],player.pos[1]- player.sprite.getSize()[1]/2];
     return entity;
   }
 
@@ -798,7 +798,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function moveInCircleAround(around, dt){
     var dt = dt;
-    var radius = around.height > around.width ? around.height : around.width;
+    var radius = around.sprite.getSize()[1] > around.sprite.getSize()[0] ? around.sprite.getSize()[1] : around.sprite.getSize()[0];
     return function(entity){ 
       var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
       var phi = velocityPerSeconds * TIMERS.gameTime;
@@ -1278,10 +1278,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function drawLife(entity){
-    var lifeTotal = entity.width * (entity.life/ entity.totalLife);
+    var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
 
     ctx.beginPath();
-    ctx.rect(entity.pos[0], entity.pos[1] + entity.height, entity.width, 7);
+    ctx.rect(entity.pos[0], entity.pos[1] + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
     ctx.fillStyle = 'yellow';
     ctx.fill();
     ctx.lineWidth = 1;
@@ -1289,7 +1289,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.rect(entity.pos[0], entity.pos[1] + entity.height, lifeTotal, 7);
+    ctx.rect(entity.pos[0], entity.pos[1] + entity.sprite.getSize()[1], lifeTotal, 7);
     ctx.fillStyle = 'blue';
     ctx.fill();
     ctx.stroke();

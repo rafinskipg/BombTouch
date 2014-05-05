@@ -38,7 +38,7 @@ define( [ ], function(){
   [0,1,2,3,4,5,6,7,8,9,10,11,12,13]];
 
   var normalBulletSpriteSchema = ['images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]];
-  var nyanBulletSpriteSchema = ['images/newsprites.png', [555, 5], [30, 30], 15, [0,1,2, 3]];
+  var nyanBulletSpriteSchema = ['images/newsprites.png', [1, 51], [21, 20], 15, [0,1,2, 3]];
   var bananaBulletSpriteSchema = ['images/newsprites.png', [670, 70], [40, 70], 15, [0,1,2, 3,4,5,6]];
   var twitterBulletSpriteSchema = ['images/weapons/twitter.png', [0, 0], [150, 150], 4, [0,1,2, 3]];
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
@@ -47,7 +47,6 @@ define( [ ], function(){
 
   //Enemies
   var level1SpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
-  //var level1SpriteSchema = ['images/newsprites.png', [4,186], [28,30], 6, [0, 1, 2,3,4]];
   var level2SpriteSchema = ['images/newsprites.png', [0,216], [35,50], 8, [0, 1, 2,3]];
   var level3SpriteSchema = ['images/newsprites.png', [175,185], [23,45], 7, [0,1,2,3,4,5,6]];
   var level4SpriteSchema = ['images/newsprites.png', [175,230], [33,40], 8, [0,1,2,3,4,3,2,1]];
@@ -177,8 +176,6 @@ define( [ ], function(){
     entity.bullet = opts.bullet || 'bullet';
     entity.topBullet = opts.topBullet || 'topBullet';
     entity.bottomBullet = opts.bottomBullet || 'bottomBullet';
-    entity.height = 35;
-    entity.width = 88;
     entity.damage = opts.damage || 80;
     entity.baseDamage = opts.damage || 80;
     entity.speed = opts.speed || 200;
@@ -335,8 +332,6 @@ define( [ ], function(){
     entity.totalLife = 100;
     entity.life = 100;
     entity.sprite.resize(50,30)
-    entity.width = 28;
-    entity.height = 30;
     entity.damage = 100;
     entity.dir = 'left';
     return entity;
@@ -348,8 +343,6 @@ define( [ ], function(){
     entity.points = 200;
     entity.totalLife = 200;
     entity.life = 200;
-    entity.width = 35;
-    entity.height = 50;
     entity.damage = 200;
     entity.dir = 'left';
     return entity;
@@ -360,8 +353,6 @@ define( [ ], function(){
     entity.points = 300;
     entity.totalLife = 300;
     entity.life = 300;
-    entity.width = 23;
-    entity.height = 45;
     entity.damage = 300;
     entity.dir = 'left';
     return entity;
@@ -373,8 +364,6 @@ define( [ ], function(){
     entity.points = 400;
     entity.totalLife = 400;
     entity.life = 400;
-    entity.width = 30;
-    entity.height = 37;
     entity.damage = 400;
     entity.dir = 'left';
     return entity;
@@ -386,8 +375,6 @@ define( [ ], function(){
     entity.points = 500;
     entity.totalLife = 500;
     entity.life = 500;
-    entity.width = 72;
-    entity.height = 72;
     entity.damage = 500;
     entity.dir = 'left';
     return entity;
@@ -428,8 +415,6 @@ define( [ ], function(){
     entity.points = 10000;
     entity.totalLife = 10000;
     entity.life = 10000;
-    entity.width = 30;
-    entity.height = 30;
     entity.damage = 10000;
     return entity;
   }
