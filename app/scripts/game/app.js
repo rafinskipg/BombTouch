@@ -156,14 +156,12 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   //Resources loaded asynchronously
   resources.load([
       'images/newsprites.png',
-      'images/boom.png',
       'images/background.png',
       'images/orbes/coin.png',
       'images/enemies/tacnyan.png',
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/weapons/twitter.png',
-      'images/grave.png',
       'images/rick/rickrollsprite.png'
   ]);
 

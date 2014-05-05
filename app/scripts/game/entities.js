@@ -47,8 +47,8 @@ define( [ ], function(){
 
   //Enemies
   var level1SpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
-  var level2SpriteSchema = ['images/newsprites.png', [0,216], [35,50], 8, [0, 1, 2,3]];
-  var level3SpriteSchema = ['images/newsprites.png', [175,185], [23,45], 7, [0,1,2,3,4,5,6]];
+  var dolanSpriteSchema = ['images/newsprites.png', [350,100], [85,73], 8, [0, 1, 2,3]];
+  var flappySpriteSchema = ['images/newsprites.png', [4,450], [125,117], 7, [0,1,2,3,4]];
   var level4SpriteSchema = ['images/newsprites.png', [175,230], [33,40], 8, [0,1,2,3,4,3,2,1]];
   var level5SpriteSchema = ['images/newsprites.png', [172,0], [72,72],1, [0]];
   //Bosses
@@ -57,7 +57,7 @@ define( [ ], function(){
   //Player
   var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
   var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
-  var graveSpriteSheet = ['images/grave.png', [0,0], [30,30], 4 , [0,1,2,0,1,2], null, true]
+  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
@@ -338,20 +338,22 @@ define( [ ], function(){
   }
 
   function level2Enemy(pos){
-    var entity = new Entity(pos, level2SpriteSchema);
+    var entity = new Entity(pos, dolanSpriteSchema);
     entity.speed = 25;
     entity.points = 200;
     entity.totalLife = 200;
+    entity.sprite.resize(50,50);
     entity.life = 200;
     entity.damage = 200;
     entity.dir = 'left';
     return entity;
   }  
   function level3Enemy(pos){
-    var entity = new Entity(pos, level3SpriteSchema);
+    var entity = new Entity(pos, flappySpriteSchema);
     entity.speed = 75;
     entity.points = 300;
     entity.totalLife = 300;
+    entity.sprite.resize(50,50);
     entity.life = 300;
     entity.damage = 300;
     entity.dir = 'left';
