@@ -12,6 +12,9 @@ TODO :
 - Add that movement equation i saw on goo create.
 - Add the social sharer on the gameover screen, add the points
 - Implement the badges logic.
+- The bonuses stay much longer, appear rarely
+- Create a class like sprite.js for paralax rendering
+- When you end a game it saves the current progress in a progress list, badges extract information from here.
 
 ### Installation 
 
