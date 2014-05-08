@@ -54,7 +54,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           $scope.$apply();
 
           $timeout( function(){
-            $scope.$apply();
+           
               $scope.message = undefined;
               $scope.messageSender = 'dog.png';
           },timeout)

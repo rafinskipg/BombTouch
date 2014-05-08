@@ -256,16 +256,16 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function initCanvas(){
-    // Reflow canvas size/margin on resize
+    //TODO: Reflow canvas size/margin on resize
     /*window.addEventListener('resize', function(){
       reflow();
     });*/
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
-  
-ctx.webkitImageSmoothingEnabled = false;
-ctx.mozImageSmoothingEnabled = false;
-ctx.imageSmoothingEnabled = false;
+    //Seems to work
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 43;
   };
@@ -737,37 +737,28 @@ ctx.imageSmoothingEnabled = false;
   }
   function calculateNextDirection(entity, dt){
     var pos = [entity.pos[0], entity.pos[1]];
-    switch(entity.dir) {
-      case 'up': 
-        pos = moveUp(entity.pos, entity.speed, dt);
-      break;
-      case 'down': 
-        pos = moveDown(entity.pos, entity.speed, dt);
-      break;
-      case 'left': 
-        pos = moveLeft(entity.pos, entity.speed, dt);
-      break;
-      case 'right': 
-        pos = moveRight(entity.pos, entity.speed, dt);
-      break;
-      case 'upleft': 
-        pos[1] = entity.pos[1] - entity.speed * dt;
-        pos[0] = entity.pos[0] - entity.speed * dt;
-      break;
-      case 'upright':
-        pos[1] = entity.pos[1] - entity.speed * dt;
-        pos[0] = entity.pos[0] + entity.speed * dt;
-      break;
-      case 'downleft':
-        pos[1] = entity.pos[1] + entity.speed * dt;
-        pos[0] = entity.pos[0] - entity.speed * dt;
-      break;
-      case 'downright':
-        pos[1] = entity.pos[1] + entity.speed * dt;
-        pos[0] = entity.pos[0] + entity.speed * dt;
-      break;
-      default:
-        pos[0] = entity.pos[0] - entity.speed * dt;
+    if(entity.dir == 'up') {
+      pos = moveUp(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'down'){
+      pos = moveDown(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'left'){
+      pos = moveLeft(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'right'){
+      pos = moveRight(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'upleft'){
+      pos[1] = entity.pos[1] - entity.speed * dt;
+      pos[0] = entity.pos[0] - entity.speed * dt;
+    }else if(entity.dir == 'upright'){
+      pos[1] = entity.pos[1] - entity.speed * dt;
+      pos[0] = entity.pos[0] + entity.speed * dt;
+    }else if(entity.dir == 'downleft'){
+      pos[1] = entity.pos[1] + entity.speed * dt;
+      pos[0] = entity.pos[0] - entity.speed * dt;
+    }else if(entity.dir == 'downright'){
+      pos[1] = entity.pos[1] + entity.speed * dt;
+      pos[0] = entity.pos[0] + entity.speed * dt;
+    }else {
+      pos[0] = entity.pos[0] - entity.speed * dt;
     }
     return pos;
   }
@@ -978,20 +969,16 @@ ctx.imageSmoothingEnabled = false;
     });
   }
   function playAction(action, entity){
-    switch(action){
-      case 'enemyShoot':
-        enemyShoot(entity.pos, entity.damage);;
-      break;
-      case 'talk':
-        var phrases = ['killer', 'power','grunt'];
-        var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
-        playSound(SOUNDS[chosenPhrase]);
-        showMessages([MESSAGES[chosenPhrase]], ['creeper']);
-      break;
-      case 'launchEnemy':
-        enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
-      break;
-    }
+    if(action =='enemyShoot'){
+      enemyShoot(entity.pos, entity.damage);
+    }else if(action == 'talk'){
+      var phrases = ['killer', 'power','grunt'];
+      var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
+      playSound(SOUNDS[chosenPhrase]);
+      showMessages([MESSAGES[chosenPhrase]], ['creeper']);
+    }else if(action == 'launchEnemy'){
+      enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
+    };
   }
 
   function getBossActions(){

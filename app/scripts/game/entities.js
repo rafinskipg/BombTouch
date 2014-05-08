@@ -249,78 +249,59 @@ define( [ ], function(){
     if(!opts){
       opts = {};
     }
-    switch(name){
-      case 'bombarea':
-        return new Bombarea(pos);
-      break;
-      case 'special':
-        return new Special(pos);
-      break;
-      case 'explosion':
-        return new Explosion(pos);
-      break;
-      case 'bomb':
-        return new Bomb(pos);
-      break;
-      case 'rick':
-        opts.size = opts.size || [70,110];
-        return new Rick(pos, opts);
-      break;
-      case 'bullet':
-        return new Bullet(pos, opts);
-      break;
-      case 'nyanbullet':
-        return new NyanBullet(pos, opts);
-      break;     
-      case 'bananabullet':
-        return new BananaBullet(pos, opts);
-      break; 
-      case 'twitterbullet':
-        return new TwitterBullet(pos, opts);
-      break;
-      case 'bulletBlue':
-        return new BlueBullet(pos, opts);
-      break;
-      case 'bottomBullet':
-         return new BottomBullet(pos, opts);
-      break;
-      case 'topBullet':
-        return new TopBullet(pos, opts);
-      break;
-      case 'player': 
-        return new Player(pos, opts);
-      break;
-      case 'superPlayer':
-        opts = {
-          damage: 160,
-          isSuperSaiyan: true,
-          speed: 500,
-          life: opts.life,
-          totalLife: opts.totalLife
-        };
-        return new Player(pos, opts);
-      break;
-      case 'grave': 
-        return new Grave(pos);
-      break;
-      case 'bonus':
-        opts = {
-          numberOfBonus : Math.ceil(Math.random(5) * 10),
-          dirs: getFixedDirs(parseInt(Math.random()*2),6),
-          speed: 200
-        }
-        return new Bonus(pos, opts);
-      break;
-      case 'life':
-        opts = {
-          dirs: getRandomDirs(3),
-          speed: 200
-        } 
-        return new Life(pos, opts);
-      break;
-      case 'bonusWeapon':
-        return new BonusWeapon(pos, opts);
-      break;
+    if(name == 'bombarea'){
+      return new Bombarea(pos);
+    }else if(name == 'special'){
+      return new Special(pos);
+    }else if(name == 'explosion'){
+      return new Explosion(pos);
+    }else if(name == 'bomb'){
+      return new Bomb(pos);
+    }else if(name == 'rick'){
+      opts.size = opts.size || [70,110];
+      return new Rick(pos, opts);
+    }else if(name == 'bullet'){
+      return new Bullet(pos, opts);
+    }else if(name == 'nyanbullet'){
+      return new NyanBullet(pos, opts);
+    }else if(name == 'bananabullet'){
+      return new BananaBullet(pos, opts);
+    }else if(name == 'twitterbullet'){
+      return new TwitterBullet(pos, opts);
+    }else if(name == 'bulletBlue'){
+      return new BlueBullet(pos, opts);
+    }else if(name == 'bottomBullet'){
+      return new BottomBullet(pos, opts);
+    }else if(name == 'topBullet'){
+      return new TopBullet(pos, opts);
+    }else if(name == 'player'){
+      return new Player(pos, opts);
+    }else if(name == 'superPlayer'){
+      opts = {
+        damage: 160,
+        isSuperSaiyan: true,
+        speed: 500,
+        life: opts.life,
+        totalLife: opts.totalLife
+      };
+      return new Player(pos, opts);
+    }else if(name == 'grave'){
+      return new Grave(pos);
+    }else if(name == 'bonus'){
+      opts = {
+        numberOfBonus : Math.ceil(Math.random(5) * 10),
+        dirs: getFixedDirs(parseInt(Math.random()*2),6),
+        speed: 200
+      }
+      return new Bonus(pos, opts);
+    }else if(name == 'life'){
+      opts = {
+        dirs: getRandomDirs(3),
+        speed: 200
+      } 
+      return new Life(pos, opts);
+    }else if(name == 'bonusWeapon'){
+      return new BonusWeapon(pos, opts);
     }
   }
 
@@ -384,22 +365,20 @@ define( [ ], function(){
   }
 
   function getEnemy(pos, level){
-    switch(level){
-      case 1:
-        return new level1Enemy(pos);
-      break;
-      case 2:
-        return new level2Enemy(pos);
-      break;
-      case 3: 
-        return new level3Enemy(pos);
-      break;
-      case 4: 
-        return new level4Enemy(pos);
-      break;
-      case 5: 
-        return new level5Enemy(pos);
-      break;
+    if(level == 1){
+      return new level1Enemy(pos);
+    }else if(level == 1){
+      return new level1Enemy(pos);
+    }else if(level == 2){
+      return new level2Enemy(pos);
+    }else if(level == 3){
+      return new level3Enemy(pos);
+    }else if(level == 4){
+      return new level4Enemy(pos);
+    }else if(level == 5){
+      return new level5Enemy(pos);
+    }else if(level == 6){
+      return new level6Enemy(pos);
     }
   }
 
