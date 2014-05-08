@@ -256,15 +256,42 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function initCanvas(){
+    // Reflow canvas size/margin on resize
+    /*window.addEventListener('resize', function(){
+      reflow();
+    });*/
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+  
+ctx.webkitImageSmoothingEnabled = false;
+ctx.mozImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 43;
   };
 
-  
+  function reflow(){
+        // 2d vectors to store various sizes
+        var browser = [
+            window.innerWidth, window.innerHeight];
+        var content = [canvas.width, canvas.height]
+        // Minimum scale to fit whole canvas
+        var scale = this.scale = Math.min(
+            browser[0] / this.content[0],
+            browser[1] / this.content[1]);
+        // Scaled content size
+        var size = [
+            this.content[0] * scale, this.content[1] * scale];
+        // Offset from top/left
+        var offset = this.offset = [
+            (browser[0] - size[0]) / 2, (browser[1] - size[1]) / 2];
+
+        // Apply CSS transform
+        var rule = "translate(" + offset[0] + "px, " + offset[1] + "px) scale(" + scale + ")";
+        canvas.style.transform = rule;
+        canvas.style.webkitTransform = rule;
+  }
   function toMouseListeners(){
-    canvas = document.getElementById("canvas");
     canvas.addEventListener('touchmove', function(ev){
       var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
       var y = ev.targetTouches[0].pageY - canvas.offsetTop;
@@ -1318,15 +1345,15 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     var y = Math.round(entity.pos[1]);
     ctx.beginPath();
     ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
-    ctx.fillStyle = 'yellow';
+    ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
     ctx.fill();
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black'; 
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.rect(x, y + entity.sprite.getSize()[1], lifeTotal, 7);
-    ctx.fillStyle = 'blue';
+    ctx.rect(x+ (entity.sprite.getSize()[0]-lifeTotal), y + entity.sprite.getSize()[1], lifeTotal, 7);
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
     ctx.fill();
     ctx.stroke();
   }
