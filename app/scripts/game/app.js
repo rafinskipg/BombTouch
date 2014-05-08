@@ -76,11 +76,12 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     return {
       lastFire :0,
       lastTime: Date.now(),
-      gameTime: 0
+      gameTime: 0,
+      realSeconds:0
     };
   }
   var TIMERS = getDefaultTimers();
-
+  var frames = 0;
   var bullets = [],
     bombs = [],
     bombareas = [],
@@ -204,7 +205,12 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   // The main game loop
   var main = function() {
     var now = Date.now();
-    var dt = (now - TIMERS.lastTime) / 1000.0;
+    var dt = (now - TIMERS.lastTime);   
+
+    frames = (1000/ (dt * 60)) * 60;
+    
+    TIMERS.realSeconds += dt;
+    dt = (now - TIMERS.lastTime) / 1000.0;
     dt = STATE.game_speed * dt;
     if(!isGameOver() && !isPaused()){
       update(dt);
@@ -1283,6 +1289,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     renderEntities(specials);
     renderEntities(bonuses);
     renderEntities(bosses);
+    drawFrames();
   };
 
   function renderEntities(list) {
@@ -1300,7 +1307,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       drawLife(entity);
     }
   }
-
+  function drawFrames(){
+    ctx.fillStyle = "blue";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText(frames, 100, 100);
+  }
   function drawLife(entity){
     var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
 
