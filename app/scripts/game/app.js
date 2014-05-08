@@ -213,7 +213,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     dt = (now - TIMERS.lastTime) / 1000.0;
     dt = STATE.game_speed * dt;
     if(!isGameOver() && !isPaused()){
-      clearShapes();
       update(dt);
       render();
       TIMERS.lastTime = now;
@@ -1287,7 +1286,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     ctxBG.fillRect(BGx + canvasBG.width, 0, canvasBG.width, canvasBG.height);
     ctxBG.drawImage(resources.get('images/background.png'), BGx, 0,canvasBG.width, canvasBG.height);
     ctxBG.drawImage(resources.get('images/background.png'), BGx + canvasBG.width, 0,canvasBG.width, canvasBG.height);
- 
+    ctx.clearRect(0,0,canvas.width, canvas.height);
     // If the image scrolled off the screen, reset
     if (BGx < - canvasBG.width){
       BGx =0;
