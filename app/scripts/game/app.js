@@ -95,7 +95,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     graves = [],
     player = {};
 
-  var canvas, ctx, power = 0;
+  var canvas, ctx,canvasBG, ctxBG, power = 0;
   var terrainPattern;
 
   //Suscribe to events of the game
@@ -213,6 +213,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     dt = (now - TIMERS.lastTime) / 1000.0;
     dt = STATE.game_speed * dt;
     if(!isGameOver() && !isPaused()){
+      clearShapes();
       update(dt);
       render();
       TIMERS.lastTime = now;
@@ -257,9 +258,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function initCanvas(){
     canvas = document.getElementById("canvas");
+    canvasBG = document.getElementById("canvasBG");
     ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43;
+    ctxBG = canvasBG.getContext("2d");
+    canvasBG.width = canvas.width = window.innerWidth;
+    canvasBG.height = canvas.height = window.innerHeight - 43;
   };
 
   
@@ -1260,18 +1263,36 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   ****************************
   ****************************/   
   var BGx = 0;
-
+  function clearShapes(){
+    clear([player]);
+    clear(bombs);
+    clear(bombareas);
+    clear(bullets);
+    clear(graves);
+    clear(bonusWeapons);
+    clear(enemyBullets);
+    clear(enemies);
+    clear(explosions);
+    clear(specials);
+    clear(bonuses);
+    clear(bosses);
+  }
+  function clear(entities){
+    for(var i = 0; i < entities.length; i++){
+      ctx.clearRect(entities[i].pos[0]-10, entities[i].pos[1]-10, entities[i].sprite.getSize()[0]+20,entities[i].sprite.getSize()[1]+20);
+    }
+  }
   function render() {
     BGx -= STATE.background_speed * STATE.game_speed;
-    ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
-    ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
-    ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
+    ctxBG.fillRect(BGx + canvasBG.width, 0, canvasBG.width, canvasBG.height);
+    ctxBG.drawImage(resources.get('images/background.png'), BGx, 0,canvasBG.width, canvasBG.height);
+    ctxBG.drawImage(resources.get('images/background.png'), BGx + canvasBG.width, 0,canvasBG.width, canvasBG.height);
  
     // If the image scrolled off the screen, reset
-    if (BGx < -canvas.width){
+    if (BGx < - canvasBG.width){
       BGx =0;
     }
-  
+    
     if(!isGameOver()) {
       renderEntity(player);
       if(player.hasBonus){
