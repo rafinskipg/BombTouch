@@ -1286,7 +1286,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     //ctxBG.fillRect(BGx + canvasBG.width, 0, canvasBG.width, canvasBG.height);
     //ctxBG.drawImage(resources.get('images/background.png'), BGx, 0,canvasBG.width, canvasBG.height);
     //ctxBG.drawImage(resources.get('images/background.png'), BGx + canvasBG.width, 0,canvasBG.width, canvasBG.height);
-    ctx.clearRect(0,0,canvas.width, canvas.height);
+    canvas.width = canvas.width;
     // If the image scrolled off the screen, reset
     if (BGx < - canvasBG.width){
       BGx =0;
