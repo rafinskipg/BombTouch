@@ -22,10 +22,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.start = function(){
-          $scope.home = false;
-          $scope.juego = true; 
           $scope.puntos = 0;
-          $scope.gameOver = false;
           nyanGame.setSound(settingsSrv.getSound());
           nyanGame.start();
         } 

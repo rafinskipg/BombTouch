@@ -229,9 +229,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   function start() {
     //wait till resources loaded
     if(!STATE.resources_loaded){
+
       requestAnimFrame(start);
       return;
     }
+    console.log('loaded');
     initCanvas();
     toMouseListeners();
     reset();
