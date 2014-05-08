@@ -15,6 +15,26 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
             text: 'Kill all the level 1 monsters'
           },
           {
+            name: 'level2',
+            alias: '',
+            text: 'Kill all the level 2 monsters'
+          },
+          {
+            name: 'level3',
+            alias: '',
+            text: 'Kill all the level 3 monsters'
+          },
+          {
+            name: 'level4',
+            alias: '',
+            text: 'Kill all the level 4 monsters'
+          },
+          {
+            name: 'level5',
+            alias: '',
+            text: 'Kill all the level 5 monsters'
+          },
+          {
             name: 'social',
             alias: '',
             text: 'Share your best score'
@@ -43,6 +63,10 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
             name: 'chaos',
             alias: '',
             text: 'Kill everything!'
+          },{
+            name: 'died',
+            alias: '',
+            text: 'Died sometime...'
           }
         ];
 
@@ -71,13 +95,19 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       }
 
       var totalEnemiesKilled = 0;
-
+      var chaos = true;
       state.enemiesInformation.levels.map(function(level, index){
-        if(level.completed && level.total == level.killed){
+        if(level.completed && level.total == level.killed && level.total > 0){
           possibleBadges.push('level'+(index+1));
+        }else{
+          chaos = false;
         }
         totalEnemiesKilled+=level.killed;
       })
+
+      if(state.win && chaos){
+        possibleBadges.push('chaos');
+      }
 
       gameTotals.bonuses += state.bonusesInformation.picked ;
       gameTotals.kills += totalEnemiesKilled;

@@ -1303,7 +1303,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     renderEntities(specials);
     renderEntities(bonuses);
     renderEntities(bosses);
-    drawFrames();
+    //drawFrames();
   };
 
   function renderEntities(list) {

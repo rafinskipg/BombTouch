@@ -16,7 +16,7 @@
         <div class="kills">
           <h3>Kills</h3>
           <ul>
-            <li class="killInfo" ng-repeat="level in gameState.enemiesInformation.levels">LEVEL {{$index+1}} - {{level.killed}} enemies of {{ level.total }}</li>
+            <li class="killInfo" ng-repeat="level in gameState.enemiesInformation.levels" ng-show="level.total > 0">LEVEL {{$index+1}} - {{level.killed}} enemies of {{ level.total }}</li>
           </ul>
         </div>
         <div class="bonuses">
