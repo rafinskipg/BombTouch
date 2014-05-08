@@ -1314,9 +1314,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
   function drawLife(entity){
     var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
-
+    var x = Math.round(entity.pos[0]);
+    var y = Math.round(entity.pos[1]);
     ctx.beginPath();
-    ctx.rect(entity.pos[0], entity.pos[1] + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
+    ctx.rect(Math.round(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
     ctx.fillStyle = 'yellow';
     ctx.fill();
     ctx.lineWidth = 1;
@@ -1324,7 +1325,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.rect(entity.pos[0], entity.pos[1] + entity.sprite.getSize()[1], lifeTotal, 7);
+    ctx.rect(x, y + entity.sprite.getSize()[1], lifeTotal, 7);
     ctx.fillStyle = 'blue';
     ctx.fill();
     ctx.stroke();
