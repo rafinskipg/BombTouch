@@ -1317,7 +1317,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     var x = Math.round(entity.pos[0]);
     var y = Math.round(entity.pos[1]);
     ctx.beginPath();
-    ctx.rect(Math.round(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
+    ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
     ctx.fillStyle = 'yellow';
     ctx.fill();
     ctx.lineWidth = 1;
