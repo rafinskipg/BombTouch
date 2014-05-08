@@ -1283,9 +1283,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
   function render() {
     BGx -= STATE.background_speed * STATE.game_speed;
-    ctxBG.fillRect(BGx + canvasBG.width, 0, canvasBG.width, canvasBG.height);
-    ctxBG.drawImage(resources.get('images/background.png'), BGx, 0,canvasBG.width, canvasBG.height);
-    ctxBG.drawImage(resources.get('images/background.png'), BGx + canvasBG.width, 0,canvasBG.width, canvasBG.height);
+    //ctxBG.fillRect(BGx + canvasBG.width, 0, canvasBG.width, canvasBG.height);
+    //ctxBG.drawImage(resources.get('images/background.png'), BGx, 0,canvasBG.width, canvasBG.height);
+    //ctxBG.drawImage(resources.get('images/background.png'), BGx + canvasBG.width, 0,canvasBG.width, canvasBG.height);
     ctx.clearRect(0,0,canvas.width, canvas.height);
     // If the image scrolled off the screen, reset
     if (BGx < - canvasBG.width){
