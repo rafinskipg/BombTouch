@@ -228,6 +228,18 @@ img {
         padding-bottom: 20px;
     }
 }
+
+.stats{
+    background: rgba(0, 0, 0, 0.49);
+    padding: 10px;
+    li{
+        list-style: none;
+    }
+    &.win{
+        border: 10px solid goldenrod;
+    }
+}
+
 .container-full {
   margin: 0 auto;
   width: 100%;
@@ -305,13 +317,12 @@ img {
 
     #message{
         position: absolute;
-        bottom: 5px;
-        left: 0;
+        top: 0;
+        right: 0;
+        z-index: 3000;
         height: 50px;
         background: url('../images/hud/circuits.png');
         width: 50%;
-        /* background: white; */
-        z-index: 2;
         border: 1px solid white;
         overflow: hidden;
         text-overflow: ellipsis;

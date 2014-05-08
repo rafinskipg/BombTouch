@@ -10,25 +10,18 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
         $scope.isMobile = window.isMobile ? true : false;
 
-        $scope.lastScore = localStorageSrv.getLastScore();
-
+        $scope.gameState = localStorageSrv.getLastGameState();
+        $scope.totals = localStorageSrv.getTotals();
+        //TODO SHOW LIST OF WON BADGES
+        //
         quotesSrv.getQuote()
           .then(function(quote){
             $scope.quote = quote;
           });
 
-        $scope.playAgain = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.start();
-        } 
-
         $scope.share = function(){
-          socialSrv.share( "I've just scored "+ $scope.lastScore+" on the Nyan Cat adventures! Wow! Such funny, very game! Check it out http://rvpg.me ! ")
+          socialSrv.share( "I've just scored "+ $scope.gameState.points+" on the Nyan Cat adventures! Wow! Such funny, very game! Check it out http://rvpg.me ! ")
         }
-
 
       }]);
 });

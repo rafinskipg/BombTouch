@@ -12,6 +12,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.isMobile = window.isMobile ? true : false;
 
         $scope.scores = localStorageSrv.getScores();
+        $scope.totals = localStorageSrv.getTotals();
 
         $scope.share = function(){
           socialSrv.share('My best score, on the nyan cat game... :D '+ $scope.bestScore+' points!');

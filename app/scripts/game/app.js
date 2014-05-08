@@ -33,26 +33,53 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     GAME Variables
   ****************************
   ****************************/
-  var STATE = {
-    sound_enabled: true,
-    boss_out : false,
-    level: 1,
-    points : 0,
-    default_power: 0,
-    max_power :1000,
-    game_over: false,
-    paused: false,
-    post_game_completed : false,
-    resources_loaded: false,
-    background_speed: 0.3,
-    game_speed: 1.0
-  };
+  function getDefaultState(){
+    var options =  {
+      sound_enabled: true,
+      boss_out : false,
+      level: 1,
+      max_level: 5,
+      iteration: 1,
+      win: false,
+      died: false,
+      points : 0,
+      enemiesInformation : {
+        total: 0,
+        picked: 0,
+        levels: []
+      },
+      bonusesInformation : {
+        total: 0,
+        picked: 0
+      },
+      default_power: 0,
+      max_power :1000,
+      game_over: false,
+      paused: false,
+      post_game_completed : false,
+      resources_loaded: false,
+      background_speed: 0.3,
+      game_speed: 1.0
+    };
 
-  var TIMERS = {
-    lastFire : 0,
-    lastTime: Date.now(),
-    gameTime: 0
-  };
+    for(var i = 0; i <= options.max_level;i++){
+      options.enemiesInformation.levels.push({
+        total:0,
+        killed: 0
+      });
+    }
+    return options;
+  }
+  var STATE = getDefaultState();
+
+  function getDefaultTimers(){
+    return {
+      lastFire :0,
+      lastTime: Date.now(),
+      gameTime: 0
+    };
+  }
+  var TIMERS = getDefaultTimers();
 
   var bullets = [],
     bombs = [],
@@ -107,20 +134,24 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       volume: 0.3
     }),
     killer: new Howl({
-      urls: ['sounds/killer.mp3']
+      urls: ['sounds/killer.mp3'],
+      volume: 0.5
     }),
     grunt: new Howl({
-      urls: ['sounds/grunt.mp3']
+      urls: ['sounds/grunt.mp3'],
+      volume: 0.5
     }),
     power: new Howl({
-      urls: ['sounds/power.mp3']
+      urls: ['sounds/power.mp3'],
+      volume: 0.5
     }),
     ouch:  new Howl({
       urls: ['sounds/ohmy.wav']
     }),
     explosions: [
       new Howl({
-          urls: ['sounds/explosions/atari_boom2.wav']
+          urls: ['sounds/explosions/atari_boom2.wav'],
+          volume: 0.6
       }),
       new Howl({
           urls: ['sounds/explosions/explodemini.wav'],
@@ -334,20 +365,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function reset() {
-    STATE = {
-      sound_enabled: STATE.sound_enabled === false ? false: true,
-      boss_out : false,
-      level: 1,
-      points : 0,
-      power: 0,
-      max_power :1000,
-      game_over: false,
-      post_game_completed : false,
-      paused: false,
-      resources_loaded: true,
-      background_speed: 0.3,
-      game_speed: 1.0
-    };
+    var newState = getDefaultState();
+    newState.sound_enabled = STATE.sound_enabled === false ? false: true;
+    STATE = newState;
 
     bullets = [];
     bombs = [];
@@ -362,11 +382,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     graves = [];
     player = EL.getEntity('player', [50, canvas.height / 2]);
 
-    TIMERS = {
-      lastFire :0,
-      lastTime: Date.now(),
-      gameTime: 0
-    };
+    TIMERS = getDefaultTimers();
   };
 
   function suscribeToEvents(){
@@ -410,13 +426,18 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     stopAmbientSound();
     graves.push(EL.getEntity('grave', player.pos));
     addExplosion(player.pos);
-    postGame();
+    if(!STATE.win){
+      postGame();  
+    }else{
+      endPostGame();
+    }
+    
   }
 
   function endPostGame(){
     STATE.post_game_completed = true;
     for(var i = 0; i<notifyGameEnd.length; i++){
-      notifyGameEnd[i]();
+      notifyGameEnd[i](STATE, TIMERS);
     }
   }
   function isGameOver(){
@@ -454,6 +475,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function changeLevel(){
+    STATE.enemiesInformation.levels[STATE.level-1].completed = true;
     STATE.level++;
     
     for(var i = 0; i<notifyLevelUp.length; i++){
@@ -607,15 +629,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     Entity update
   ****************************
   ****************************/
-
-
   var createBonus = throttle(function(){
     bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
-  }, 5000);
-
-  var createLife = throttle(function(){
-    bonuses.push(EL.getEntity('life',[canvas.width, Math.random() * (canvas.height - 39)]));
-  }, 5000);
+    STATE.bonusesInformation.total+=1;
+  }, 15000);
 
   function update(dt) {
     TIMERS.gameTime += dt;
@@ -624,11 +641,12 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(STATE.level < 6 && !STATE.boss_out && false){
+    if(STATE.level <= STATE.max_level && !STATE.boss_out){
       var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
 
       if(value) {
         enemies.push(EL.getEnemy([canvas.width, Math.random() * (canvas.height - 39)], STATE.level));
+        STATE.enemiesInformation.levels[STATE.level - 1].total+=1;
       }
 
       createBonus();
@@ -1043,7 +1061,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
       .map(shootThrottled(0.5, dt))
-      .map(removeBonusIfTImeGreaterThan(10)));
+      .map(removeBonusIfTImeGreaterThan(15)));
   }
 
   function updateBosses(dt){
@@ -1086,6 +1104,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
+        STATE.bonusesInformation.picked+=1;
         entity.hasBonus = true;
         entity.bullet = 'nyanbullet';
         addPoints(200);
@@ -1152,6 +1171,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       if(enemy.life > 0){
         return enemy;
       }else{
+        STATE.enemiesInformation.levels[STATE.level - 1].killed+=1;
         addPoints(enemy.points);
         addPower(enemy.points);
         playSound(SOUNDS.death);
@@ -1201,7 +1221,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function checkGameEndConditions(){
-     if(player.life <= 0){
+    if(player.life <= 0){
+      STATE.died = true;
+      endGame();
+    }else if(STATE.boss_out && bosses.length == 0 && enemies.length == 0){
+      STATE.win = true;
       endGame();
     } 
   }

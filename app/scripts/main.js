@@ -54,6 +54,7 @@ require( [
     'services/social',
     'services/localStorage',
     'services/settings',
+    'services/badges',
     'services/quotes',
     'routes',
     'howler',

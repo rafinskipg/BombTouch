@@ -8,7 +8,7 @@ define([
     function init(){
       window.isMobile = true;
     }
-
+    window.isMobile = true;
     var BombTouchApp = angular.module('BombTouchApp', ['ngRoute']).run(function() {
 	    FastClick.attach(document.body);
 	  }) ;
