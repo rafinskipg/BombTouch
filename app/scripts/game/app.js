@@ -1300,7 +1300,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function renderEntity(entity) {
     ctx.save();
-    ctx.translate(entity.pos[0], entity.pos[1]);
+    ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
     entity.sprite.render(ctx);
     ctx.restore();
     if(entity.life){
