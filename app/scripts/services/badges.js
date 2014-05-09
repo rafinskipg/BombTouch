@@ -96,7 +96,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
 
       var totalEnemiesKilled = 0;
       var chaos = true;
-      state.enemiesInformation.levels.map(function(level, index){
+      state.levelsInfo.levels.map(function(level, index){
         if(level.completed && level.total == level.killed && level.total > 0){
           possibleBadges.push('level'+(index+1));
         }else{
@@ -109,7 +109,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         possibleBadges.push('chaos');
       }
 
-      gameTotals.bonuses += state.bonusesInformation.picked ;
+      gameTotals.bonuses += state.levelsInfo.bonuses.picked ;
       gameTotals.kills += totalEnemiesKilled;
       
       if(gameTotals.bonuses  >= 25){

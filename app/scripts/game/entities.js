@@ -382,8 +382,8 @@ define( [ ], function(){
     }
   }
 
-  function getBoss(screenWidth, screenHeight){
-    var entity = new Entity([screenWidth, screenHeight / 2], bossSpriteSchema);
+  function getBoss(pos){
+    var entity = new Entity(pos, bossSpriteSchema);
     entity.actions = [
       'enemyShoot',
       'move',

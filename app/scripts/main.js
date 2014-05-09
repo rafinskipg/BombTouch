@@ -3,6 +3,7 @@ requirejs.config({
     paths: {
         angular : '../bower_components/angular/angular',
         maingame : 'game/app',
+        levelsDirector : 'game/levelsDirector',
         input : 'game/input',
         resources : 'game/resources',
         sprite : 'game/sprite',

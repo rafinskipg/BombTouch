@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
+define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], function(hu, EL, LEVELS_DIRECTOR){
   /****************************
   ****************************
     Cross browser animation frame
@@ -36,22 +36,10 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   function getDefaultState(){
     var options =  {
       sound_enabled: true,
-      boss_out : false,
-      level: 1,
-      max_level: 5,
       iteration: 1,
       win: false,
       died: false,
       points : 0,
-      enemiesInformation : {
-        total: 0,
-        picked: 0,
-        levels: []
-      },
-      bonusesInformation : {
-        total: 0,
-        picked: 0
-      },
       default_power: 0,
       max_power :1000,
       game_over: false,
@@ -61,15 +49,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       background_speed: 0.3,
       game_speed: 1.0
     };
-
-    for(var i = 0; i <= options.max_level;i++){
-      options.enemiesInformation.levels.push({
-        total:0,
-        killed: 0
-      });
-    }
     return options;
   }
+
   var STATE = getDefaultState();
 
   function getDefaultTimers(){
@@ -80,8 +62,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       realSeconds:0
     };
   }
+
   var TIMERS = getDefaultTimers();
+
   var frames = 0;
+
   var bullets = [],
     bombs = [],
     bombareas = [],
@@ -100,9 +85,9 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   //Suscribe to events of the game
   var notifyGameEnd = [];
+  var notifyLevelUp = [];
   var notifyPoints = [];
   var notifyMessages = [];
-  var notifyLevelUp = [];
   var notifyPower = [];
   var notifyMaxPower = [];
 
@@ -197,10 +182,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       'images/rick/rickrollsprite.png'
   ]);
 
-  //Flag for initialization
-  resources.onReady(function() {
-    STATE.resources_loaded = true;
-  });
 
   // The main game loop
   var main = function() {
@@ -212,6 +193,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     TIMERS.realSeconds += dt;
     dt = (now - TIMERS.lastTime) / 1000.0;
     dt = STATE.game_speed * dt;
+
     if(!isGameOver() && !isPaused()){
       update(dt);
       render();
@@ -233,13 +215,13 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   };
 
   function start() {
-    //wait till resources loaded
-    if(!STATE.resources_loaded){
-
+    if(!resources.isReady()){
       requestAnimFrame(start);
       return;
     }
-    console.log('loaded');
+
+    LEVELS_DIRECTOR.init(5,1);
+
     initCanvas();
     toMouseListeners();
     reset();
@@ -256,10 +238,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   }
 
   function initCanvas(){
-    //TODO: Reflow canvas size/margin on resize
-    /*window.addEventListener('resize', function(){
-      reflow();
-    });*/
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     //Seems to work
@@ -270,27 +248,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     canvas.height = window.innerHeight - 43;
   };
 
-  function reflow(){
-        // 2d vectors to store various sizes
-        var browser = [
-            window.innerWidth, window.innerHeight];
-        var content = [canvas.width, canvas.height]
-        // Minimum scale to fit whole canvas
-        var scale = this.scale = Math.min(
-            browser[0] / this.content[0],
-            browser[1] / this.content[1]);
-        // Scaled content size
-        var size = [
-            this.content[0] * scale, this.content[1] * scale];
-        // Offset from top/left
-        var offset = this.offset = [
-            (browser[0] - size[0]) / 2, (browser[1] - size[1]) / 2];
-
-        // Apply CSS transform
-        var rule = "translate(" + offset[0] + "px, " + offset[1] + "px) scale(" + scale + ")";
-        canvas.style.transform = rule;
-        canvas.style.webkitTransform = rule;
-  }
   function toMouseListeners(){
     canvas.addEventListener('touchmove', function(ev){
       var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
@@ -440,6 +397,11 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
       }
     });
 
+    notifyLevelUp.map(function(fn){
+      LEVELS_DIRECTOR.suscribeLevelUp(fn);  
+    });
+    
+
     /*suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
       STATE.game_speed = 0.4;
       
@@ -471,6 +433,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function endPostGame(){
     STATE.post_game_completed = true;
+    STATE.levelsInfo = LEVELS_DIRECTOR.getLevelsInfo();
     for(var i = 0; i<notifyGameEnd.length; i++){
       notifyGameEnd[i](STATE, TIMERS);
     }
@@ -507,15 +470,6 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
 
   function stopAmbientSound(){
     SOUNDS.ambient.stop();
-  }
-
-  function changeLevel(){
-    STATE.enemiesInformation.levels[STATE.level-1].completed = true;
-    STATE.level++;
-    
-    for(var i = 0; i<notifyLevelUp.length; i++){
-      notifyLevelUp[i](STATE.level);
-    }
   }
 
   function showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages){
@@ -664,38 +618,32 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     Entity update
   ****************************
   ****************************/
-  var createBonus = throttle(function(){
-    bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
-    STATE.bonusesInformation.total+=1;
-  }, 15000);
 
   function update(dt) {
     TIMERS.gameTime += dt;
+    updateLevelsDirector(dt);
     handleInput(dt);
     updateEntities(dt);
-
-    // It gets harder over time by adding enemies using this
-    // equation: 1-.993^gameTime
-    if(STATE.level <= STATE.max_level && !STATE.boss_out){
-      var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
-
-      if(value) {
-        enemies.push(EL.getEnemy([canvas.width, Math.random() * (canvas.height - 39)], STATE.level));
-        STATE.enemiesInformation.levels[STATE.level - 1].total+=1;
-      }
-
-      createBonus();
-    }else if( !STATE.boss_out){
-      bosses.push(EL.getBoss(canvas.width, canvas.height));
-      createBonus();
-      STATE.background_speed = 1.6;
-      STATE.boss_out = true;
-    }
-   
     checkCollisions();
-    checkLevelUpConditions();
     checkGameEndConditions();
   };
+
+  function updateLevelsDirector(dt){
+    LEVELS_DIRECTOR.update(dt);
+
+    if(LEVELS_DIRECTOR.shouldAddEnemy() == true ){
+      enemies.push(LEVELS_DIRECTOR.createEnemy([canvas.width, Math.random() * (canvas.height - 39)]));
+    }
+    
+    if(LEVELS_DIRECTOR.shouldAddBoss() == true ){
+      bosses.push(LEVELS_DIRECTOR.createBoss([canvas.width, canvas.height/2]));
+      STATE.background_speed = 1.6;
+    }
+
+    if(LEVELS_DIRECTOR.shouldAddBonus()){
+      bonuses.push(LEVELS_DIRECTOR.createBonus([canvas.width, Math.random() * (canvas.height - 39)]));
+    }
+  }
 
   function updateEntities(dt) {
     updatePlayer(dt);
@@ -1126,7 +1074,7 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
-        STATE.bonusesInformation.picked+=1;
+        LEVELS_DIRECTOR.pickedBonus();
         entity.hasBonus = true;
         entity.bullet = 'nyanbullet';
         addPoints(200);
@@ -1160,93 +1108,64 @@ define( [ 'hu','game/entities','resources','sprite','input'], function(hu, EL){
     return function(item){
       var shouldReturnItem = removeIfCollideWith(entity)(item);
       if(!shouldReturnItem){
-        playerDamaged();
+        playerDamaged(item.damage);
       }else{
         return item;
       }
     }
   }
-  function playerDamaged(){
+  function playerDamaged(damage){
     playSound(SOUNDS.ouch);
+    player.life -= damage;
     showMessages([MESSAGES.ouch], [(player.isSuperSaiyan ? 'saiyancatdamaged': 'catdamaged')]);
   }
+
+  function killEnemy(enemy){
+    LEVELS_DIRECTOR.killedEnemy();
+    addPoints(enemy.points);
+    addPower(enemy.points);
+    playSound(SOUNDS.death);
+    addExplosion(enemy.pos);    
+  }
+
+  function collisionToEnemyGroup(enemyGroup){
+      enemyGroup = hu.compact(enemyGroup.map(function(enemy){
+
+        bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(removeIfCollideWith(enemy)));
+          
+        specials
+          .map(ifCollidesApplyDamageTo(enemy));
+
+        if(entitiesCollide(enemy, player)){
+          playerDamaged(enemy.damage);
+          enemy.life -= player.damage;
+        }
+
+        if(enemy.life > 0){
+          return enemy;
+        }else{
+          killEnemy(enemy);
+        }
+      }));
+    return enemyGroup;
+  }
+
   function checkCollisions() {
     checkPlayerBounds();
-    
-    enemies = hu.compact(enemies.map(function(enemy){
 
-      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
-        .map(removeIfCollideWith(enemy)));
-
-      bombareas
-        .map(ifCollidesApplyDamageTo(enemy));
-        
-      specials
-        .map(ifCollidesApplyDamageTo(enemy));
-
-      if(entitiesCollide(enemy, player)){
-        playerDamaged();
-        player.life -= enemy.damage;
-        enemy.life -= player.damage;
-      }
-
-      if(enemy.life > 0){
-        return enemy;
-      }else{
-        STATE.enemiesInformation.levels[STATE.level - 1].killed+=1;
-        addPoints(enemy.points);
-        addPower(enemy.points);
-        playSound(SOUNDS.death);
-        addExplosion(enemy.pos);    
-      }
-    }));
+    enemies = collisionToEnemyGroup(enemies);
+    bosses = collisionToEnemyGroup(bosses);
 
     enemyBullets = hu.compact(enemyBullets.map(ifCollidesApplyDamageTo(player))
         .map(removeIfCollideWithAndPlaySound(player)));
-
-    bosses = hu.compact(bosses.map(function(enemy){
-      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
-        .map(removeIfCollideWith(enemy)));
-
-      bombareas
-        .map(ifCollidesApplyDamageTo(enemy));
-        
-      specials
-        .map(ifCollidesApplyDamageTo(enemy));
-
-      if(entitiesCollide(enemy, player)){
-        playerDamaged();
-        player.life -= enemy.damage;
-        enemy.life -= player.damage;
-      }
-
-      if(enemy.life > 0){
-        return enemy;
-      }else{
-        addPoints(enemy.points);
-        addPower(enemy.points);
-        playSound(SOUNDS.death);
-        addExplosion(enemy.pos);    
-      }
-    }));
-   
-  }
-
-  function checkLevelUpConditions(){
-    if(TIMERS.gameTime > 30 && STATE.level === 1
-      || TIMERS.gameTime > 60 && STATE.level === 2
-      || TIMERS.gameTime > 90 && STATE.level === 3
-      || TIMERS.gameTime > 120 && STATE.level === 4
-      || TIMERS.gameTime > 160 && STATE.level === 5){
-      changeLevel();
-    }
   }
 
   function checkGameEndConditions(){
     if(player.life <= 0){
       STATE.died = true;
       endGame();
-    }else if(STATE.boss_out && bosses.length == 0 && enemies.length == 0){
+    }else if(LEVELS_DIRECTOR.isFinalStage() && bosses.length == 0 && enemies.length == 0){
       STATE.win = true;
       endGame();
     } 

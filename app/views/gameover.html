@@ -16,12 +16,13 @@
         <div class="kills">
           <h3>Kills</h3>
           <ul>
-            <li class="killInfo" ng-repeat="level in gameState.enemiesInformation.levels" ng-show="level.total > 0">LEVEL {{$index+1}} - {{level.killed}} enemies of {{ level.total }}</li>
+            <li class="killInfo" ng-repeat="level in gameState.levelsInfo.levels">LEVEL {{$index+1}} - {{level.killed}} enemies of {{ level.total }}</li>
+            <li ng-show="gameState.win">BOSS</li>
           </ul>
         </div>
         <div class="bonuses">
           <h3>Bonuses picked</h3>
-          {{gameState.bonusesInformation.picked}} out of {{gameState.bonusesInformation.total}} 
+          {{gameState.levelsInfo.bonuses.picked}} out of {{gameState.levelsInfo.bonuses.total}} 
         </div>
 
         <div class="badges">
