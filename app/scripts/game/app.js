@@ -69,7 +69,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
   var bullets = [],
     bombs = [],
-    bombareas = [],
     enemies = [],
     explosions = [],
     specials = [],
@@ -363,7 +362,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
     bullets = [];
     bombs = [];
-    bombareas = [];
     enemies = [];
     explosions = [];
     specials = [];
@@ -428,7 +426,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }else{
       endPostGame();
     }
-    
   }
 
   function endPostGame(){
@@ -438,6 +435,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       notifyGameEnd[i](STATE, TIMERS);
     }
   }
+
   function isGameOver(){
       return STATE.game_over;
   }
@@ -545,6 +543,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       createRicks(9)();
     }
   }
+
   var megaShoot = throttle(megaShootUntrottled, 1000);
 
   function addExplosion(pos){
@@ -651,7 +650,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     updateBullets(dt);
     updateEnemies(dt);
     updateBombs(dt);
-    updateBombAreas(dt);
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
@@ -747,13 +745,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }
   }
 
-  function pushBombIfDone(entity){
-    if(entity.sprite.done){
-      bombareas.push(EL.getEntity('bombarea',entity.pos));
-      playSound(SOUNDS.explosion);
-    }
-    return entity;
-  }
   function removeIfDone(entity){
     if(!entity.sprite.done){
       return entity;
@@ -1003,9 +994,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       .map(pushBombIfDone)
       .map(removeIfDone));
   }
-  function updateBombAreas(dt){
-    bombareas = updateEntitiesAndRemoveIfDone(bombareas,dt);
-  }
   
   function updateSpecials(dt){
     specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
@@ -1214,7 +1202,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       renderEntities(graves);
     }
     renderEntities(bombs);
-    renderEntities(bombareas);
     renderEntities(bullets);
     renderEntities(enemyBullets);
     renderEntities(enemies);

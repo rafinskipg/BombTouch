@@ -159,12 +159,3 @@ define( [ 'hu','game/entities'], function(hu, EL){
   return  LEVELS_DIRECTOR;
 
 });
-
-
-
-
-
-
-function checkLevelUpConditions(){
-    
-  }
