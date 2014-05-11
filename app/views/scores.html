@@ -6,7 +6,7 @@
       </a>
     </div>
     <div class="col-xs-12 text-center">
-      <h1>Your best score : {{bestScore}}</h1>
+      <h1>Your best score : {{bestScore}}<span class="glyphicon glyphicon-star"></span></h1>
       <h2>Total kills : {{totals.kills}}</h2>
       <h2>Total bonuses : {{totals.bonuses}}</h2>
       <div class="sharer">
@@ -24,7 +24,7 @@
       </div>
       <ul class="list-group">
         <li ng-repeat="score in scores  track by $index"  class="list-group-item">
-          {{score}}
+          {{score}} <span class="glyphicon glyphicon-star"></span>
         </li>
       </ul>  
     </div>

@@ -29,6 +29,18 @@ body {
 a {
     color: white;
 }
+.glyphicon-star{
+    color: #E9F64E;
+    margin-left: 5px;
+}
+.glyphicon-heart-empty{
+    color: #CC0F17;
+    margin-left: 5px;
+}
+.glyphicon-plane{
+    color: #1CEB00;
+    margin-left: 5px;
+}
 .btn-nyan{
     margin-left:5px; 
     margin-right:5px;
@@ -36,8 +48,11 @@ a {
     font-size: 15px;
     .glyphicon{
         margin-right: 10px;
+        margin-left: 0px;
     }
 }
+
+
 
 img {
     max-width:  100%;
@@ -99,6 +114,9 @@ img {
                 color: white;
                 font-weight: bold;
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                .sound{
+                    color:rgb(246, 139, 78);
+                }
             }
             li a:after{
                 position: absolute;
@@ -309,15 +327,6 @@ img {
         right: 20px;
     }
 
-    #level{
-        position: absolute;
-        top: -26px;
-        left: -10px;
-        z-index: 3000;
-        padding: 30px;
-        font-size: 19px;
-    }
-
     #message{
         position: absolute;
         top: 0;
@@ -411,6 +420,12 @@ img {
     .list-group{
         margin-top: 30px;
         color: black;
+    }
+    .list-group-item{
+        background-color: rgba(89, 112, 231, 0.39);
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
     }
 }
 

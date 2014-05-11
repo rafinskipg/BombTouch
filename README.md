@@ -72,5 +72,12 @@ cordova run android
 cordova emulate android
 `````
 
+Cordova plugins
+````
+
+cordova plugin add https://github.com/leecrossley/cordova-plugin-social-message.git
+cordova plugin add org.apache.cordova.dialogs
+
+````
 
 

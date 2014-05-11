@@ -12,7 +12,7 @@
 
       <div class="stats" ng-class="{'win': gameState.win}">
         <h3>Your stats</h3>
-        <div class="score">Your score is {{gameState.points}}</div>
+        <div class="score">Your score is {{gameState.points}}<span class="glyphicon glyphicon-star"></span></div>
         <div class="kills">
           <h3>Kills</h3>
           <ul>
@@ -46,13 +46,14 @@
           <div>{{quote}}</div>
       </div>
       <div class="sharer">
-          <a ng-show="!isMobile" title="send to Facebook" onclick="return !window.open(this.href, 'Facebook', 'width=640,height=300')" href="http://www.facebook.com/sharer.php?s=100&title=Nyan Cat adventures&summary=I've completed {{lastScore}} points on NyanSpace!&p[url]=http://nyanspace.herokuapp.com" data-desc="This is a description of the page" data-img="http://rvpg.me/experiments/BombTouch/images/cat.gif" target="_blank">
+          <a ng-show="!isMobile"  ng-click="share($event)" title="send to Facebook"  href="" target="_blank">
             <span>
               <img class="social-icon" src="images/social/nyan_fb_icon.png" alt="Facebook"> Share it! 
             </span>
           </a>
 
-          <a ng-show="isMobile" ng-click="share()">
+
+          <a ng-click="share($event)">
             <span>
               <img class="social-icon" src="images/social/nyan_fb_icon.png" alt="Facebook"> Share it! 
             </span>

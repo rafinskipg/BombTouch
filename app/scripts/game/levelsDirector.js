@@ -1,16 +1,45 @@
 define( [ 'hu','game/entities'], function(hu, EL){
   var MAX_LEVEL;
   var CURRENT_LEVEL;
+  var CURRENT_GROUP;
+  var CURRENT_ENEMY;
   var TIME;
   var BONUS_TIME;
   var BOSS_OUT;
   var INFORMATION;
   var SUSCRIPTIONS;
-
+  var TIME_SINCE_LAST_ENEMY_OUT;
+  var TIME_SINCE_LAST_LEVEL_OUT;
+  var TIME_SINCE_LAST_GROUP_OUT;
+  var ALLOW_ENEMY_OUT = false;
+  var levelsStructure = {
+    time_between_groups: 6,
+    time_between_enemies:3,
+    time_between_levels: 10,
+    levels : [
+      [
+      [1],[1,1],[1,2,1],[1,1,1,1]
+      ],
+      [
+      [2],[2,2,2],[2,3,2,1],[2,3,4,1,1,2,2]
+      ],
+      [
+      [3],[3,3],[3,4,3],[4,3,3,5,3,4,5]
+      ],
+      [
+      [4],[4,4],[4,5,4],[4,5,4,3,4,4,5]
+      ],
+      [
+      [5],[5,5],[5,5,4],[5,4,3,5,4,5,4,5]
+      ]
+    ]
+  }
 
   function init(max, current){
     MAX_LEVEL = max; 
     CURRENT_LEVEL = current;
+    CURRENT_GROUP = 0;
+    CURRENT_ENEMY = 0;
     BOSS_OUT = false;
     SUSCRIPTIONS = [];
     INFORMATION = {
@@ -23,6 +52,10 @@ define( [ 'hu','game/entities'], function(hu, EL){
     };
     TIME = 0;
     BONUS_TIME = 0;
+    ALLOW_ENEMY_OUT = false;
+    TIME_SINCE_LAST_ENEMY_OUT = 0;
+    TIME_SINCE_LAST_GROUP_OUT = 0;
+    TIME_SINCE_LAST_LEVEL_OUT = 0;
 
     for(var i = 0; i< max; i++){
       INFORMATION.levels.push({
@@ -31,6 +64,7 @@ define( [ 'hu','game/entities'], function(hu, EL){
         completed: false
       });
     }
+    console.log(INFORMATION.levels);
   }
 
   function shouldAddBonus(){
@@ -50,24 +84,70 @@ define( [ 'hu','game/entities'], function(hu, EL){
   function update(dt){
     TIME +=dt;
     BONUS_TIME += dt;
+    TIME_SINCE_LAST_ENEMY_OUT+=dt;
+    ALLOW_ENEMY_OUT = false;
 
-    if(TIME > 30 && CURRENT_LEVEL === 1
-      || TIME > 60 && CURRENT_LEVEL === 2
-      || TIME > 90 && CURRENT_LEVEL === 3
-      || TIME > 120 && CURRENT_LEVEL === 4
-      || TIME > 160 && CURRENT_LEVEL === 5){
-      changeLevel();
+    if(CURRENT_LEVEL <= MAX_LEVEL){
+      if(allEnemiesFromLevelAreOut(CURRENT_LEVEL -1 )){
+        TIME_SINCE_LAST_LEVEL_OUT+=dt;
+        if(TIME_SINCE_LAST_LEVEL_OUT >= levelsStructure.time_between_levels){
+          changeLevel();
+        }
+      }else if(allEnemiesFromGroupAreOut(CURRENT_LEVEL-1, CURRENT_GROUP)){
+        TIME_SINCE_LAST_GROUP_OUT+=dt;
+        if(TIME_SINCE_LAST_GROUP_OUT >= levelsStructure.time_between_groups){
+          changeGroup();
+        }
+      }else{
+        TIME_SINCE_LAST_ENEMY_OUT+=dt;
+        if(TIME_SINCE_LAST_ENEMY_OUT >= levelsStructure.time_between_enemies){
+          ALLOW_ENEMY_OUT = true;
+        }
+      }
     }
   }
 
+  function changeLevel(){
+    console.log('Changing level');
+    INFORMATION.levels[ CURRENT_LEVEL -1 ].completed = true;
+    CURRENT_LEVEL++;
+    CURRENT_GROUP = 0;
+    CURRENT_ENEMY = 0;
+    TIME_SINCE_LAST_LEVEL_OUT = 0;
+    notifyLevelUp();
+  }
+
+
+  function changeGroup(){
+    console.log('Changing group');
+    CURRENT_GROUP++;
+    CURRENT_ENEMY = 0;
+    TIME_SINCE_LAST_GROUP_OUT = 0;
+  }
+
+  function getTotalsOfCurrentLevel(lvl){
+    var totalsOfLevel = 0;
+    levelsStructure.levels[lvl].map(function(group){
+      totalsOfLevel +=group.length || 0;
+    });
+    return totalsOfLevel;
+  }
+  function allEnemiesFromLevelAreOut(lvl){
+    return(INFORMATION.levels[lvl].total >= getTotalsOfCurrentLevel(lvl));
+  }
+  function allEnemiesFromGroupAreOut(lvl, group){
+    var currGroup = levelsStructure.levels[lvl][group];
+    return(CURRENT_ENEMY >= currGroup.length);
+  }
   function shouldAddEnemy(){
     if(CURRENT_LEVEL <= MAX_LEVEL && !BOSS_OUT){
-      var value = Math.random() < 1 - Math.pow(.999, TIME);
+      /*var value = Math.random() < 1 - Math.pow(.999, TIME);
       if(value) {
         return true;
       }else{
         return false;
-      }
+      }*/
+      return ALLOW_ENEMY_OUT;
     }else{
       return false;
     }
@@ -83,16 +163,21 @@ define( [ 'hu','game/entities'], function(hu, EL){
   //ENEMY
   function createEnemy(pos){
     enemyAdded();
-    return EL.getEnemy(pos,CURRENT_LEVEL);
+    TIME_SINCE_LAST_ENEMY_OUT = 0;
+    var enemyID = levelsStructure.levels[CURRENT_LEVEL-1][CURRENT_GROUP][CURRENT_ENEMY];
+    CURRENT_ENEMY++;
+    var enemy =  EL.getEnemy(pos,enemyID);
+    enemy.level = CURRENT_LEVEL;
+    return enemy;
   }
 
   function enemyAdded(){
     INFORMATION.levels[CURRENT_LEVEL - 1].total += 1;
   }
 
-  function killedEnemy(){
-    if(CURRENT_LEVEL <=MAX_LEVEL){
-      INFORMATION.levels[CURRENT_LEVEL - 1].killed += 1;
+  function killedEnemy(enemy){
+    if(enemy.level <= MAX_LEVEL){
+      INFORMATION.levels[enemy.level - 1].killed += 1;  
     }
   }
   //BOSS
@@ -123,12 +208,6 @@ define( [ 'hu','game/entities'], function(hu, EL){
     for(var i = 0; i<SUSCRIPTIONS.length; i++){
       SUSCRIPTIONS[i](CURRENT_LEVEL);
     }
-  }
-
-  function changeLevel(){
-    INFORMATION.levels[ CURRENT_LEVEL -1 ].completed = true;
-    CURRENT_LEVEL++;
-    notifyLevelUp();
   }
 
   function isFinalStage(){

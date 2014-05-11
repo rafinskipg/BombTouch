@@ -36,15 +36,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           nyanGame.resume();
         }
 
-        //Message for levels
-        function showLevel(level){
-          $scope.level = level;
-          $scope.showLevel = true;
-          $timeout( function(){
-              $scope.showLevel = false;
-          },1500)
-        }
-
         function showMessage(message,sender,timeout){
           if(!timeout){
             timeout = 2500;
@@ -93,10 +84,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         nyanGame.suscribePower(function(power){
             $scope.power = power;
             //TODO applyhere
-        });
-
-        nyanGame.suscribeLevelUp(function(level){
-          showLevel(level);
         });
 
         $scope.start();

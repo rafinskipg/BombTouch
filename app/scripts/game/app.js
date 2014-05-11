@@ -40,7 +40,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       win: false,
       died: false,
       points : 0,
-      default_power: 0,
+      power: 0,
       max_power :1000,
       game_over: false,
       paused: false,
@@ -68,7 +68,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   var frames = 0;
 
   var bullets = [],
-    bombs = [],
     enemies = [],
     explosions = [],
     specials = [],
@@ -116,7 +115,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }),
     rick: new Howl({
       urls: ['sounds/rickcut2.wav'],
-      volume: 0.3
+      volume: 0.5
     }),
     killer: new Howl({
       urls: ['sounds/killer.mp3'],
@@ -160,7 +159,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     init: "It's time, for other adventure, for other trip to the unknown...",
     not: 'Your trip will know a deadly end... B**CH',
     tst: 'Tstsk... You will have to pass over my rainbow',
-    ouch: 'Ouch @#¡%%!! :('
+    ouch: 'Ouch @#¡%%!! :(',
+    levelUp: 'Leeevel up! :D'
   };
 
   /****************************
@@ -361,7 +361,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     STATE = newState;
 
     bullets = [];
-    bombs = [];
     enemies = [];
     explosions = [];
     specials = [];
@@ -395,8 +394,12 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       }
     });
 
+    LEVELS_DIRECTOR.suscribeLevelUp(function(){
+      SOUNDS['nyan'].play();
+      showMessages([MESSAGES.levelUp], ['grumpy']);
+    })
     notifyLevelUp.map(function(fn){
-      LEVELS_DIRECTOR.suscribeLevelUp(fn);  
+      LEVELS_DIRECTOR.suscribeLevelUp(fn);
     });
     
 
@@ -537,6 +540,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   }
 
   function megaShootUntrottled(){
+    console.log(STATE.power)
     if(STATE.power == STATE.max_power){
       setPower(0);
       playSound(SOUNDS.rick);
@@ -649,7 +653,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
-    updateBombs(dt);
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
@@ -988,12 +991,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       .map(removeIfOutsideScreenleft));
   }
 
-  function updateBombs(dt){
-    bombs = hu.compact(
-      bombs.map(updateSprite(dt))
-      .map(pushBombIfDone)
-      .map(removeIfDone));
-  }
   
   function updateSpecials(dt){
     specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
@@ -1109,7 +1106,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   }
 
   function killEnemy(enemy){
-    LEVELS_DIRECTOR.killedEnemy();
+    LEVELS_DIRECTOR.killedEnemy(enemy);
     addPoints(enemy.points);
     addPower(enemy.points);
     playSound(SOUNDS.death);
@@ -1201,7 +1198,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }else{
       renderEntities(graves);
     }
-    renderEntities(bombs);
     renderEntities(bullets);
     renderEntities(enemyBullets);
     renderEntities(enemies);

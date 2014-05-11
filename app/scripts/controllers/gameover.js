@@ -19,7 +19,8 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
             $scope.quote = quote;
           });
 
-        $scope.share = function(){
+        $scope.share = function(e){
+          e.preventDefault();
           socialSrv.share( "I've just scored "+ $scope.gameState.points+" on the Nyan Cat adventures! Wow! Such funny, very game! Check it out http://rvpg.me ! ")
         }
 
