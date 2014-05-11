@@ -1,5 +1,25 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes.dex : \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/device/Device.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$3$4.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$5$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$2$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$4.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$2.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$3$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$2$2.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$5.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$2$3.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$2$4.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$3$2.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$3$3.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$1$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$3.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$1$2.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/org/apache/cordova/dialogs/Notification$4$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/uk/co/ilee/socialmessage/SocialMessage.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/uk/co/ilee/socialmessage/SocialMessage$1.class \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/rafinskipg/nyanspace/R$string.class \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/rafinskipg/nyanspace/R$attr.class \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/rafinskipg/nyanspace/NyanSpace.class \

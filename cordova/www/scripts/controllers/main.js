@@ -1,8 +1,8 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
     return BombTouchApp.controller('MainCtrl',
-      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location',
-      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv, $location) {
+      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location','badgesSrv',
+      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv, $location,badgesSrv) {
         $scope.puntos = 0;
         $scope.paused = false;
         $scope.megaShootActive = false;
@@ -22,10 +22,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         }
 
         $scope.start = function(){
-          $scope.home = false;
-          $scope.juego = true; 
           $scope.puntos = 0;
-          $scope.gameOver = false;
           nyanGame.setSound(settingsSrv.getSound());
           nyanGame.start();
         } 
@@ -39,15 +36,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           nyanGame.resume();
         }
 
-        //Message for levels
-        function showLevel(level){
-          $scope.level = level;
-          $scope.showLevel = true;
-          $timeout( function(){
-              $scope.showLevel = false;
-          },1500)
-        }
-
         function showMessage(message,sender,timeout){
           if(!timeout){
             timeout = 2500;
@@ -57,7 +45,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
           $scope.$apply();
 
           $timeout( function(){
-            $scope.$apply();
+           
               $scope.message = undefined;
               $scope.messageSender = 'dog.png';
           },timeout)
@@ -77,9 +65,11 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
 
         
         //Observer of the game
-        nyanGame.suscribeGameOver(function(){
-            localStorageSrv.saveBestScore($scope.puntos);
-            $location.path('/gameover');
+        nyanGame.suscribeGameOver(function(gameState, times){
+          gameState.times = times;
+          gameState.newBadges = badgesSrv.checkIfWonBadges(gameState);
+          localStorageSrv.saveGameState(gameState);
+          $location.path('/gameover');
         });
 
         nyanGame.suscribePoints(function(points){
@@ -94,10 +84,6 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         nyanGame.suscribePower(function(power){
             $scope.power = power;
             //TODO applyhere
-        });
-
-        nyanGame.suscribeLevelUp(function(level){
-          showLevel(level);
         });
 
         $scope.start();

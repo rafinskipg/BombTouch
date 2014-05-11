@@ -16,6 +16,10 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         $scope.play = function(){
           $location.path('/main');
         }
+        
+        $scope.highScores = function(){
+          $location.path('/scores');
+        }
 
         $scope.badges = function(){
            $location.path('/badges');

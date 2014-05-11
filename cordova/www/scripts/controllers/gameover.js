@@ -1,30 +1,28 @@
 define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
     'use strict';
     return BombTouchApp.controller('GameOverCtrl',
-      ['$scope','$routeParams', '$timeout', 'socialSrv', 'localStorageSrv','$location',
-      function ($scope,$routeParams, $timeout,socialSrv, localStorageSrv, $location) {
+      ['$scope','localStorageSrv','$location','quotesSrv','socialSrv',
+      function ($scope, localStorageSrv, $location,quotesSrv, socialSrv) {
+       
         $scope.bestScore = localStorageSrv.getBestScore();
         $scope.goHome  = function(){
           $location.path("/");
         }
         $scope.isMobile = window.isMobile ? true : false;
 
-        $scope.playAgain = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.start();
-        } 
+        $scope.gameState = localStorageSrv.getLastGameState();
+        $scope.totals = localStorageSrv.getTotals();
+        //TODO SHOW LIST OF WON BADGES
+        //
+        quotesSrv.getQuote()
+          .then(function(quote){
+            $scope.quote = quote;
+          });
 
-        $scope.share = function(){
-          $scope.home = false;
-          $scope.juego = true; 
-          $scope.puntos = 0;
-          $scope.gameOver = false;
-          GAME.restart();
+        $scope.share = function(e){
+          e.preventDefault();
+          socialSrv.share( "I've just scored "+ $scope.gameState.points+" on the Nyan Cat adventures! Wow! Such funny, very game! Check it out http://rvpg.me ! ")
         }
-
 
       }]);
 });

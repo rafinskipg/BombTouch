@@ -24,6 +24,10 @@ define([
         templateUrl: 'views/gameover.html',
         controller: 'GameOverCtrl'
       });
+      $routeProvider.when('/scores', {
+        templateUrl: 'views/scores.html',
+        controller: 'ScoresCtrl'
+      });
       $routeProvider.otherwise({ redirectTo: '/' });
     }
   ]);

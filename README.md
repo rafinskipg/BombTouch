@@ -81,3 +81,21 @@ cordova plugin add org.apache.cordova.dialogs
 ````
 
 
+List Cordova devices
+```
+adb devices
+````
+
+Device ??????? no permisions
+````
+sudo ./adb kill-server
+sudo ./adb start-server
+sudo ./adb devices
+````
+
+Sudo adb not command found
+````
+Symlink to adb
+sudo ln -s /opt/android-sdk-linux_x86/platform-tools/adb /usr/local/sbin/adb
+````
+

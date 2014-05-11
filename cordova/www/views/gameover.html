@@ -1,21 +1,64 @@
 <div class="container page gameover">
   <div class="row intro-text">
     <div class="col-xs-12">
-      <a class="btn btn-nyan"  ng-click="goHome()">
+      <a class="btn btn-nyan" ng-click="goHome()">
         <span class="glyphicon glyphicon-th-list"></span>Menu
       </a>
     </div>
     <div class="col-xs-12 text-center">
-      <h1>Game over</h1>
+      <h1 ng-show="!gameState.win">Game over</h1>
+      <h1 ng-show="gameState.win">You win this time</h1>
       <h2>Congratulations, player</h2>
-      <div class="score">Your score is {{puntos}}</div>
-      <div class="sharer">
-        <a ng-show="!isMobile" title="send to Facebook" onclick="return !window.open(this.href, 'Facebook', 'width=640,height=300')" href="http://www.facebook.com/sharer.php?s=100&title=Nyan Cat adventures&summary=I've completed {{puntos}} points on NyanSpace!&p[url]=http://nyanspace.herokuapp.com" data-desc="This is a description of the page" data-img="http://rvpg.me/experiments/BombTouch/images/cat.gif" target="_blank">
-          <span>
-            <img width="14" height="14" src="images/facebook.png" alt="Facebook"> Share it! 
-          </span>
-        </a>
 
+      <div class="stats" ng-class="{'win': gameState.win}">
+        <h3>Your stats</h3>
+        <div class="score">Your score is {{gameState.points}}<span class="glyphicon glyphicon-star"></span></div>
+        <div class="kills">
+          <h3>Kills</h3>
+          <ul>
+            <li class="killInfo" ng-repeat="level in gameState.levelsInfo.levels">LEVEL {{$index+1}} - {{level.killed}} enemies of {{ level.total }}</li>
+            <li ng-show="gameState.win">BOSS</li>
+          </ul>
+        </div>
+        <div class="bonuses">
+          <h3>Bonuses picked</h3>
+          {{gameState.levelsInfo.bonuses.picked}} out of {{gameState.levelsInfo.bonuses.total}} 
+        </div>
+
+        <div class="badges">
+          <h3 ng-show="gameState.newBadges.length > 0">Badges Earned</h3>
+          <h3 ng-show="gameState.newBadges.length  == 0">No badges earned... :(</h3>
+          <div class="badge {{badge}} completed" ng-repeat="badge in gameState.newBadges">
+            <span class="cover"></span>
+          </div>
+        </div>
+
+        <div class="total-stats">
+            <h3>Your total stats:</h3>
+            <div>{{totals.bonuses}} bonuses picked</div>
+            <div>{{totals.kills}} enemies killed</div>
+        </div>
+      </div>
+      
+      <div class="quote">
+          <p>And rembember...</p>
+
+          <div>{{quote}}</div>
+      </div>
+      <div class="sharer">
+          <a ng-show="!isMobile" ng-click="share($event)" title="send to Facebook" href="" target="_blank">
+            <span>
+              <img class="social-icon" src="images/social/nyan_fb_icon.png" alt="Facebook"> Share it! 
+            </span>
+          </a>
+
+
+          <a ng-click="share($event)">
+            <span>
+              <img class="social-icon" src="images/social/nyan_fb_icon.png" alt="Facebook"> Share it! 
+            </span>
+          </a>
+      </div>
     </div>
   </div>
-</div></div>
+</div>

@@ -20,9 +20,7 @@
             return this.expectedSize;
         },
         resize: function(width, height){
-            console.log(this.expectedSize);
             this.expectedSize = [width,height];
-            console.log(this.expectedSize);
         },
 
         render: function(ctx) {
@@ -53,7 +51,7 @@
                 x += frame * this.size[0];
         
             ctx.drawImage(resources.get(this.url),
-                          x, y,
+                          Math.round(x), Math.round(y),
                           this.size[0], this.size[1],
                           0, 0,
                           this.expectedSize[0], this.expectedSize[1]);
