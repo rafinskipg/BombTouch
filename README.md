@@ -7,14 +7,13 @@ Nyancat is a super sayan!
 TODO :
 - Adjust life / damage of enemies.
 - Make a menu appear when you hit Esc key
-- Make it respond to back button on android
 - Rethink the top menu
 - Add that movement equation i saw on goo create.
-- Add the social sharer on the gameover screen, add the points
-- Implement the badges logic.
-- The bonuses stay much longer, appear rarely
+- Social is sharing only the image.
+
 - Create a class like sprite.js for paralax rendering
-- When you end a game it saves the current progress in a progress list, badges extract information from here.
+- Send the game score to the backend
+- Add a -currentFrame method on the sprite.js, used to know when to shoot.
 
 ### Installation 
 
