@@ -110,7 +110,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     yeah: new Howl({
       urls: ['sounds/oh_yeah_wav_cut.wav']
     }),
-    nyan: new Howl({
+    levelup: new Howl({
       urls: ['sounds/upmid.wav']
     }),
     rick: new Howl({
@@ -149,7 +149,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     ]
   };
 
-  MESSAGES = {
+  var MESSAGES = {
     killer: 'I am your killer...!',
     power: 'BEHOLD MY POWER!',
     grunt: 'graARRRLL!!!',
@@ -163,6 +163,15 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     levelUp: 'Leeevel up! :D'
   };
 
+  var main_character_name = 'cat';
+  //var main_character_name = 'supercooldog';
+  var main_enemy_name = 'creeper';
+  var main_character_super_damaged = 'saiyancatdamaged';
+  var main_character_damaged = 'catdamaged';
+  var main_character_super_name = 'saiyancat';
+  //var main_character_super_name = 'supercooldog';
+
+  var time_between_bullets = 0.300;
   /****************************
   ****************************
     GAME Initialization
@@ -178,6 +187,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/weapons/twitter.png',
+      'images/doggy/cooldog.png',
       'images/rick/rickrollsprite.png'
   ]);
 
@@ -225,7 +235,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     toMouseListeners();
     reset();
     suscribeToEvents();
-    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
+    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],[main_character_name, main_enemy_name, main_character_name], 4000,500);
     playSound(SOUNDS.ambient);
     main();
   };
@@ -255,7 +265,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       touchInputs = {
         pos: {
           x : x ,
-          y : y
+          y : y - player.sprite.getSize()[1]/2
         }
       }
 
@@ -269,7 +279,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       touchInputs = {
         pos: {
           x : x ,
-          y : y
+          y : y - player.sprite.getSize()[1]/2
         }
       }
        
@@ -369,7 +379,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     bosses = [];
     enemyBullets = [];
     graves = [];
-    player = EL.getEntity('player', [50, canvas.height / 2]);
+    player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
 
     TIMERS = getDefaultTimers();
   };
@@ -378,25 +388,24 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
     suscribeMaxPower(function(bool){
       if(bool){
-        var superPlayerOptions =  EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
+        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, {life:player.life, totalLife: player.totalLife});
         player.sprite = superPlayerOptions.sprite;
         player.speed = superPlayerOptions.speed;
         player.damage = superPlayerOptions.damage;
         player.isSuperSaiyan = true;
-        showMessages([MESSAGES.saiyan], ['saiyancat']);
+        showMessages([MESSAGES.saiyan], [main_character_super_name]);
       }else{
-        var normalPlayerOptions =  EL.getEntity('player', player.pos, {life:player.life, totalLife: player.totalLife});
+        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, {life:player.life, totalLife: player.totalLife});
         player.sprite = normalPlayerOptions.sprite;
         player.speed = normalPlayerOptions.speed;
         player.isSuperSaiyan = false;
         player.damage = normalPlayerOptions.damage;
-        //showMessages([MESSAGES.nosaiyan], ['cat']);
       }
     });
 
     LEVELS_DIRECTOR.suscribeLevelUp(function(){
-      SOUNDS['nyan'].play();
-      showMessages([MESSAGES.levelUp], ['grumpy']);
+      SOUNDS['levelup'].play();
+      showMessages([MESSAGES.levelUp], ['dog']);
     })
     notifyLevelUp.map(function(fn){
       LEVELS_DIRECTOR.suscribeLevelUp(fn);
@@ -486,14 +495,14 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
   function shoot(){
     if(!isGameOver() &&
-      TIMERS.gameTime - TIMERS.lastFire > 0.100) {
+      TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity(player.bullet, [x,y], { damage: player.damage }));
-      bullets.push(EL.getEntity(player.topBullet, [x,y], { damage: player.damage/2 }));
-      bullets.push(EL.getEntity(player.bottomBullet, [x,y], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity(player.bullet, [player.pos[0] + player.sprite.getSize()[0],y], { damage: player.damage }));
+      bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
     
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
@@ -917,7 +926,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
       playSound(SOUNDS[chosenPhrase]);
-      showMessages([MESSAGES[chosenPhrase]], ['creeper']);
+      showMessages([MESSAGES[chosenPhrase]], [main_enemy_name]);
     }else if(action == 'launchEnemy'){
       enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
     };
@@ -949,20 +958,13 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }
   }
   /* Updates */
+  function lerp3(start,end, speed, dt){
+    return start + (end - start) * 0.1; 
+  }
   function updatePlayer(dt){
     if(touchInputs){
-      var signX = touchInputs.pos.x  > player.pos[0] ? 1 :  -1;
-      var signY = touchInputs.pos.y > player.pos[1]  ? 1 :  -1;
-      var diffX = touchInputs.pos.x - signX * player.pos[0];
-      var diffY = touchInputs.pos.y - signY * player.pos[1];
-
-      if(diffX > 5){
-        player.pos[0] += signX * player.speed * dt;
-      }
-      if(diffY > 5){
-        player.pos[1] += signY * player.speed * dt;
-      }
-      
+      player.pos[0] = lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      player.pos[1] = lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
     }
     player.sprite.update(dt);
   }
@@ -1102,7 +1104,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   function playerDamaged(damage){
     playSound(SOUNDS.ouch);
     player.life -= damage;
-    showMessages([MESSAGES.ouch], [(player.isSuperSaiyan ? 'saiyancatdamaged': 'catdamaged')]);
+    showMessages([MESSAGES.ouch], [(player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged)]);
   }
 
   function killEnemy(enemy){

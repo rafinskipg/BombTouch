@@ -55,8 +55,12 @@ define( [ ], function(){
   var bossSpriteSchema = ['images/creeper.png', [0,35], [30,30], 4, [0,1,2,1,2,1]];
  
   //Player
-  var playerSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
-  var superPlayerSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 4, [0, 1,2,3,4]];
+  var nyanCatSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
+  var superNyanCatSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 5, [0, 1,2,3,4]];
+
+  var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
+  var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
+  
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
@@ -168,7 +172,7 @@ define( [ ], function(){
   }
 
   function Player(pos, opts){
-    var sprite = opts.isSuperSaiyan ? superPlayerSpriteSchema : playerSpriteSchema;
+    var sprite = opts.spriteSchema;
     var entity  = new Entity(pos, sprite);
     entity.life = opts.life || 1000;
     entity.totalLife = opts.totalLife || 1000;
@@ -179,6 +183,9 @@ define( [ ], function(){
     entity.damage = opts.damage || 80;
     entity.baseDamage = opts.damage || 80;
     entity.speed = opts.speed || 200;
+    if(opts.resize){
+      entity.sprite.resize(opts.resize[0], opts.resize[1]);
+    }
     return entity;
   }
 
@@ -274,15 +281,32 @@ define( [ ], function(){
       return new BottomBullet(pos, opts);
     }else if(name == 'topBullet'){
       return new TopBullet(pos, opts);
-    }else if(name == 'player'){
+    }else if(name == 'cat'){
+      opts.spriteSchema = nyanCatSpriteSchema;
       return new Player(pos, opts);
-    }else if(name == 'superPlayer'){
+    }else if(name == 'cooldog'){
+      opts.spriteSchema = coolDogSpriteSchema;
+      opts.resize = [80,100];
+      return new Player(pos, opts);
+    }else if(name == 'saiyancat'){
       opts = {
         damage: 160,
         isSuperSaiyan: true,
         speed: 500,
         life: opts.life,
-        totalLife: opts.totalLife
+        totalLife: opts.totalLife,
+        spriteSchema: superNyanCatSpriteSchema
+      };
+      return new Player(pos, opts);
+    }else if(name == 'supercooldog'){
+      opts = {
+        damage: 160,
+        isSuperSaiyan: true,
+        speed: 500,
+        life: opts.life,
+        totalLife: opts.totalLife,
+        spriteSchema: superCoolDogSpriteSchema,
+        resize: [80,100]
       };
       return new Player(pos, opts);
     }else if(name == 'grave'){

@@ -163,13 +163,13 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     levelUp: 'Leeevel up! :D'
   };
 
-  //var main_character_name = 'cat';
-  var main_character_name = 'supercooldog';
+  var main_character_name = 'cat';
+  //var main_character_name = 'supercooldog';
   var main_enemy_name = 'creeper';
   var main_character_super_damaged = 'saiyancatdamaged';
   var main_character_damaged = 'catdamaged';
-  //var main_character_super_name = 'saiyancat';
-  var main_character_super_name = 'supercooldog';
+  var main_character_super_name = 'saiyancat';
+  //var main_character_super_name = 'supercooldog';
 
   var time_between_bullets = 0.300;
   /****************************

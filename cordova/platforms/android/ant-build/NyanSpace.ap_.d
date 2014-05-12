@@ -14,7 +14,6 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/_where-is-www.txt \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/styles \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/fonts \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/favicon.png \
@@ -490,24 +489,6 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/hammerjs/hammer.js \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/hammerjs/plugins/hammer.showtouches.js \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/bower_components/hammerjs/plugins/hammer.fakemultitouch.js \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android/icon-48-mdpi.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android/drawable_xxhdpi \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android/icon-36-ldpi.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android/icon-72-hdpi.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android/icon-96-xhdpi.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/icons/android/drawable_xxhdpi/ic_launcher.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-mdpi-portrait.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-ldpi-portrait.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-hdpi-landscape.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-hdpi-portrait.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-xhdpi-portrait.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-mdpi-landscape.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-xhdpi-landscape.png \
-/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/res/screens/android/screen-ldpi-landscape.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/styles/main.css \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/fonts/glyphicons-halflings-regular.eot \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/fonts/glyphicons-halflings-regular.ttf \
@@ -591,6 +572,7 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/glyphicons-halflings.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/background2.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/bg.png \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/doggy \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/weapons \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/orbes \
@@ -621,6 +603,8 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/hud/metal5.jpg \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/hud/metal1.jpg \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/hud/separator.jpg \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/doggy/logo.png \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/doggy/cooldog.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/Nyan Cat Rainbow.sprite2_FILES \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/fireball_0.png \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/images/newsprites/54664.png \
