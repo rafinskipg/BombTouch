@@ -58,7 +58,8 @@ define( [ ], function(){
   var nyanCatSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
   var superNyanCatSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 5, [0, 1,2,3,4]];
 
-  var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
+ // var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
+  var coolDogSpriteSchema = ['images/doggy/dog2.png', [0, 350], [350,350], 1, [0, 1,2,3,4,5,6,7,8,9]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
@@ -286,7 +287,7 @@ define( [ ], function(){
       return new Player(pos, opts);
     }else if(name == 'cooldog'){
       opts.spriteSchema = coolDogSpriteSchema;
-      opts.resize = [80,100];
+      opts.resize = [80,80];
       return new Player(pos, opts);
     }else if(name == 'saiyancat'){
       opts = {

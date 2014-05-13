@@ -163,8 +163,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     levelUp: 'Leeevel up! :D'
   };
 
-  var main_character_name = 'cat';
-  //var main_character_name = 'supercooldog';
+  //var main_character_name = 'cat';
+  var main_character_name = 'cooldog';
   var main_enemy_name = 'creeper';
   var main_character_super_damaged = 'saiyancatdamaged';
   var main_character_damaged = 'catdamaged';
@@ -188,6 +188,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       'images/creeper.png',
       'images/weapons/twitter.png',
       'images/doggy/cooldog.png',
+      'images/doggy/dog2.png',
       'images/rick/rickrollsprite.png'
   ]);
 
