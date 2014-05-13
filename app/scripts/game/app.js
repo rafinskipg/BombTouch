@@ -187,7 +187,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       'images/bonusWeapon.png',
       'images/creeper.png',
       'images/weapons/twitter.png',
-      'images/doggy/cooldog.png',
+      'images/doggy/pixeleddog.png',
       'images/doggy/dog2.png',
       'images/rick/rickrollsprite.png'
   ]);
@@ -501,9 +501,9 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity(player.bullet, [player.pos[0] + player.sprite.getSize()[0],y], { damage: player.damage }));
-      bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
-      bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity('bulletBlue', [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], { damage: player.damage }));
+      //bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
+      //bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
     
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
