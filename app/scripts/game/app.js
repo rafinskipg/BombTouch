@@ -161,7 +161,13 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     not: 'Your trip will know a deadly end... B**CH',
     tst: 'Tstsk... You will have to pass over my rainbow',
     ouch: 'Ouch @#¡%%!! :(',
-    levelUp: 'Leeevel up! :D'
+    levelUp: 'Leeevel up! :D',
+    space: {
+      moving: 'We are moving through space at the rate of 530km a second',
+      moon: 'Moons are like little planets, without the enough mass to hold an atmosphere',
+      sunlight: 'The sunlight we see today was created 30,000 years ago, in the core of the sun.',
+      sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
+    }
   };
 
   //var main_character_name = 'cat';
