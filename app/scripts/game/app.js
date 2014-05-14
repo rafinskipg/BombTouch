@@ -59,7 +59,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       lastFire :0,
       lastTime: Date.now(),
       gameTime: 0,
-      realSeconds:0
+      realSeconds:0,
+      shootSpriteTime: 0
     };
   }
 
@@ -389,14 +390,15 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
     suscribeMaxPower(function(bool){
       if(bool){
-        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, {life:player.life, totalLife: player.totalLife});
+        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, player);
         player.sprite = superPlayerOptions.sprite;
         player.speed = superPlayerOptions.speed;
         player.damage = superPlayerOptions.damage;
         player.isSuperSaiyan = true;
         showMessages([MESSAGES.saiyan], [main_character_super_name]);
       }else{
-        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, {life:player.life, totalLife: player.totalLife});
+        console.log('ey')
+        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, player);
         player.sprite = normalPlayerOptions.sprite;
         player.speed = normalPlayerOptions.speed;
         player.isSuperSaiyan = false;
@@ -497,6 +499,12 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   function shoot(){
     if(!isGameOver() &&
       TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
+      
+      if(TIMERS.shootSpriteTime === 0){
+        changePlayerSpriteToShooting(true);
+      }
+      TIMERS.shootSpriteTime = 0.5;
+      
 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
@@ -792,9 +800,13 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
   function moveInCircleAround(around, dt){
     var dt = dt;
-    var radius = around.sprite.getSize()[1] > around.sprite.getSize()[0] ? around.sprite.getSize()[1] : around.sprite.getSize()[0];
+    //TODO We are changing around / by player cause the reference is getting lost
+    
     return function(entity){ 
+      var radius = player.sprite.getSize()[1] > player.sprite.getSize()[0] ? player.sprite.getSize()[1] : player.sprite.getSize()[0];
       var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+      //TODO: This may cause the dogge to move from the center of the circle, the Phi calculus agains a game time
+      //it should be against something between 0 and 10 ? 
       var phi = velocityPerSeconds * TIMERS.gameTime;
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
@@ -802,8 +814,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       var xC = radius * Math.cos(angleInRadians)+phi;
       var yC = radius * Math.sin(angleInRadians)+phi;
 
-      xC = xC + around.pos[0];
-      yC = yC + around.pos[1];
+      xC = xC + player.pos[0];
+      yC = yC + player.pos[1];
       entity.pos =[xC,yC]
       return entity;
     }
@@ -958,15 +970,32 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       return entity;
     }
   }
+
+  function changePlayerSpriteToShooting(shooting){
+    if(shooting){
+      player.sprite = EL.getEntity(main_character_name+'shooting', player.pos, player).sprite;
+    }else{
+      player.sprite = EL.getEntity(main_character_name, player.pos, player).sprite;
+    }
+  }
   /* Updates */
   function lerp3(start,end, speed, dt){
     return start + (end - start) * 0.1; 
   }
   function updatePlayer(dt){
+    if(TIMERS.shootSpriteTime > 0){
+      TIMERS.shootSpriteTime -= dt;
+      if(TIMERS.shootSpriteTime <= 0){
+        TIMERS.shootSpriteTime = 0;
+        changePlayerSpriteToShooting(false);
+      }
+    }
+
     if(touchInputs){
       player.pos[0] = lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
       player.pos[1] = lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
     }
+
     player.sprite.update(dt);
   }
   function movePlayer(dir,dt){
