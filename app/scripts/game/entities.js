@@ -129,6 +129,7 @@ define( [ ], function(){
   function BlueBullet(pos, opts){
     var entity = new Entity(pos, blueBulletSpriteSchema);
     entity.dir = 'right';
+    entity.sprite.resize(20,20);
     entity.damage = opts.damage || 50;
     entity.speed = opts.speed || 500;
     return entity;

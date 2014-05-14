@@ -19,8 +19,8 @@ box-sizing: border-box;
 }
 
 body {
-    background: url('../images/bg/starts.jpeg');
-    background-size:cover;
+    background: url('../images/background.png');
+    
 }
 
 .container{
@@ -143,6 +143,19 @@ img {
                 }
             }
         }
+    }
+    .donation{
+        background: rgba(128, 50, 50, 0.86);
+        padding: 20px;
+    }
+    .donationBag{
+        width: 5em;
+        background-image: url('../images/money.png');
+        height: 5em;
+        background-repeat: no-repeat;
+        background-size:contain;
+        display: block;
+        float: left;
     }
 }
 

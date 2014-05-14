@@ -47,7 +47,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       post_game_completed : false,
       resources_loaded: false,
       background_speed: 0.3,
-      game_speed: 1.0
+      game_speed: 0.5
     };
     return options;
   }
@@ -104,7 +104,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }),
     ambient: new Howl({
      //urls: ['sounds/April_Kisses.mp3'],
-      urls: ['sounds/songs/intro.mp3'],
+      urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
       volume: 0.5,
       loop: true
     }),
