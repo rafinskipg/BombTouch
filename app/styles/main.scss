@@ -283,7 +283,7 @@ img {
 .game{
     overflow: hidden;
      
-    canvas {
+    #canvas {
         margin: auto;
         position: absolute;
         top: 43px;
@@ -291,6 +291,18 @@ img {
         left: 0;
         right: 0;
     }
+    #canvas2{
+        position: absolute;
+        top:0;
+        left: 0;
+        margin: auto;
+        z-index: 3000;
+        display: none;
+        &.visible{
+            display: block;
+        }
+    }
+
     .top_menu{
         width: 100%;
         top: 0;

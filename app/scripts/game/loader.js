@@ -18,19 +18,21 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
       });
       return;
     }
-
+    canvas.className = '';
     cb();
   }
 
   function init(canvasId){
     canvas = document.getElementById(canvasId);
+    canvas.className = 'visible';
     ctx = canvas.getContext("2d");
+    
     //Seems to work
     ctx.webkitImageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43;
+    canvas.height = window.innerHeight ;
     
     now = 0; then = Date.now();
 
@@ -68,7 +70,7 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     }
 
     this.radius = 5;
-    this.color = 'red';
+    this.color = 'white';
     this.weight = 10;
 
     var self = this;
@@ -98,7 +100,10 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     // Fill the path
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    
+    ctx.fillStyle = 'white';
+    ctx.font = "30px Arial";
+    ctx.fillText("LOADING ...", 10, 50);
+
 
     update(dt/1000.0);
     render();
