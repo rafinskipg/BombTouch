@@ -107,15 +107,15 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       }),
       killer: new Howl({
         urls: ['sounds/killer.mp3'],
-        volume: 0.5
+        volume: 0.2
       }),
       grunt: new Howl({
         urls: ['sounds/grunt.mp3'],
-        volume: 0.5
+        volume: 0.2
       }),
       power: new Howl({
         urls: ['sounds/power.mp3'],
-        volume: 0.5
+        volume: 0.2
       }),
       ouch:  new Howl({
         urls: ['sounds/ohmy.wav']
@@ -206,7 +206,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,20);
+    LEVELS_DIRECTOR.init(5,6,20);
 
     initCanvas();
     toMouseListeners();
@@ -921,6 +921,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   }
   function playAction(action, entity){
     if(action =='enemyShoot'){
+      console.log(entity.damage);
       enemyShoot(entity.pos, entity.damage);
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
@@ -1046,7 +1047,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       .map(updateSprite(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionThrottled(0.5,dt)))
+      .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
       .map(resetBossActionsIfEmpty)
       .map(moveToPlayerVertically(dt)));
   }
@@ -1169,7 +1170,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     enemies = collisionToEnemyGroup(enemies);
     bosses = collisionToEnemyGroup(bosses);
 
-    enemyBullets = hu.compact(enemyBullets.map(ifCollidesApplyDamageTo(player))
+    enemyBullets = hu.compact(enemyBullets
         .map(removeIfCollideWithAndPlaySound(player)));
   }
 

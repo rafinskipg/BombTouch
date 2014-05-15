@@ -340,7 +340,7 @@ define( [ ], function(){
   //Enemies
   function level1Enemy(pos){
     var entity = new Entity(pos, tacnyanSpriteSchema);
-    entity.speed = 50;
+    entity.speed = 45;
     entity.points = 100;
     entity.totalLife = 100;
     entity.life = 100;
@@ -352,46 +352,46 @@ define( [ ], function(){
 
   function level2Enemy(pos){
     var entity = new Entity(pos, dolanSpriteSchema);
-    entity.speed = 25;
+    entity.speed = 50;
     entity.points = 200;
     entity.totalLife = 200;
     entity.sprite.resize(50,50);
     entity.life = 200;
-    entity.damage = 200;
+    entity.damage = 120;
     entity.dir = 'left';
     return entity;
   }  
   function level3Enemy(pos){
     var entity = new Entity(pos, flappySpriteSchema);
-    entity.speed = 75;
+    entity.speed = 55;
     entity.points = 300;
     entity.totalLife = 300;
     entity.sprite.resize(50,50);
     entity.life = 300;
-    entity.damage = 300;
+    entity.damage = 160;
     entity.dir = 'left';
     return entity;
   }  
 
   function level4Enemy(pos){
     var entity = new Entity(pos, dramaticSpriteSchema);
-    entity.speed = 25;
+    entity.speed = 65;
     entity.points = 400;
     entity.totalLife = 400;
     entity.life = 400;
     entity.sprite.resize(50,45);
-    entity.damage = 400;
+    entity.damage = 180;
     entity.dir = 'left';
     return entity;
   }  
 
   function level5Enemy(pos){
     var entity = new Entity(pos, level5SpriteSchema);
-    entity.speed = 25;
+    entity.speed = 75;
     entity.points = 500;
     entity.totalLife = 500;
     entity.life = 500;
-    entity.damage = 500;
+    entity.damage = 200;
     entity.dir = 'left';
     return entity;
   }
@@ -429,7 +429,8 @@ define( [ ], function(){
     entity.points = 10000;
     entity.totalLife = 10000;
     entity.life = 10000;
-    entity.damage = 10000;
+    entity.damage = 400;
+    entity.sprite.resize(60,60);
     return entity;
   }
 

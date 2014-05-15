@@ -15,7 +15,7 @@ define(['angular', 'app', 'maingame'], function(angular, BombTouchApp , GAME){
         $scope.totals = localStorageSrv.getTotals();
 
         $scope.share = function(){
-          socialSrv.share('My best score, on the nyan cat game... :D '+ $scope.bestScore+' points!');
+          socialSrv.share('My best score, on the Cool Dog game... :D '+ $scope.bestScore+' points!');
         }
 
       }]);
