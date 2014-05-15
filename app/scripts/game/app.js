@@ -1,19 +1,4 @@
-define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], function(hu, EL, LEVELS_DIRECTOR){
-  /****************************
-  ****************************
-    Cross browser animation frame
-  ****************************
-  ****************************/
-  var requestAnimFrame = (function(){
-    return window.requestAnimationFrame  ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame    ||
-      window.oRequestAnimationFrame      ||
-      window.msRequestAnimationFrame     ||
-      function(callback){
-        window.setTimeout(callback, 1000 / 60);
-      };
-  })();
+define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(hu, EL, LEVELS_DIRECTOR){
 
   var throttle = function(lambda, ms){
     var allow = true;
@@ -45,9 +30,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       game_over: false,
       paused: false,
       post_game_completed : false,
-      resources_loaded: false,
       background_speed: 0.3,
-      game_speed: 0.5
+      game_speed: 2.5
     };
     return options;
   }
@@ -93,62 +77,66 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   //Touch inputs
   var touchInputs;
 
-  var SOUNDS = {
-    death: new Howl({
-      urls: ['sounds/cut_grunt2.wav'],
-      volume: 0.1
-    }),
-    shoot: new Howl({
-      urls: ['sounds/laser5.wav'],
-      volume: 0.1
-    }),
-    ambient: new Howl({
-     //urls: ['sounds/April_Kisses.mp3'],
-      urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
-      volume: 0.5,
-      loop: true
-    }),
-    yeah: new Howl({
-      urls: ['sounds/oh_yeah_wav_cut.wav']
-    }),
-    levelup: new Howl({
-      urls: ['sounds/upmid.wav']
-    }),
-    rick: new Howl({
-      urls: ['sounds/rickcut2.wav'],
-      volume: 0.5
-    }),
-    killer: new Howl({
-      urls: ['sounds/killer.mp3'],
-      volume: 0.5
-    }),
-    grunt: new Howl({
-      urls: ['sounds/grunt.mp3'],
-      volume: 0.5
-    }),
-    power: new Howl({
-      urls: ['sounds/power.mp3'],
-      volume: 0.5
-    }),
-    ouch:  new Howl({
-      urls: ['sounds/ohmy.wav']
-    }),
-    explosions: [
-      new Howl({
-          urls: ['sounds/explosions/atari_boom2.wav'],
-          volume: 0.6
-      }),
-      new Howl({
-          urls: ['sounds/explosions/explodemini.wav'],
-          volume: 0.3
-      }),
-      new Howl({
-          urls: ['sounds/explosions/explode.wav'],
-          volume: 0.3
-      })
+  var SOUNDS;
 
-    ]
-  };
+  function preloadSounds(){
+    SOUNDS = {
+      death: new Howl({
+        urls: ['sounds/cut_grunt2.wav'],
+        volume: 0.1
+      }),
+      shoot: new Howl({
+        urls: ['sounds/laser5.wav'],
+        volume: 0.1
+      }),
+      ambient: new Howl({
+       //urls: ['sounds/April_Kisses.mp3'],
+        urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
+        volume: 0.5,
+        loop: true
+      }),
+      yeah: new Howl({
+        urls: ['sounds/oh_yeah_wav_cut.wav']
+      }),
+      levelup: new Howl({
+        urls: ['sounds/upmid.wav']
+      }),
+      rick: new Howl({
+        urls: ['sounds/rickcut2.wav'],
+        volume: 0.5
+      }),
+      killer: new Howl({
+        urls: ['sounds/killer.mp3'],
+        volume: 0.5
+      }),
+      grunt: new Howl({
+        urls: ['sounds/grunt.mp3'],
+        volume: 0.5
+      }),
+      power: new Howl({
+        urls: ['sounds/power.mp3'],
+        volume: 0.5
+      }),
+      ouch:  new Howl({
+        urls: ['sounds/ohmy.wav']
+      }),
+      explosions: [
+        new Howl({
+            urls: ['sounds/explosions/atari_boom2.wav'],
+            volume: 0.6
+        }),
+        new Howl({
+            urls: ['sounds/explosions/explodemini.wav'],
+            volume: 0.3
+        }),
+        new Howl({
+            urls: ['sounds/explosions/explode.wav'],
+            volume: 0.3
+        })
+
+      ]
+    };
+  }
 
   var MESSAGES = {
     killer: 'I am your killer...!',
@@ -185,25 +173,10 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   ****************************
   ****************************/
 
-  //Resources loaded asynchronously
-  resources.load([
-      'images/newsprites.png',
-      'images/background.png',
-      'images/orbes/coin.png',
-      'images/enemies/tacnyan.png',
-      'images/bonusWeapon.png',
-      'images/creeper.png',
-      'images/weapons/twitter.png',
-      'images/doggy/pixeleddog.png',
-      'images/doggy/dog2.png',
-      'images/rick/rickrollsprite.png'
-  ]);
-
-
   // The main game loop
   var main = function() {
     var now = Date.now();
-    var dt = (now - TIMERS.lastTime);   
+    var dt = (now - TIMERS.lastTime);
 
     frames = (1000/ (dt * 60)) * 60;
     
@@ -232,11 +205,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   };
 
   function start() {
-    if(!resources.isReady()){
-      requestAnimFrame(start);
-      return;
-    }
-
+    preloadSounds();
     LEVELS_DIRECTOR.init(5,1);
 
     initCanvas();

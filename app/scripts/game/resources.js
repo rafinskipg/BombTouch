@@ -19,9 +19,22 @@
     function _load(url) {
         if(resourceCache[url]) {
             return resourceCache[url];
-        }
-        else {
+        }else if( (/(\.mp4|\.mp3|\.ogg|\.wav)/).test(url) ){
+            var audio = new Audio();
+            audio.addEventListener('canplaythrough',  function() {
+                resourceCache[url] = audio;
+                
+                if(isReady()) {
+                    readyCallbacks.forEach(function(func) { func(); });
+                }
+            }, false); // It works!!
+            
+            resourceCache[url] = false;
+            audio.src = url;
+        }else{
             var img = new Image();
+            resourceCache[url] = false;
+         
             img.onload = function() {
                 resourceCache[url] = img;
                 
@@ -29,7 +42,7 @@
                     readyCallbacks.forEach(function(func) { func(); });
                 }
             };
-            resourceCache[url] = false;
+            
             img.src = url;
         }
     }
