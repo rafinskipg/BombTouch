@@ -359,27 +359,42 @@ img {
         right: 0;
         z-index: 3000;
         height: 50px;
-        background: url('../images/hud/circuits.png');
-        width: 50%;
+        background-color:white;
+        width: 100%;
         border: 1px solid white;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: white;
+        color: black;
         .picture{
             width: 85px;
             float: left;
-            img{
-                height: 50px;
-                width: 50px;
-                margin-left: 20px;
+            height: 50px;
+            background-repeat:no-repeat;
+            background-size: 50px 50px;
+            &.cooldog{
+                background-image:url('../images/messages/cooldog.png');
             }
+            &.cooldogdamaged{
+                background-image:url('../images/messages/cooldogdamaged.png');
+            }
+            &.creeper{
+                background-image:url('../images/messages/creeper.png');
+            }
+            &.dog{
+                background-image:url('../images/messages/dog.png');
+            }
+            &.unknown{
+                background-image:url('../images/messages/unknown.png');
+            }
+            margin-left: 20px;
+
         }
         
         .messageBody{
             padding-left: 75px;
             padding-top: 5px;
             font-size: 12px;
-            background: rgba(253, 95, 95, 0.18);
+            margin-left: 80px;
             font-weight: bold;
             /* letter-spacing: 1px; */
             text-transform: uppercase;
@@ -420,7 +435,6 @@ img {
         #message{
             min-height: 25px;
             height: auto;
-            width: 56%;
             .picture{
                 width: 50px;
                 img{
@@ -519,3 +533,4 @@ img {
     }
 }
 @import "mobile";
+

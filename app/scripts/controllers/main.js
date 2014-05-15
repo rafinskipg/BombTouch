@@ -68,13 +68,13 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
         function showMessage(message){
           $scope.message = message.text;
           //TODO use resources.get resource from preloaded items
-          $scope.messageSender = 'images/messages/'+message.sender + '.png';
+          $scope.messageSender = message.sender;
         
           $scope.$apply();
 
           $timeout( function(){
               $scope.message = undefined;
-              $scope.messageSender = 'images/messages/unknown.png';
+              $scope.messageSender = 'unknown';
           },message.duration)
           
         }
