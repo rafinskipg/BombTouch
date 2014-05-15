@@ -10,7 +10,7 @@ define([
                 navigator.notification.alert(
                     message,    // message
                     null,       // callback
-                    "The Nyan Cat Adventures", // title
+                    "The Cool Dog Adventures", // title
                     'OK'        // buttonName
                 );
             };

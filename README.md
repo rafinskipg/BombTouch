@@ -5,15 +5,14 @@ Nyancat is a super sayan!
 [DEMO](http://rvpg.me/experiments/BombTouch/)
 
 TODO :
-- Adjust life / damage of enemies.
+
 - Make a menu appear when you hit Esc key
 - Rethink the top menu
-- Add that movement equation i saw on goo create.
-- Social is sharing only the image.
-
 - Create a class like sprite.js for paralax rendering
 - Send the game score to the backend
 - Add a -currentFrame method on the sprite.js, used to know when to shoot.
+- Add difficulties. 
+- Make again the gif on the home
 
 ### Installation 
 

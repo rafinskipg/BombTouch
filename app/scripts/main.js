@@ -20,6 +20,9 @@ requirejs.config({
 		angular: {
 			exports: 'angular'
 		},
+        'ngsanitize':{
+            exports: 'ngSanitize'
+        },
         ngroute:{
             deps:['angular']
         },

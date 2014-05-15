@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(hu, EL, LEVELS_DIRECTOR){
+define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, LEVELS_DIRECTOR){
 
   var throttle = function(lambda, ms){
     var allow = true;
@@ -158,12 +158,12 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
     }
   };
 
-  //var main_character_name = 'cat';
   var main_character_name = 'cooldog';
   var main_enemy_name = 'creeper';
-  var main_character_super_damaged = 'saiyancatdamaged';
-  var main_character_damaged = 'catdamaged';
-  var main_character_super_name = 'saiyancat';
+  var main_character_super_damaged = 'cooldogdamaged';
+  var main_character_damaged = 'cooldogdamaged';
+  var main_character_super_name = 'cooldog';
+  var bonus_image_name = 'dog';
   //var main_character_super_name = 'supercooldog';
 
   var time_between_bullets = 0.300;
@@ -181,11 +181,11 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
     frames = (1000/ (dt * 60)) * 60;
     
     TIMERS.realSeconds += dt;
-    dt = (now - TIMERS.lastTime) / 1000.0;
-    dt = STATE.game_speed * dt;
+    var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
+    dt = STATE.game_speed * realtimeDt;
 
     if(!isGameOver() && !isPaused()){
-      update(dt);
+      update(dt,realtimeDt);
       render();
       TIMERS.lastTime = now;
       requestAnimFrame(main);
@@ -206,14 +206,15 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1);
+    LEVELS_DIRECTOR.init(5,1,20);
 
     initCanvas();
     toMouseListeners();
     reset();
     suscribeToEvents();
-    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],[main_character_name, main_enemy_name, main_character_name], 4000,500);
     playSound(SOUNDS.ambient);
+
+    showInitialDialogs();
     main();
   };
 
@@ -363,7 +364,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
 
   function suscribeToEvents(){
 
-    suscribeMaxPower(function(bool){
+    /*suscribeMaxPower(function(bool){
       if(bool){
         var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, player);
         player.sprite = superPlayerOptions.sprite;
@@ -379,24 +380,37 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
         player.isSuperSaiyan = false;
         player.damage = normalPlayerOptions.damage;
       }
-    });
+    });*/
 
     LEVELS_DIRECTOR.suscribeLevelUp(function(){
       SOUNDS['levelup'].play();
-      showMessages([MESSAGES.levelUp], ['dog']);
+      var message = new models.Message(MESSAGES.levelup, bonus_image_name);
+      showMessages([message]);
     })
     notifyLevelUp.map(function(fn){
       LEVELS_DIRECTOR.suscribeLevelUp(fn);
     });
-    
+  }
 
-    /*suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
-      STATE.game_speed = 0.4;
-      
-      window.setTimeout(function(){
-        STATE.game_speed = 1.0;
-      }, messages.length * (timeoutMessage+timeoutBetweenMessages));
-    });*/
+  function showInitialDialogs(){
+
+    var messageHero1 = new models.Message('I see the humanity...', main_character_name,3000);
+    var messageHero2 = new models.Message('... i felt them', main_character_name,3000);
+    var messageHero3 = new models.Message('...', main_character_name);
+    var messageHero4 = new models.Message('You have to recover your wisdom', main_character_name);
+    var messageHero5 = new models.Message('... if you want to survive', main_character_name);
+    var messageEnemy1 = new models.Message('I won\' allow you ' , main_enemy_name);
+    var messageHero6 = new models.Message('...wat', main_character_name);
+
+    showMessages([ 
+      messageHero1,
+      messageHero2,
+      messageHero3,
+      messageHero4,
+      messageHero5,
+      messageEnemy1,
+      messageHero6
+       ],200);
     
   }
 
@@ -460,14 +474,12 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
     SOUNDS.ambient.stop();
   }
 
-  function showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages){
-    timeoutMessage = timeoutMessage ? timeoutMessage : 2000;
+  function showMessages(messages,timeoutBetweenMessages){
     timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 500;
-
     for(var i = 0; i < notifyMessages.length; i++){
+      //Clone the item, cause we dont want to send a referenced object ;)
       var messagesClone = messages.map(function(item){ return item });
-      var sendersClone = senders.map(function(item){ return item });
-      notifyMessages[i](messagesClone,sendersClone, timeoutMessage,timeoutBetweenMessages);
+      notifyMessages[i](messagesClone,timeoutBetweenMessages);
     }
   }
 
@@ -615,17 +627,17 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
   ****************************
   ****************************/
 
-  function update(dt) {
+  function update(dt,realtimeDt) {
     TIMERS.gameTime += dt;
-    updateLevelsDirector(dt);
+    updateLevelsDirector(dt,realtimeDt);
     handleInput(dt);
     updateEntities(dt);
     checkCollisions();
     checkGameEndConditions();
   };
 
-  function updateLevelsDirector(dt){
-    LEVELS_DIRECTOR.update(dt);
+  function updateLevelsDirector(dt,realtimeDt){
+    LEVELS_DIRECTOR.update(dt,realtimeDt);
 
     if(LEVELS_DIRECTOR.shouldAddEnemy() == true ){
       enemies.push(LEVELS_DIRECTOR.createEnemy([canvas.width, Math.random() * (canvas.height - 39)]));
@@ -641,7 +653,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
     }
   }
 
-  function updateEntities(dt) {
+  function updateEntities(dt,realtimeDt) {
     updatePlayer(dt);
     updateBosses(dt);
     updateBullets(dt);
@@ -913,8 +925,11 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
+      
       playSound(SOUNDS[chosenPhrase]);
-      showMessages([MESSAGES[chosenPhrase]], [main_enemy_name]);
+      
+      var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
+      showMessages([message]);
     }else if(action == 'launchEnemy'){
       enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
     };
@@ -1074,7 +1089,10 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
         entity.damage = entity.baseDamage + 50;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
-        showMessages([MESSAGES.wow], ['dog']);
+
+        var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
+        showMessages([message]);
+
       }
       return bonus;
     }
@@ -1109,7 +1127,9 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input','g
   function playerDamaged(damage){
     playSound(SOUNDS.ouch);
     player.life -= damage;
-    showMessages([MESSAGES.ouch], [(player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged)]);
+
+    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged))
+    showMessages([messageOuch]);
   }
 
   function killEnemy(enemy){

@@ -6,7 +6,6 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
         $scope.puntos = 0;
         $scope.paused = false;
         $scope.megaShootActive = false;
-        $scope.messageSender = 'dog.png';
 
         var theGame = new GAME();
 
@@ -32,10 +31,14 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
               'images/enemies/tacnyan.png',
               'images/bonusWeapon.png',
               'images/creeper.png',
-              'images/weapons/twitter.png',
               'images/doggy/pixeleddog.png',
               'images/doggy/dog2.png',
               'images/rick/rickrollsprite.png',
+              'images/messages/dog.png',
+              'images/messages/creeper.png',
+              'images/messages/cooldog.png',
+              'images/messages/cooldogdamaged.png',
+              'images/messages/unknown.png',
               'sounds/cut_grunt2.wav',
               'sounds/laser5.wav',
               'sounds/songs/thiaz_itch_bubblin_pipe.mp3',
@@ -62,30 +65,27 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
           theGame.resume();
         }
 
-        function showMessage(message,sender,timeout){
-          if(!timeout){
-            timeout = 2500;
-          }
-          $scope.message = message;
-          $scope.messageSender = sender ?  sender + '.png' : 'dog.png';
+        function showMessage(message){
+          $scope.message = message.text;
+          //TODO use resources.get resource from preloaded items
+          $scope.messageSender = 'images/messages/'+message.sender + '.png';
+        
           $scope.$apply();
 
           $timeout( function(){
-           
               $scope.message = undefined;
-              $scope.messageSender = 'dog.png';
-          },timeout)
+              $scope.messageSender = 'images/messages/unknown.png';
+          },message.duration)
           
         }
 
-        function showMessages(messages, senders, timeoutMessage, timeoutBetweenMessages){
+        function showMessages(messages, timeoutBetweenMessages){
           var message = messages.shift();
-          var sender = senders.shift();
-          showMessage(message, sender, timeoutMessage);
+          showMessage(message);
           if(messages.length > 0){
             setTimeout(function() {
-              showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages);
-            }, timeoutMessage+timeoutBetweenMessages);
+              showMessages(messages,timeoutBetweenMessages);
+            }, message.duration + timeoutBetweenMessages);
           }
         }
 
