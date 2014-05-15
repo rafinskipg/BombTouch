@@ -1,48 +1,58 @@
-define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'], function($,hu, EL){
-  /****************************
-  ****************************
-    Cross browser animation frame
-  ****************************
-  ****************************/
-  var requestAnimFrame = (function(){
-    return window.requestAnimationFrame  ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame    ||
-      window.oRequestAnimationFrame      ||
-      window.msRequestAnimationFrame     ||
-      function(callback){
-        window.setTimeout(callback, 1000 / 60);
-      };
-  })();
+define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, LEVELS_DIRECTOR){
 
+  var throttle = function(lambda, ms){
+    var allow = true;
+    return function(){
+      if(allow){
+        allow = false,
+        lambda();
+
+        setTimeout(function(){
+          allow = true;
+        },ms);
+      }
+    }
+  }
   /****************************
   ****************************
     GAME Variables
   ****************************
   ****************************/
-  var STATE = {
-    sound_enabled: true,
-    boss_out : false,
-    level: 1,
-    points : 0,
-    default_power: 0,
-    max_power :1000,
-    game_over: false,
-    paused: false,
-    post_game_completed : false,
-    resources_loaded: false,
-    background_speed: 0.3
-  };
+  function getDefaultState(){
+    var options =  {
+      sound_enabled: true,
+      iteration: 1,
+      win: false,
+      died: false,
+      points : 0,
+      power: 0,
+      max_power :1000,
+      game_over: false,
+      paused: false,
+      post_game_completed : false,
+      background_speed: 0.3,
+      game_speed: 1.0
+    };
+    return options;
+  }
 
-  var TIMERS = {
-    lastFire : Date.now(),
-    lastTime: Date.now(),
-    gameTime: 0
-  };
+  var STATE = getDefaultState();
+
+  function getDefaultTimers(){
+    return {
+      lastFire :0,
+      lastTime: Date.now(),
+      gameTime: 0,
+      realSeconds:0,
+      shootSpriteTime: 0
+    };
+  }
+
+  var TIMERS = getDefaultTimers();
+
+  var frames = 0;
 
   var bullets = [],
-    bombs = [],
-    bombareas = [],
     enemies = [],
     explosions = [],
     specials = [],
@@ -58,48 +68,77 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   //Suscribe to events of the game
   var notifyGameEnd = [];
+  var notifyLevelUp = [];
   var notifyPoints = [];
   var notifyMessages = [];
-  var notifyLevelUp = [];
   var notifyPower = [];
   var notifyMaxPower = [];
 
-  var SOUNDS = {
-    death: new Howl({
-      urls: ['sounds/cut_grunt2.wav']
-    }),
-    shoot: new Howl({
-      urls: ['sounds/laser5.wav'],
-      volumme: 0.1
-    }),
-    explosion: new Howl({
-      urls: ['sounds/atari_boom2.wav']
-    }),
-    ambient: new Howl({
-      urls: ['sounds/April_Kisses.mp3'],
-      loop: true
-    }),
-    yeah: new Howl({
-      urls: ['sounds/oh_yeah_wav_cut.wav']
-    }),
-    nyan: new Howl({
-      urls: ['sounds/upmid.wav']
-    }),
-    killer: new Howl({
-      urls: ['sounds/killer.mp3']
-    }),
-    grunt: new Howl({
-      urls: ['sounds/grunt.mp3']
-    }),
-    power: new Howl({
-      urls: ['sounds/power.mp3']
-    }),
-    ouch:  new Howl({
-      urls: ['sounds/power.mp3']
-    })
-  };
+  //Touch inputs
+  var touchInputs;
 
-  MESSAGES = {
+  var SOUNDS;
+
+  function preloadSounds(){
+    SOUNDS = {
+      death: new Howl({
+        urls: ['sounds/cut_grunt2.wav'],
+        volume: 0.1
+      }),
+      shoot: new Howl({
+        urls: ['sounds/laser5.wav'],
+        volume: 0.1
+      }),
+      ambient: new Howl({
+       //urls: ['sounds/April_Kisses.mp3'],
+        urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
+        volume: 0.5,
+        loop: true
+      }),
+      yeah: new Howl({
+        urls: ['sounds/oh_yeah_wav_cut.wav']
+      }),
+      levelup: new Howl({
+        urls: ['sounds/upmid.wav']
+      }),
+      rick: new Howl({
+        urls: ['sounds/rickcut2.wav'],
+        volume: 0.5
+      }),
+      killer: new Howl({
+        urls: ['sounds/killer.mp3'],
+        volume: 0.5
+      }),
+      grunt: new Howl({
+        urls: ['sounds/grunt.mp3'],
+        volume: 0.5
+      }),
+      power: new Howl({
+        urls: ['sounds/power.mp3'],
+        volume: 0.5
+      }),
+      ouch:  new Howl({
+        urls: ['sounds/ohmy.wav']
+      }),
+      explosions: [
+        new Howl({
+            urls: ['sounds/explosions/atari_boom2.wav'],
+            volume: 0.6
+        }),
+        new Howl({
+            urls: ['sounds/explosions/explodemini.wav'],
+            volume: 0.3
+        }),
+        new Howl({
+            urls: ['sounds/explosions/explode.wav'],
+            volume: 0.3
+        })
+
+      ]
+    };
+  }
+
+  var MESSAGES = {
     killer: 'I am your killer...!',
     power: 'BEHOLD MY POWER!',
     grunt: 'graARRRLL!!!',
@@ -109,38 +148,44 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     init: "It's time, for other adventure, for other trip to the unknown...",
     not: 'Your trip will know a deadly end... B**CH',
     tst: 'Tstsk... You will have to pass over my rainbow',
-    ouch: 'Ouch @#¡%%!! :('
+    ouch: 'Ouch @#¡%%!! :(',
+    levelUp: 'Leeevel up! :D',
+    space: {
+      moving: 'We are moving through space at the rate of 530km a second',
+      moon: 'Moons are like little planets, without the enough mass to hold an atmosphere',
+      sunlight: 'The sunlight we see today was created 30,000 years ago, in the core of the sun.',
+      sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
+    }
   };
 
+  var main_character_name = 'cooldog';
+  var main_enemy_name = 'creeper';
+  var main_character_super_damaged = 'cooldogdamaged';
+  var main_character_damaged = 'cooldogdamaged';
+  var main_character_super_name = 'cooldog';
+  var bonus_image_name = 'dog';
+  //var main_character_super_name = 'supercooldog';
+
+  var time_between_bullets = 0.300;
   /****************************
   ****************************
     GAME Initialization
   ****************************
   ****************************/
 
-  //Resources loaded asynchronously
-  resources.load([
-      'images/newsprites.png',
-      'images/boom.png',
-      'images/background.png',
-      'images/orbes/bonus3.png',
-      'images/bonusWeapon.png',
-      'images/creeper.png',
-      'images/weapons/twitter.png',
-      'images/grave.png'
-  ]);
-
-  //Flag for initialization
-  resources.onReady(function() {
-    STATE.resources_loaded = true;
-  });
-
   // The main game loop
   var main = function() {
     var now = Date.now();
-    var dt = (now - TIMERS.lastTime) / 1000.0;
+    var dt = (now - TIMERS.lastTime);
+
+    frames = (1000/ (dt * 60)) * 60;
+    
+    TIMERS.realSeconds += dt;
+    var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
+    dt = STATE.game_speed * realtimeDt;
+
     if(!isGameOver() && !isPaused()){
-      update(dt);
+      update(dt,realtimeDt);
       render();
       TIMERS.lastTime = now;
       requestAnimFrame(main);
@@ -160,12 +205,118 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   };
 
   function start() {
-    //wait till resources loaded
-    if(!STATE.resources_loaded){
-      requestAnimFrame(start);
-      return;
-    }
+    preloadSounds();
+    LEVELS_DIRECTOR.init(5,1,20);
+
     initCanvas();
+    toMouseListeners();
+    reset();
+    suscribeToEvents();
+    playSound(SOUNDS.ambient);
+
+    showInitialDialogs();
+    main();
+  };
+
+  function restart(){
+    reset();
+    playSound(SOUNDS.ambient);
+    main();
+  }
+
+  function initCanvas(){
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    //Seems to work
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = false;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 43;
+  };
+
+  function toMouseListeners(){
+    canvas.addEventListener('touchmove', function(ev){
+      var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
+      var y = ev.targetTouches[0].pageY - canvas.offsetTop;
+      
+      touchInputs = {
+        pos: {
+          x : x ,
+          y : y - player.sprite.getSize()[1]/2
+        }
+      }
+
+      shoot();
+      ev.preventDefault();
+    });
+    canvas.addEventListener('touchstart', function(ev){
+      var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
+      var y = ev.targetTouches[0].pageY - canvas.offsetTop;
+      
+      touchInputs = {
+        pos: {
+          x : x ,
+          y : y - player.sprite.getSize()[1]/2
+        }
+      }
+       
+    });
+
+    canvas.addEventListener('touchend', function(){
+      touchInputs = null;
+    })
+    
+    var options = {
+      dragLockToAxis: true,
+      dragBlockHorizontal: true
+    };
+
+    var hammertime = new Hammer(canvas, options);
+
+    hammertime.on("swipe", function(ev){ 
+      ev.gesture.preventDefault();
+      console.log(ev);
+      megaShoot(ev.gesture.deltaX, ev.gesture.deltaY);
+      
+      var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
+      var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
+    });
+
+  }
+
+  function dragListeners(){
+    canvas = document.getElementById("canvas");
+    var options = {
+      dragLockToAxis: true,
+      dragBlockHorizontal: true
+    };
+    var hammertime = new Hammer(canvas, options);
+    hammertime.on("drag swipe", function(ev){ 
+      ev.gesture.preventDefault();
+
+      var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
+      var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
+        touchInputs = {
+          vel: {
+            x : signX * ev.gesture.velocityX * 2,
+            y : signY * ev.gesture.velocityY * 2
+          }
+        }
+      shoot();
+      
+    });
+    hammertime.on('tap hold', function(ev){
+      ev.gesture.preventDefault();
+      shoot();
+    });
+    hammertime.on('dragend swipeend', function(ev){
+      ev.gesture.preventDefault();
+      touchInputs = null;
+    });
+  }
+
+  function orientationListeners(){
     //TODO: this is being added many times
     window.addEventListener('deviceorientation',function(e){
       if(e.gamma &&  e.gamma > 10){
@@ -190,50 +341,14 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       }
       
     });
-    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],['cat', 'creeper', 'cat'], 4000,500);
-    reset();
-    suscribeToEvents();
-    playSound(SOUNDS.ambient);
-    main();
-  };
-
-  function restart(){
-    reset();
-    playSound(SOUNDS.ambient);
-    main();
   }
 
-  function initCanvas(){
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43
-
-    $(canvas).on('vclick',function(e){
-      var x = e.pageX - $(canvas).offset().left;
-      var y = e.pageY - $(canvas).offset().top;
-      bombs.push(EL.getEntity('bomb', [x, y]));                             
-    });
-  };
-
   function reset() {
-    STATE = {
-      sound_enabled: STATE.sound_enabled === false ? false: true,
-      boss_out : false,
-      level: 1,
-      points : 0,
-      power: 0,
-      max_power :1000,
-      game_over: false,
-      post_game_completed : false,
-      paused: false,
-      resources_loaded: true,
-      background_speed: 0.3
-    };
+    var newState = getDefaultState();
+    newState.sound_enabled = STATE.sound_enabled === false ? false: true;
+    STATE = newState;
 
     bullets = [];
-    bombs = [];
-    bombareas = [];
     enemies = [];
     explosions = [];
     specials = [];
@@ -242,33 +357,61 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bosses = [];
     enemyBullets = [];
     graves = [];
-    player = EL.getEntity('player', [50, canvas.height / 2]);
+    player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
 
-    TIMERS = {
-      lastFire : Date.now(),
-      lastTime: Date.now(),
-      gameTime: 0
-    };
+    TIMERS = getDefaultTimers();
   };
 
   function suscribeToEvents(){
-    suscribeMaxPower(function(bool){
+
+    /*suscribeMaxPower(function(bool){
       if(bool){
-        var superPlayerOptions =  EL.getEntity('superPlayer', player.pos, {life:player.life, totalLife: player.totalLife});
+        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, player);
         player.sprite = superPlayerOptions.sprite;
         player.speed = superPlayerOptions.speed;
         player.damage = superPlayerOptions.damage;
-        player.isSaiyan = true;
-        showMessages([MESSAGES.saiyan], ['saiyancat']);
+        player.isSuperSaiyan = true;
+        showMessages([MESSAGES.saiyan], [main_character_super_name]);
       }else{
-        var normalPlayerOptions =  EL.getEntity('player', player.pos, {life:player.life, totalLife: player.totalLife});
+        console.log('ey')
+        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, player);
         player.sprite = normalPlayerOptions.sprite;
         player.speed = normalPlayerOptions.speed;
+        player.isSuperSaiyan = false;
         player.damage = normalPlayerOptions.damage;
-        player.isSaiyan = false;
-        showMessages([MESSAGES.nosaiyan], ['cat']);
       }
+    });*/
+
+    LEVELS_DIRECTOR.suscribeLevelUp(function(){
+      SOUNDS['levelup'].play();
+      var message = new models.Message(MESSAGES.levelup, bonus_image_name);
+      showMessages([message]);
+    })
+    notifyLevelUp.map(function(fn){
+      LEVELS_DIRECTOR.suscribeLevelUp(fn);
     });
+  }
+
+  function showInitialDialogs(){
+
+    var messageHero1 = new models.Message('I see the humanity...', main_character_name,3000);
+    var messageHero2 = new models.Message('... i felt them', main_character_name,3000);
+    var messageHero3 = new models.Message('...', main_character_name);
+    var messageHero4 = new models.Message('You have to recover your wisdom', main_character_name);
+    var messageHero5 = new models.Message('... if you want to survive', main_character_name);
+    var messageEnemy1 = new models.Message('I won\' allow you ' , main_enemy_name);
+    var messageHero6 = new models.Message('...wat', main_character_name);
+
+    showMessages([ 
+      messageHero1,
+      messageHero2,
+      messageHero3,
+      messageHero4,
+      messageHero5,
+      messageEnemy1,
+      messageHero6
+       ],200);
+    
   }
 
   /****************************
@@ -282,15 +425,21 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     stopAmbientSound();
     graves.push(EL.getEntity('grave', player.pos));
     addExplosion(player.pos);
-    postGame();
+    if(!STATE.win){
+      postGame();  
+    }else{
+      endPostGame();
+    }
   }
 
   function endPostGame(){
     STATE.post_game_completed = true;
+    STATE.levelsInfo = LEVELS_DIRECTOR.getLevelsInfo();
     for(var i = 0; i<notifyGameEnd.length; i++){
-      notifyGameEnd[i]();
+      notifyGameEnd[i](STATE, TIMERS);
     }
   }
+
   function isGameOver(){
       return STATE.game_over;
   }
@@ -325,34 +474,34 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     SOUNDS.ambient.stop();
   }
 
-  function changeLevel(){
-    STATE.level++;
-    TIMERS.gameTime = 10 * STATE.level;
-    
-    for(var i = 0; i<notifyLevelUp.length; i++){
-      notifyLevelUp[i](STATE.level);
-    }
-  }
-
-  function showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages){
+  function showMessages(messages,timeoutBetweenMessages){
+    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 500;
     for(var i = 0; i < notifyMessages.length; i++){
-      notifyMessages[i](messages,senders, timeoutMessage,timeoutBetweenMessages);
+      //Clone the item, cause we dont want to send a referenced object ;)
+      var messagesClone = messages.map(function(item){ return item });
+      notifyMessages[i](messagesClone,timeoutBetweenMessages);
     }
   }
 
   function shoot(){
     if(!isGameOver() &&
-      Date.now() - TIMERS.lastFire > 100) {
+      TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
+      
+      if(TIMERS.shootSpriteTime === 0){
+        changePlayerSpriteToShooting(true);
+      }
+      TIMERS.shootSpriteTime = 0.5;
+      
 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity('twitterbullet', [x,y], { damage: player.damage }));
-      bullets.push(EL.getEntity('topBullet', [x,y], { damage: player.damage/2 }));
-      bullets.push(EL.getEntity('bottomBullet', [x,y], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity('bulletBlue', [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], { damage: player.damage }));
+      //bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
+      //bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
     
       playSound(SOUNDS.shoot);
-      TIMERS.lastFire = Date.now();
+      TIMERS.lastFire = TIMERS.gameTime ;
     }
   }
 
@@ -369,17 +518,47 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     playSound(SOUNDS.shoot);
   }
 
-  function megaShoot(){
-    if(STATE.power == STATE.max_power){
-      setPower(0);
-      playSound(SOUNDS.nyan);
-      specials.push(EL.getEntity('special', [player.pos[0] + player.width, player.pos[1] - player.height/2]));
+  function randomFromArray(array){
+    var randomPos = parseInt(Math.random() * array.length)
+    return array[randomPos];
+  }
+  var createRick = throttle(function(){
+    var possibleRickSizes = [
+      [70,110],
+      [140,220],
+      [35,65]
+    ];
+    var opts  = {
+      size : randomFromArray(possibleRickSizes)
+    }
+     specials.push(EL.getEntity('rick', [0, Math.random()* (canvas.height -39)], opts));
+  }, 300);
+  
+  var createRicks = function(ammount){
+    return function(){
+      createRick();
+
+      if(specials.length < ammount){
+        requestAnimFrame(createRicks(ammount))
+      }  
     }
   }
- 
+
+  function megaShootUntrottled(){
+    console.log(STATE.power)
+    if(STATE.power == STATE.max_power){
+      setPower(0);
+      playSound(SOUNDS.rick);
+      createRicks(9)();
+    }
+  }
+
+  var megaShoot = throttle(megaShootUntrottled, 1000);
+
   function addExplosion(pos){
     explosions.push(EL.getEntity('explosion',pos));
-    playSound(SOUNDS.explosion);
+    var number = parseInt(Math.random()*SOUNDS.explosions.length);
+    playSound(SOUNDS.explosions[number]);
   }
 
   function addPoints(pts){
@@ -447,62 +626,38 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     Entity update
   ****************************
   ****************************/
-  var throttle = function(lambda, ms){
-    var allow = true;
-    return function(){
-      if(allow){
-        allow = false,
-        lambda();
 
-        setTimeout(function(){
-          allow = true;
-        },ms);
-      }
-    }
-  }
-
-  var createBonus = throttle(function(){
-    bonuses.push(EL.getEntity('bonus',[canvas.width, Math.random() * (canvas.height - 39)]));
-  }, 5000);
-
-  var createLife = throttle(function(){
-    bonuses.push(EL.getEntity('life',[canvas.width, Math.random() * (canvas.height - 39)]));
-  }, 5000);
-
-  function update(dt) {
+  function update(dt,realtimeDt) {
     TIMERS.gameTime += dt;
+    updateLevelsDirector(dt,realtimeDt);
     handleInput(dt);
     updateEntities(dt);
-
-    // It gets harder over time by adding enemies using this
-    // equation: 1-.993^gameTime
-    if(STATE.level < 6 && !STATE.boss_out){
-      var value = Math.random() < 1 - Math.pow(.999, TIMERS.gameTime);
-
-      if(value) {
-        enemies.push(EL.getEnemy([canvas.width, Math.random() * (canvas.height - 39)], STATE.level));
-      }
-
-      createBonus();
-    }else if( !STATE.boss_out){
-      bosses.push(EL.getBoss(canvas.width, canvas.height));
-      createBonus();
-      STATE.background_speed = 1.6;
-      STATE.boss_out = true;
-    }
-   
     checkCollisions();
-    checkLevelUpConditions();
     checkGameEndConditions();
   };
 
-  function updateEntities(dt) {
-    player.sprite.update(dt);
+  function updateLevelsDirector(dt,realtimeDt){
+    LEVELS_DIRECTOR.update(dt,realtimeDt);
+
+    if(LEVELS_DIRECTOR.shouldAddEnemy() == true ){
+      enemies.push(LEVELS_DIRECTOR.createEnemy([canvas.width, Math.random() * (canvas.height - 39)]));
+    }
+    
+    if(LEVELS_DIRECTOR.shouldAddBoss() == true ){
+      bosses.push(LEVELS_DIRECTOR.createBoss([canvas.width, canvas.height/2]));
+      STATE.background_speed = 1.6;
+    }
+
+    if(LEVELS_DIRECTOR.shouldAddBonus()){
+      bonuses.push(LEVELS_DIRECTOR.createBonus([canvas.width, Math.random() * (canvas.height - 39)]));
+    }
+  }
+
+  function updateEntities(dt,realtimeDt) {
+    updatePlayer(dt);
     updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
-    updateBombs(dt);
-    updateBombAreas(dt);
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
@@ -511,7 +666,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
-    entity.pos = [player.pos[0]+ player.width,player.pos[1]- player.height/2];
+    entity.pos = [player.pos[0]+ player.sprite.getSize()[0],player.pos[1]- player.sprite.getSize()[1]/2];
     return entity;
   }
 
@@ -536,37 +691,28 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   }
   function calculateNextDirection(entity, dt){
     var pos = [entity.pos[0], entity.pos[1]];
-    switch(entity.dir) {
-      case 'up': 
-        pos = moveUp(entity.pos, entity.speed, dt);
-      break;
-      case 'down': 
-        pos = moveDown(entity.pos, entity.speed, dt);
-      break;
-      case 'left': 
-        pos = moveLeft(entity.pos, entity.speed, dt);
-      break;
-      case 'right': 
-        pos = moveRight(entity.pos, entity.speed, dt);
-      break;
-      case 'upleft': 
-        pos[1] = entity.pos[1] - entity.speed * dt;
-        pos[0] = entity.pos[0] - entity.speed * dt;
-      break;
-      case 'upright':
-        pos[1] = entity.pos[1] - entity.speed * dt;
-        pos[0] = entity.pos[0] + entity.speed * dt;
-      break;
-      case 'downleft':
-        pos[1] = entity.pos[1] + entity.speed * dt;
-        pos[0] = entity.pos[0] - entity.speed * dt;
-      break;
-      case 'downright':
-        pos[1] = entity.pos[1] + entity.speed * dt;
-        pos[0] = entity.pos[0] + entity.speed * dt;
-      break;
-      default:
-        pos[0] = entity.pos[0] - entity.speed * dt;
+    if(entity.dir == 'up') {
+      pos = moveUp(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'down'){
+      pos = moveDown(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'left'){
+      pos = moveLeft(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'right'){
+      pos = moveRight(entity.pos, entity.speed, dt);
+    }else if(entity.dir == 'upleft'){
+      pos[1] = entity.pos[1] - entity.speed * dt;
+      pos[0] = entity.pos[0] - entity.speed * dt;
+    }else if(entity.dir == 'upright'){
+      pos[1] = entity.pos[1] - entity.speed * dt;
+      pos[0] = entity.pos[0] + entity.speed * dt;
+    }else if(entity.dir == 'downleft'){
+      pos[1] = entity.pos[1] + entity.speed * dt;
+      pos[0] = entity.pos[0] - entity.speed * dt;
+    }else if(entity.dir == 'downright'){
+      pos[1] = entity.pos[1] + entity.speed * dt;
+      pos[0] = entity.pos[0] + entity.speed * dt;
+    }else {
+      pos[0] = entity.pos[0] - entity.speed * dt;
     }
     return pos;
   }
@@ -607,13 +753,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
-  function pushBombIfDone(entity){
-    if(entity.sprite.done){
-      bombareas.push(EL.getEntity('bombarea',entity.pos));
-      playSound(SOUNDS.explosion);
-    }
-    return entity;
-  }
   function removeIfDone(entity){
     if(!entity.sprite.done){
       return entity;
@@ -648,17 +787,22 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function moveInCircleAround(around, dt){
     var dt = dt;
-    var radius = around.height > around.width ? around.height : around.width;
+    //TODO We are changing around / by player cause the reference is getting lost
+    
     return function(entity){ 
+      var radius = player.sprite.getSize()[1] > player.sprite.getSize()[0] ? player.sprite.getSize()[1] : player.sprite.getSize()[0];
       var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+      //TODO: This may cause the dogge to move from the center of the circle, the Phi calculus agains a game time
+      //it should be against something between 0 and 10 ? 
       var phi = velocityPerSeconds * TIMERS.gameTime;
-      var angleInRadians = Math.atan(entity.pos[0], entity.pos[1]) + phi;
-
+      //We add 1000 to ensure the calculus is allways done for positive values
+      ////It gets a weird behaviour with negative values on the x axis
+      var angleInRadians = Math.atan(entity.pos[0]+1000, entity.pos[1]) + phi;
       var xC = radius * Math.cos(angleInRadians)+phi;
       var yC = radius * Math.sin(angleInRadians)+phi;
 
-      xC = xC + around.pos[0];
-      yC = yC + around.pos[1];
+      xC = xC + player.pos[0];
+      yC = yC + player.pos[1];
       entity.pos =[xC,yC]
       return entity;
     }
@@ -685,6 +829,17 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }
   }
 
+  function removeBonusIfTImeGreaterThan(time){
+    return function(entity){
+      var returned = removeIfTimeCounterGreaterThan(time)(entity);
+      if(!returned){
+        player.bullet = 'bullet';
+        player.damage = player.baseDamage;
+      }else{
+        return returned;
+      }
+    }
+  }
   function wrapperReadyForActionOnly(fn){
     return function(entity){
       if(entity.readyForAction){
@@ -754,7 +909,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function shootThrottled(time, dt){
     return entityStepsInTime(time,dt)(function(entity){
-      blueShoot(entity.pos);
+      blueShoot([entity.pos[0] + entity.sprite.getSize()[0], entity.pos[1] + entity.sprite.getSize()[1]/2]);
       return entity;
     });
   }
@@ -765,20 +920,19 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     });
   }
   function playAction(action, entity){
-    switch(action){
-      case 'enemyShoot':
-        enemyShoot(entity.pos, entity.damage);;
-      break;
-      case 'talk':
-        var phrases = ['killer', 'power','grunt'];
-        var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
-        playSound(SOUNDS[chosenPhrase]);
-        showMessages([MESSAGES[chosenPhrase]], ['creeper']);
-      break;
-      case 'launchEnemy':
-        enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
-      break;
-    }
+    if(action =='enemyShoot'){
+      enemyShoot(entity.pos, entity.damage);
+    }else if(action == 'talk'){
+      var phrases = ['killer', 'power','grunt'];
+      var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
+      
+      playSound(SOUNDS[chosenPhrase]);
+      
+      var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
+      showMessages([message]);
+    }else if(action == 'launchEnemy'){
+      enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
+    };
   }
 
   function getBossActions(){
@@ -806,9 +960,36 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       return entity;
     }
   }
+
+  function changePlayerSpriteToShooting(shooting){
+    if(shooting){
+      player.sprite = EL.getEntity(main_character_name+'shooting', player.pos, player).sprite;
+    }else{
+      player.sprite = EL.getEntity(main_character_name, player.pos, player).sprite;
+    }
+  }
   /* Updates */
+  function lerp3(start,end, speed, dt){
+    return start + (end - start) * 0.1; 
+  }
+  function updatePlayer(dt){
+    if(TIMERS.shootSpriteTime > 0){
+      TIMERS.shootSpriteTime -= dt;
+      if(TIMERS.shootSpriteTime <= 0){
+        TIMERS.shootSpriteTime = 0;
+        changePlayerSpriteToShooting(false);
+      }
+    }
+
+    if(touchInputs){
+      player.pos[0] = lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      player.pos[1] = lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+    }
+
+    player.sprite.update(dt);
+  }
   function movePlayer(dir,dt){
-    player.dir =dir;
+    player.dir = dir;
     player = moveToDirection(dt)(player);
   }
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
@@ -832,18 +1013,9 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
       .map(removeIfOutsideScreenleft));
   }
 
-  function updateBombs(dt){
-    bombs = hu.compact(
-      bombs.map(updateSprite(dt))
-      .map(pushBombIfDone)
-      .map(removeIfDone));
-  }
-  function updateBombAreas(dt){
-    bombareas = updateEntitiesAndRemoveIfDone(bombareas,dt);
-  }
   
   function updateSpecials(dt){
-    specials = updateEntitiesAndRemoveIfDone(specials.map(entityInFrontOfPlayer), dt);
+    specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
   }
   
   function updateExplosions(dt){
@@ -866,7 +1038,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
       .map(shootThrottled(0.5, dt))
-      .map(removeIfTimeCounterGreaterThan(10)));
+      .map(removeBonusIfTImeGreaterThan(15)));
   }
 
   function updateBosses(dt){
@@ -909,10 +1081,18 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
+        LEVELS_DIRECTOR.pickedBonus();
         entity.hasBonus = true;
-        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] + entity.sprite.getSize()[0] , entity.pos[1]])];
+        entity.bullet = 'nyanbullet';
+        addPoints(200);
+        entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
+        entity.damage = entity.baseDamage + 50;
+        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
-        showMessages([MESSAGES.wow], ['dog']);
+
+        var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
+        showMessages([message]);
+
       }
       return bonus;
     }
@@ -938,89 +1118,67 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     return function(item){
       var shouldReturnItem = removeIfCollideWith(entity)(item);
       if(!shouldReturnItem){
-        playerDamaged();
+        playerDamaged(item.damage);
       }else{
         return item;
       }
     }
   }
-  function playerDamaged(){
+  function playerDamaged(damage){
     playSound(SOUNDS.ouch);
-    showMessages([MESSAGES.ouch], [(player.isSaiyan ? 'saiyancat': 'catdamaged')]);
+    player.life -= damage;
+
+    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged))
+    showMessages([messageOuch]);
   }
+
+  function killEnemy(enemy){
+    LEVELS_DIRECTOR.killedEnemy(enemy);
+    addPoints(enemy.points);
+    addPower(enemy.points);
+    playSound(SOUNDS.death);
+    addExplosion(enemy.pos);    
+  }
+
+  function collisionToEnemyGroup(enemyGroup){
+      enemyGroup = hu.compact(enemyGroup.map(function(enemy){
+
+        bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(removeIfCollideWith(enemy)));
+          
+        specials
+          .map(ifCollidesApplyDamageTo(enemy));
+
+        if(entitiesCollide(enemy, player)){
+          playerDamaged(enemy.damage);
+          enemy.life -= player.damage;
+        }
+
+        if(enemy.life > 0){
+          return enemy;
+        }else{
+          killEnemy(enemy);
+        }
+      }));
+    return enemyGroup;
+  }
+
   function checkCollisions() {
     checkPlayerBounds();
-    
-    enemies = hu.compact(enemies.map(function(enemy){
 
-      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
-        .map(removeIfCollideWith(enemy)));
-
-      bombareas
-        .map(ifCollidesApplyDamageTo(enemy));
-        
-      specials
-        .map(ifCollidesApplyDamageTo(enemy));
-
-      if(entitiesCollide(enemy, player)){
-        playerDamaged();
-        player.life -= enemy.damage;
-        enemy.life -= player.damage;
-      }
-
-      if(enemy.life > 0){
-        return enemy;
-      }else{
-        addPoints(enemy.points);
-        addPower(enemy.points);
-        playSound(SOUNDS.death);
-        addExplosion(enemy.pos);    
-      }
-    }));
+    enemies = collisionToEnemyGroup(enemies);
+    bosses = collisionToEnemyGroup(bosses);
 
     enemyBullets = hu.compact(enemyBullets.map(ifCollidesApplyDamageTo(player))
         .map(removeIfCollideWithAndPlaySound(player)));
-
-    bosses = hu.compact(bosses.map(function(enemy){
-      bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
-        .map(removeIfCollideWith(enemy)));
-
-      bombareas
-        .map(ifCollidesApplyDamageTo(enemy));
-        
-      specials
-        .map(ifCollidesApplyDamageTo(enemy));
-
-      if(entitiesCollide(enemy, player)){
-        playerDamaged();
-        player.life -= enemy.damage;
-        enemy.life -= player.damage;
-      }
-
-      if(enemy.life > 0){
-        return enemy;
-      }else{
-        addPoints(enemy.points);
-        addPower(enemy.points);
-        playSound(SOUNDS.death);
-        addExplosion(enemy.pos);    
-      }
-    }));
-   
-  }
-
-  function checkLevelUpConditions(){
-    if(TIMERS.gameTime > 30 && STATE.level === 1
-      || TIMERS.gameTime > 60 && STATE.level === 2
-      || TIMERS.gameTime > 90 && STATE.level === 3
-      || TIMERS.gameTime > 120 && STATE.level === 4
-      || TIMERS.gameTime > 160 && STATE.level === 5){
-      changeLevel();
-    }
   }
 
   function checkGameEndConditions(){
-     if(player.life <= 0){
+    if(player.life <= 0){
+      STATE.died = true;
+      endGame();
+    }else if(LEVELS_DIRECTOR.isFinalStage() && bosses.length == 0 && enemies.length == 0){
+      STATE.win = true;
       endGame();
     } 
   }
@@ -1049,7 +1207,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
   var BGx = 0;
 
   function render() {
-    BGx -= STATE.background_speed;
+    BGx -= STATE.background_speed * STATE.game_speed;
     ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
     ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
     ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
@@ -1067,8 +1225,6 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     }else{
       renderEntities(graves);
     }
-    renderEntities(bombs);
-    renderEntities(bombareas);
     renderEntities(bullets);
     renderEntities(enemyBullets);
     renderEntities(enemies);
@@ -1076,6 +1232,7 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
     renderEntities(specials);
     renderEntities(bonuses);
     renderEntities(bosses);
+    //drawFrames();
   };
 
   function renderEntities(list) {
@@ -1086,28 +1243,33 @@ define( [ 'jquery','hu','game/entities','resources','sprite','input', 'jqmobile'
 
   function renderEntity(entity) {
     ctx.save();
-    ctx.translate(entity.pos[0], entity.pos[1]);
+    ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
     entity.sprite.render(ctx);
     ctx.restore();
     if(entity.life){
       drawLife(entity);
     }
   }
-
+  function drawFrames(){
+    ctx.fillStyle = "blue";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText(frames, 100, 100);
+  }
   function drawLife(entity){
-    var lifeTotal = entity.width * (entity.life/ entity.totalLife);
-
+    var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
+    var x = Math.round(entity.pos[0]);
+    var y = Math.round(entity.pos[1]);
     ctx.beginPath();
-    ctx.rect(entity.pos[0], entity.pos[1] + entity.height, entity.width, 7);
-    ctx.fillStyle = 'yellow';
+    ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
+    ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
     ctx.fill();
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black'; 
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.rect(entity.pos[0], entity.pos[1] + entity.height, lifeTotal, 7);
-    ctx.fillStyle = 'blue';
+    ctx.rect(x+ (entity.sprite.getSize()[0]-lifeTotal), y + entity.sprite.getSize()[1], lifeTotal, 7);
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
     ctx.fill();
     ctx.stroke();
   }

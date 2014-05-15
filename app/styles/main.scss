@@ -19,8 +19,8 @@ box-sizing: border-box;
 }
 
 body {
-    background: url('../images/bg/starts.jpeg');
-    background-size:cover;
+    background: url('../images/background.png');
+    
 }
 
 .container{
@@ -29,6 +29,18 @@ body {
 a {
     color: white;
 }
+.glyphicon-star{
+    color: #E9F64E;
+    margin-left: 5px;
+}
+.glyphicon-heart-empty{
+    color: #CC0F17;
+    margin-left: 5px;
+}
+.glyphicon-plane{
+    color: #1CEB00;
+    margin-left: 5px;
+}
 .btn-nyan{
     margin-left:5px; 
     margin-right:5px;
@@ -36,8 +48,11 @@ a {
     font-size: 15px;
     .glyphicon{
         margin-right: 10px;
+        margin-left: 0px;
     }
 }
+
+
 
 img {
     max-width:  100%;
@@ -66,6 +81,7 @@ img {
     #logo{
         img{
             max-height:200px;
+            height: 200px;
         }
         margin-bottom: 10px;
     }
@@ -99,6 +115,9 @@ img {
                 color: white;
                 font-weight: bold;
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                .sound{
+                    color:rgb(246, 139, 78);
+                }
             }
             li a:after{
                 position: absolute;
@@ -124,6 +143,19 @@ img {
                 }
             }
         }
+    }
+    .donation{
+        background: rgba(128, 50, 50, 0.86);
+        padding: 20px;
+    }
+    .donationBag{
+        width: 5em;
+        background-image: url('../images/money.png');
+        height: 5em;
+        background-repeat: no-repeat;
+        background-size:contain;
+        display: block;
+        float: left;
     }
 }
 
@@ -199,6 +231,9 @@ img {
     .level6{
         background-image: url('../images/badges/level6.png');
     }
+    .died{
+        background-image: url('../images/badges/died.png');
+    }
     .dogs25 {
         background-image: url('../images/badges/25dogs.png');
     }
@@ -228,6 +263,18 @@ img {
         padding-bottom: 20px;
     }
 }
+
+.stats{
+    background: rgba(0, 0, 0, 0.49);
+    padding: 10px;
+    li{
+        list-style: none;
+    }
+    &.win{
+        border: 10px solid goldenrod;
+    }
+}
+
 .container-full {
   margin: 0 auto;
   width: 100%;
@@ -236,7 +283,7 @@ img {
 .game{
     overflow: hidden;
      
-    canvas {
+    #canvas {
         margin: auto;
         position: absolute;
         top: 43px;
@@ -244,6 +291,18 @@ img {
         left: 0;
         right: 0;
     }
+    #canvas2{
+        position: absolute;
+        top:0;
+        left: 0;
+        margin: auto;
+        z-index: 3000;
+        display: none;
+        &.visible{
+            display: block;
+        }
+    }
+
     .top_menu{
         width: 100%;
         top: 0;
@@ -294,40 +353,48 @@ img {
         right: 20px;
     }
 
-    #level{
-        position: absolute;
-        top: 44%;
-        left: 39%;
-        z-index: 2000;
-        padding: 30px;
-        font-size: 19px;
-    }
-
     #message{
         position: absolute;
-        bottom: 5px;
-        left: 0;
+        top: 0;
+        right: 0;
+        z-index: 3000;
         height: 50px;
-        background: url('../images/hud/circuits.png');
-        width: 50%;
-        /* background: white; */
-        z-index: 2;
+        background-color:white;
+        width: 100%;
         border: 1px solid white;
-        color: white;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: black;
         .picture{
             width: 85px;
             float: left;
-            img{
-                height: 50px;
-                width: 50px;
-                margin-left: 20px;
+            height: 50px;
+            background-repeat:no-repeat;
+            background-size: 50px 50px;
+            &.cooldog{
+                background-image:url('../images/messages/cooldog.png');
             }
+            &.cooldogdamaged{
+                background-image:url('../images/messages/cooldogdamaged.png');
+            }
+            &.creeper{
+                background-image:url('../images/messages/creeper.png');
+            }
+            &.dog{
+                background-image:url('../images/messages/dog.png');
+            }
+            &.unknown{
+                background-image:url('../images/messages/unknown.png');
+            }
+            margin-left: 20px;
+
         }
         
         .messageBody{
-            padding-left: 100px;
-            padding-top: 15px;
-            background: rgba(253, 95, 95, 0.18);
+            padding-left: 75px;
+            padding-top: 5px;
+            font-size: 12px;
+            margin-left: 80px;
             font-weight: bold;
             /* letter-spacing: 1px; */
             text-transform: uppercase;
@@ -368,7 +435,6 @@ img {
         #message{
             min-height: 25px;
             height: auto;
-            width: 56%;
             .picture{
                 width: 50px;
                 img{
@@ -388,6 +454,27 @@ img {
         }
     }
     
+}
+
+.scores{
+    .list-group{
+        margin-top: 30px;
+        color: black;
+    }
+    .list-group-item{
+        background-color: rgba(89, 112, 231, 0.39);
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+    }
+}
+
+.sharer {
+    margin-top: 20px;
+    .social-icon{
+        height: 40px;
+        width: 75px;
+    }
 }
 
 @media (max-width: 400px) {
@@ -446,3 +533,4 @@ img {
     }
 }
 @import "mobile";
+

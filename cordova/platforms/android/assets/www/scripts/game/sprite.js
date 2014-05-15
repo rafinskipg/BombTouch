@@ -5,6 +5,7 @@
         this.size = size;
         this.speed = typeof speed === 'number' ? speed : 0;
         this.frames = frames;
+        this.expectedSize = [this.size[0],this.size[1]];
         this._index = 0;
         this.url = url;
         this.dir = dir || 'horizontal';
@@ -14,6 +15,12 @@
     Sprite.prototype = {
         update: function(dt) {
             this._index += this.speed*dt;
+        },
+        getSize:function(){
+            return this.expectedSize;
+        },
+        resize: function(width, height){
+            this.expectedSize = [width,height];
         },
 
         render: function(ctx) {
@@ -42,13 +49,13 @@
             }
             else {
                 x += frame * this.size[0];
-            }
-
+        
             ctx.drawImage(resources.get(this.url),
-                          x, y,
+                          Math.round(x), Math.round(y),
                           this.size[0], this.size[1],
                           0, 0,
-                          this.size[0], this.size[1]);
+                          this.expectedSize[0], this.expectedSize[1]);
+            }
         }
     };
 

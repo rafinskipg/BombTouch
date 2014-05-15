@@ -4,34 +4,33 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     factory('socialSrv', ['$http', '$q', function($http, $q) {
 
 
-    var save = function(command){
-      var commandsSaved = getLocals(); 
-      if(command.checked){
-        commandsSaved.push(command.id);
+    var share = function(text){
+      if(window.isMobile){
+        var message = {
+          url: 'http://ns4007672.ip-192-95-30.net:9000',
+          //image: 'http://ns4007672.ip-192-95-30.net:9000/images/logo.png',
+          text:text
+        };
+        window.socialmessage.send(message);  
       }else{
-        itemsFound = commandsSaved.filter(function(com){
-          return com != command.id;
-        });
-        console.log(itemsFound);
-        commandsSaved = itemsFound;
+        var width  = 575,
+        height = 400,
+        left   = 500 / 2,
+        top    = 300 / 2,
+        url    = 'https://play.google.com/store/apps/details?id=com.rafinskipg.gitella',
+         opts   = 'status=1' +
+             ',width='  + width  +
+             ',height=' + height +
+             ',top='    + top    +
+             ',left='   + left;
+
+        window.open('http://www.facebook.com/sharer.php?s=100&title=Nyan Cat adventures&summary=heyy&p[url]=http://ns4007672.ip-192-95-30.net:9000', 'twitter', opts);
       }
-      saveLocals(commandsSaved);
       
-    }
-    var saveLocals = function(locals){
-      localStorage.setItem("gitella", JSON.stringify(locals));
-    }
-    var getData = function(){
-      var commands =  JSON.parse(localStorage.getItem("nyanspace"));
-      if(!commands || !commands.length > 0){
-        commands = [];
-      }
-      return commands;
     }
 
     return {
-        getData: getData,
-        save: save
+        share: share
       };
   }]);
 });

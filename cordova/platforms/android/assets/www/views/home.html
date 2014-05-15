@@ -1,0 +1,36 @@
+<div class="container page home">
+  <header>
+      <div class="row">
+          <div class="col-xs-12 text-center" id="logo">
+            <img src="images/cat.gif">
+          </div>
+          <div class="col-xs-12 intro-text">
+            <h1>The adventures of nyan cat</h1>
+            <p>Now presenting: <b>A cat in the space</b></p>
+            <p class="score">Your best score is <span class="badge">{{bestScore}}<span class="glyphicon glyphicon-star"></span></span></p>
+         </div>
+      </div>
+  </header>
+  <div class="controls row">
+    <div class="col-xs-12">
+      <ul class="menu">
+        <li ng-click="play()">
+          <a href="">Play <span class="glyphicon glyphicon-plane"></span></a>
+        </li>
+        <li ng-click="setSound()">
+          <a href="">Sound: <span><b class="sound">{{getSound()}}</b></span></a>
+        </li>
+        <li ng-click="highScores()">
+          <a href="">High Scores  <span class="glyphicon glyphicon-star"></span></a></li>
+        
+        <li ng-click="badges()">
+          <a href="">Badges <span class="glyphicon glyphicon-heart-empty"></span></a>
+        </li>
+      </ul>
+    </div>
+    
+
+    
+  </div>
+
+</div>

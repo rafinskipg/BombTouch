@@ -1,0 +1,27 @@
+<div class="container page scores">
+  <div class="row intro-text">
+    <div class="col-xs-12">
+      <a class="btn btn-nyan"  ng-click="goHome()">
+        <span class="glyphicon glyphicon-th-list"></span>Menu
+      </a>
+    </div>
+    <div class="col-xs-12 text-center">
+      <h1>Your best score : {{bestScore}}<span class="glyphicon glyphicon-star"></span></h1>
+      <h2>Total kills : {{totals.kills}}</h2>
+      <h2>Total bonuses : {{totals.bonuses}}</h2>
+      <div class="sharer">
+          <a ng-click="share($event)" title="send to Facebook"  href="" target="_blank">
+            <span>
+              <img class="social-icon" src="images/social/nyan_fb_icon.png" alt="Facebook"> Share it! 
+            </span>
+          </a>
+
+      </div>
+      <ul class="list-group">
+        <li ng-repeat="score in scores  track by $index"  class="list-group-item">
+          {{score}} <span class="glyphicon glyphicon-star"></span>
+        </li>
+      </ul>  
+    </div>
+  </div>
+</div>

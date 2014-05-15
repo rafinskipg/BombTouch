@@ -1,4 +1,4 @@
-define(['angular', 'app'], function(angular, BombTouchApp){
+define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers/main'], function(angular, BombTouchApp){
     
   BombTouchApp.config(['$routeProvider', function($routeProvider) {
     
@@ -18,6 +18,11 @@ define(['angular', 'app'], function(angular, BombTouchApp){
     $routeProvider.when('/gameover', {
       templateUrl: 'views/gameover.html',
       controller: 'GameOverCtrl'
+    });
+
+    $routeProvider.when('/scores', {
+      templateUrl: 'views/scores.html',
+      controller: 'ScoresCtrl'
     });
 
 		$routeProvider.otherwise({redirectTo: '/'});

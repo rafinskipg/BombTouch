@@ -5,20 +5,14 @@ Nyancat is a super sayan!
 [DEMO](http://rvpg.me/experiments/BombTouch/)
 
 TODO :
-- Adjust life / damage of enemies.
-- Add a animation when you are hit
-- Make boss bullets go faster
-- Add sounds when you are hit
-- add sounds when the boss enters
-- Add lifes like bonuses
 
-
-## Contribute!!
-- Add new levels
-- Add better sprites for the boss
-- New shooting modes
-- Add flying bonuses that changes your shoot 
-- Add wathever you want!!
+- Make a menu appear when you hit Esc key
+- Rethink the top menu
+- Create a class like sprite.js for paralax rendering
+- Send the game score to the backend
+- Add a -currentFrame method on the sprite.js, used to know when to shoot.
+- Add difficulties. 
+- Make again the gif on the home
 
 ### Installation 
 
@@ -76,5 +70,30 @@ cordova run android
 cordova emulate android
 `````
 
+Cordova plugins
+````
 
+cordova plugin add https://github.com/leecrossley/cordova-plugin-social-message.git
+cordova plugin add org.apache.cordova.dialogs
+
+````
+
+
+List Cordova devices
+```
+adb devices
+````
+
+Device ??????? no permisions
+````
+sudo ./adb kill-server
+sudo ./adb start-server
+sudo ./adb devices
+````
+
+Sudo adb not command found
+````
+Symlink to adb
+sudo ln -s /opt/android-sdk-linux_x86/platform-tools/adb /usr/local/sbin/adb
+````
 

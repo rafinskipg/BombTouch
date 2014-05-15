@@ -3,11 +3,20 @@ define([
 	], function (angular, FastClick ) {
 		'use strict';
 
-    document.addEventListener('deviceready', init, false);
+    document.addEventListener('deviceready', function () {
+        if (navigator.notification) { // Override default HTML alert with native dialog
+            window.isMobile = true;
+            window.alert = function (message) {
+                navigator.notification.alert(
+                    message,    // message
+                    null,       // callback
+                    "The Cool Dog Adventures", // title
+                    'OK'        // buttonName
+                );
+            };
+        }
+    }, false);
 
-    function init(){
-      window.isMobile = true;
-    }
 
     var BombTouchApp = angular.module('BombTouchApp', ['ngRoute']).run(function() {
 	    FastClick.attach(document.body);
