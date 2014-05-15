@@ -31,7 +31,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       paused: false,
       post_game_completed : false,
       background_speed: 0.3,
-      game_speed: 2.5
+      game_speed: 1.0
     };
     return options;
   }
