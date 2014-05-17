@@ -18,7 +18,7 @@
 
       </div>
       <ul class="list-group">
-        <li ng-repeat="score in scores  track by $index"  class="list-group-item">
+        <li ng-show="score > 0" ng-repeat="score in scores.slice().reverse()  track by $index | orderBy:identity"  class="list-group-item">
           {{score}} <span class="glyphicon glyphicon-star"></span>
         </li>
       </ul>  

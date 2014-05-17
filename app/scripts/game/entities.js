@@ -60,8 +60,8 @@ define( [ ], function(){
 
  // var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
   //var coolDogSpriteSchema = ['images/doggy/dog2.png', [0, 350], [350,350], 1, [0, 1,2,3,4,5,6,7,8,9]];
-  var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 0], [100,100], 10, [0, 1,2,3,4,5,6,7]];
-  var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 100], [100,100], 8, [0, 1,2,3,4,5,6,7]];
+  var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 20], [100,70], 10, [0, 1,2,3,4,5,6,7]];
+  var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 120], [100,70], 8, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
@@ -290,11 +290,11 @@ define( [ ], function(){
       return new Player(pos, opts);
     }else if(name == 'cooldog'){
       opts.spriteSchema = coolDogSpriteSchema;
-      opts.resize = [80,80];
+      opts.resize = [80,56];
       return new Player(pos, opts);
     }else if(name == 'cooldogshooting'){
       opts.spriteSchema = coolDogShootingSpriteSchema;
-      opts.resize = [80,80];
+      opts.resize = [80,56];
       return new Player(pos, opts);
     }else if(name == 'saiyancat'){
       opts = {

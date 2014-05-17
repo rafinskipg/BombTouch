@@ -1,25 +1,35 @@
-## BombTouch
+# The adventures of Cool  Dog
+by [VenturaStudios](http://venturastudios.org)
+
+## Chapter 1 - Lost in space
 ----------
-Nyancat is a super sayan!
 
-[DEMO](http://rvpg.me/experiments/BombTouch/)
+> The adventures of Cool Dog, chapter 1 - lost in space is an open source game released under the [MOZILLA](http://choosealicense.com/licenses/mozilla/) 2.0 license.
 
-TODO :
+##RoadMap
+* Alpha
+* Release beta and release campaign for fundraising
+* Beta with online scores
+
+##Contributing
+
+You can contribute code with pull requests, if you want to contribute artworks or sounds you can email me at ventura@venturastudios.com.
+
+### Todo list
 
 - Make a menu appear when you hit Esc key
-- Rethink the top menu
-- Create a class like sprite.js for paralax rendering
+- Redesign the top menu
+- Create a "paralax.js" or "canvas.js" for paralax rendering with different layers and speeds
 - Send the game score to the backend
 - Add a -currentFrame method on the sprite.js, used to know when to shoot.
-- Add difficulties. 
 - Make again the gif on the home
 
-### Installation 
+### Installation
 
 Run from shell (needs node)
 
 ````
-npm install 
+sudo npm install 
 ````
 Then
 
@@ -36,6 +46,7 @@ Build
 ````
 grunt build
 ````
+
 
 ### Cordova
 *See [cordova tutorial](http://coenraets.org/blog/cordova-phonegap-3-tutorial/)*
@@ -62,24 +73,29 @@ export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64
 export PATH=${PATH}:/usr/bin/ant
 ````
 
-Install a android version in the ADV..
+Be sure you have installed some android version on the android version management.
 
-And run with (dont use sudo, it will load other .bashrc file)
+Adding cordova plugins
 ````
-cordova run android
-cordova emulate android
-`````
-
-Cordova plugins
-````
-
 cordova plugin add https://github.com/leecrossley/cordova-plugin-social-message.git
 cordova plugin add org.apache.cordova.dialogs
 
 ````
 
 
-List Cordova devices
+*build your project and copy the distributed version onto /cordova/www*
+
+And run the cordova project with the following command (dont use sudo, it will load other .bashrc file)
+
+````
+cordova run android
+cordova emulate android 
+`````
+
+
+##Common problems
+
+My device won't show up. List Cordova devices
 ```
 adb devices
 ````
@@ -97,3 +113,11 @@ Symlink to adb
 sudo ln -s /opt/android-sdk-linux_x86/platform-tools/adb /usr/local/sbin/adb
 ````
 
+Creating a new cordova project
+````
+cordova create myproject com.yourname.myproject MyProject
+````
+
+### Optimization
+
+We are using [CocoonJS](https://www.ludei.com/cocoonjs/) cloud compiler service for optimization.

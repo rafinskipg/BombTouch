@@ -155,6 +155,9 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       moon: 'Moons are like little planets, without the enough mass to hold an atmosphere',
       sunlight: 'The sunlight we see today was created 30,000 years ago, in the core of the sun.',
       sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
+    },
+    personal: {
+
     }
   };
 
@@ -206,7 +209,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,6,20);
+    LEVELS_DIRECTOR.init(5,1,20);
 
     initCanvas();
     toMouseListeners();
@@ -346,6 +349,8 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function reset() {
     var newState = getDefaultState();
     newState.sound_enabled = STATE.sound_enabled === false ? false: true;
+    newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
+    
     STATE = newState;
 
     bullets = [];
@@ -410,7 +415,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       messageHero5,
       messageEnemy1,
       messageHero6
-       ],200);
+       ],0);
     
   }
 
@@ -475,7 +480,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   }
 
   function showMessages(messages,timeoutBetweenMessages){
-    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 500;
+    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 0;
     for(var i = 0; i < notifyMessages.length; i++){
       //Clone the item, cause we dont want to send a referenced object ;)
       var messagesClone = messages.map(function(item){ return item });
@@ -1310,6 +1315,9 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       STATE.sound_enabled = bool;
     }
   }
+  function setDifficulty(speed){
+    STATE.game_speed = speed;
+  }
 
   /****************************
   ****************************
@@ -1326,6 +1334,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       megaShoot : megaShoot,
       setSound : setSound,
       setSoundInGame: setSoundInGame,
+      setDifficulty: setDifficulty,
       endGame : endGame,
       start : start,
       restart : restart,

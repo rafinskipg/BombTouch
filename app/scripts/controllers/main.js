@@ -23,6 +23,7 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
         $scope.start = function(){
           $scope.puntos = 0;
           theGame.setSound(settingsSrv.getSound());
+          theGame.setDifficulty(settingsSrv.getDifficulty());
           LOADER.init('canvas2');
           LOADER.load([
               'images/newsprites.png',
