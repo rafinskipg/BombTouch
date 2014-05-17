@@ -8,26 +8,27 @@ define( [ 'hu','game/entities'], function(hu, EL){
   var BOSS_OUT;
   var INFORMATION;
   var SUSCRIPTIONS;
+  var STARTING_DELAY;
   var TIME_SINCE_LAST_ENEMY_OUT;
   var TIME_SINCE_LAST_LEVEL_OUT;
   var TIME_SINCE_LAST_GROUP_OUT;
   var ALLOW_ENEMY_OUT = false;
   var levelsStructure = {
-    time_between_groups: 6,
-    time_between_enemies:3,
-    time_between_levels: 10,
+    time_between_groups: 5,
+    time_between_enemies:1,
+    time_between_levels: 5,
     levels : [
       [
-      [1],[1,1],[1,2,1],[1,1,1,1]
+      [1],[1,1],[1,1,1],[1,1,1,1,1,1],[2]
       ],
       [
-      [2],[2,2,2],[2,3,2,1],[2,3,4,1,1,2,2]
+      [2],[2,1,2],[2,1,2,2],[2,2,2,2,3,3],[3,3,3]
       ],
       [
-      [3],[3,3],[3,4,3],[4,3,3,5,3,4,5]
+      [3,2],[3,3,2],[3,2,3,3],[4,4,5,4]
       ],
       [
-      [4],[4,4],[4,5,4],[4,5,4,3,4,4,5]
+      [4],[4,4],[4,3,4],[4,3,4,3,4,4,5,5], [4,5,5,5]
       ],
       [
       [5],[5,5],[5,5,4],[5,4,3,5,4,5,4,5]
@@ -35,9 +36,10 @@ define( [ 'hu','game/entities'], function(hu, EL){
     ]
   }
 
-  function init(max, current){
+  function init(max, current, delay){
     MAX_LEVEL = max; 
     CURRENT_LEVEL = current;
+    STARTING_DELAY = delay;
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
     BOSS_OUT = false;
@@ -64,7 +66,6 @@ define( [ 'hu','game/entities'], function(hu, EL){
         completed: false
       });
     }
-    console.log(INFORMATION.levels);
   }
 
   function shouldAddBonus(){
@@ -81,27 +82,29 @@ define( [ 'hu','game/entities'], function(hu, EL){
   }
 
 
-  function update(dt){
-    TIME +=dt;
-    BONUS_TIME += dt;
-    TIME_SINCE_LAST_ENEMY_OUT+=dt;
+  function update(dt, realtimeDt){
+    TIME +=realtimeDt;
+    
     ALLOW_ENEMY_OUT = false;
-
-    if(CURRENT_LEVEL <= MAX_LEVEL){
-      if(allEnemiesFromLevelAreOut(CURRENT_LEVEL -1 )){
-        TIME_SINCE_LAST_LEVEL_OUT+=dt;
-        if(TIME_SINCE_LAST_LEVEL_OUT >= levelsStructure.time_between_levels){
-          changeLevel();
-        }
-      }else if(allEnemiesFromGroupAreOut(CURRENT_LEVEL-1, CURRENT_GROUP)){
-        TIME_SINCE_LAST_GROUP_OUT+=dt;
-        if(TIME_SINCE_LAST_GROUP_OUT >= levelsStructure.time_between_groups){
-          changeGroup();
-        }
-      }else{
-        TIME_SINCE_LAST_ENEMY_OUT+=dt;
-        if(TIME_SINCE_LAST_ENEMY_OUT >= levelsStructure.time_between_enemies){
-          ALLOW_ENEMY_OUT = true;
+    if(TIME >= STARTING_DELAY){
+      BONUS_TIME += dt;
+      TIME_SINCE_LAST_ENEMY_OUT+=dt;
+      if(CURRENT_LEVEL <= MAX_LEVEL){
+        if(allEnemiesFromLevelAreOut(CURRENT_LEVEL -1 )){
+          TIME_SINCE_LAST_LEVEL_OUT+=dt;
+          if(TIME_SINCE_LAST_LEVEL_OUT >= levelsStructure.time_between_levels){
+            changeLevel();
+          }
+        }else if(allEnemiesFromGroupAreOut(CURRENT_LEVEL-1, CURRENT_GROUP)){
+          TIME_SINCE_LAST_GROUP_OUT+=dt;
+          if(TIME_SINCE_LAST_GROUP_OUT >= levelsStructure.time_between_groups){
+            changeGroup();
+          }
+        }else{
+          TIME_SINCE_LAST_ENEMY_OUT+=dt;
+          if(TIME_SINCE_LAST_ENEMY_OUT >= levelsStructure.time_between_enemies){
+            ALLOW_ENEMY_OUT = true;
+          }
         }
       }
     }

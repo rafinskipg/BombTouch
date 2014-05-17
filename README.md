@@ -23,6 +23,7 @@ You can contribute code with pull requests, if you want to contribute artworks o
 - Send the game score to the backend
 - Add a -currentFrame method on the sprite.js, used to know when to shoot.
 - Make again the gif on the home
+- Add cancelRequestAnimationFrame
 
 ### Installation
 
@@ -92,6 +93,18 @@ cordova run android
 cordova emulate android 
 `````
 
+##Crosswalk
+
+If you want to compile it with crosswalk, get whatever you need from [Crosswalk page](https://crosswalk-project.org/)
+
+Compile for android
+````
+python make_apk.py --manifest=/PATH_TO_MY_APP/manifest.json
+````
+Install
+````
+adb install -r cool_dog_arm.apk
+````
 
 ##Common problems
 

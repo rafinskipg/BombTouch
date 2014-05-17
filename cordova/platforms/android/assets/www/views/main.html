@@ -23,12 +23,13 @@
       </div>
 
       <div id="message" ng-show="message">
-        <div class="picture"><img src="images/messages/{{messageSender}}"></div>
+        <div class="picture {{messageSender}}"></div>
         <div class="messageBody">
           {{message}}
         </div>
       </div>
      
       <canvas id="canvas" moz-opaque=""></canvas>
+      <canvas id="canvas2"></canvas>
    </div>
 </div>

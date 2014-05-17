@@ -8,7 +8,7 @@ define([
       // Override default HTML alert with native dialog
       window.isMobile = true;
       window.alert = function (message) {
-        navigator.notification.alert(message, null, 'The Nyan Cat Adventures', 'OK');
+        navigator.notification.alert(message, null, 'The Cool Dog Adventures', 'OK');
       };
     }
   }, false);

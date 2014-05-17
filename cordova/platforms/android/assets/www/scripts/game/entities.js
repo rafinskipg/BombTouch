@@ -40,7 +40,7 @@ define( [ ], function(){
   var normalBulletSpriteSchema = ['images/newsprites.png', [10, 0], [18, 18], 5, [0,1,2]];
   var nyanBulletSpriteSchema = ['images/newsprites.png', [1, 51], [21, 20], 15, [0,1,2, 3]];
   var bananaBulletSpriteSchema = ['images/newsprites.png', [670, 70], [40, 70], 15, [0,1,2, 3,4,5,6]];
-  var twitterBulletSpriteSchema = ['images/weapons/twitter.png', [0, 0], [150, 150], 4, [0,1,2, 3]];
+  //var twitterBulletSpriteSchema = ['images/weapons/twitter.png', [0, 0], [150, 150], 4, [0,1,2, 3]];
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
@@ -58,7 +58,10 @@ define( [ ], function(){
   var nyanCatSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
   var superNyanCatSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 5, [0, 1,2,3,4]];
 
-  var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
+ // var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
+  //var coolDogSpriteSchema = ['images/doggy/dog2.png', [0, 350], [350,350], 1, [0, 1,2,3,4,5,6,7,8,9]];
+  var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 20], [100,70], 10, [0, 1,2,3,4,5,6,7]];
+  var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 120], [100,70], 8, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
@@ -126,6 +129,7 @@ define( [ ], function(){
   function BlueBullet(pos, opts){
     var entity = new Entity(pos, blueBulletSpriteSchema);
     entity.dir = 'right';
+    entity.sprite.resize(20,20);
     entity.damage = opts.damage || 50;
     entity.speed = opts.speed || 500;
     return entity;
@@ -286,7 +290,11 @@ define( [ ], function(){
       return new Player(pos, opts);
     }else if(name == 'cooldog'){
       opts.spriteSchema = coolDogSpriteSchema;
-      opts.resize = [80,100];
+      opts.resize = [80,56];
+      return new Player(pos, opts);
+    }else if(name == 'cooldogshooting'){
+      opts.spriteSchema = coolDogShootingSpriteSchema;
+      opts.resize = [80,56];
       return new Player(pos, opts);
     }else if(name == 'saiyancat'){
       opts = {
@@ -332,7 +340,7 @@ define( [ ], function(){
   //Enemies
   function level1Enemy(pos){
     var entity = new Entity(pos, tacnyanSpriteSchema);
-    entity.speed = 50;
+    entity.speed = 45;
     entity.points = 100;
     entity.totalLife = 100;
     entity.life = 100;
@@ -344,46 +352,46 @@ define( [ ], function(){
 
   function level2Enemy(pos){
     var entity = new Entity(pos, dolanSpriteSchema);
-    entity.speed = 25;
+    entity.speed = 50;
     entity.points = 200;
     entity.totalLife = 200;
     entity.sprite.resize(50,50);
     entity.life = 200;
-    entity.damage = 200;
+    entity.damage = 120;
     entity.dir = 'left';
     return entity;
   }  
   function level3Enemy(pos){
     var entity = new Entity(pos, flappySpriteSchema);
-    entity.speed = 75;
+    entity.speed = 55;
     entity.points = 300;
     entity.totalLife = 300;
     entity.sprite.resize(50,50);
     entity.life = 300;
-    entity.damage = 300;
+    entity.damage = 160;
     entity.dir = 'left';
     return entity;
   }  
 
   function level4Enemy(pos){
     var entity = new Entity(pos, dramaticSpriteSchema);
-    entity.speed = 25;
+    entity.speed = 65;
     entity.points = 400;
     entity.totalLife = 400;
     entity.life = 400;
     entity.sprite.resize(50,45);
-    entity.damage = 400;
+    entity.damage = 180;
     entity.dir = 'left';
     return entity;
   }  
 
   function level5Enemy(pos){
     var entity = new Entity(pos, level5SpriteSchema);
-    entity.speed = 25;
+    entity.speed = 75;
     entity.points = 500;
     entity.totalLife = 500;
     entity.life = 500;
-    entity.damage = 500;
+    entity.damage = 200;
     entity.dir = 'left';
     return entity;
   }
@@ -421,7 +429,8 @@ define( [ ], function(){
     entity.points = 10000;
     entity.totalLife = 10000;
     entity.life = 10000;
-    entity.damage = 10000;
+    entity.damage = 400;
+    entity.sprite.resize(60,60);
     return entity;
   }
 

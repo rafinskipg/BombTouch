@@ -1,19 +1,4 @@
-define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], function(hu, EL, LEVELS_DIRECTOR){
-  /****************************
-  ****************************
-    Cross browser animation frame
-  ****************************
-  ****************************/
-  var requestAnimFrame = (function(){
-    return window.requestAnimationFrame  ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame    ||
-      window.oRequestAnimationFrame      ||
-      window.msRequestAnimationFrame     ||
-      function(callback){
-        window.setTimeout(callback, 1000 / 60);
-      };
-  })();
+define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, LEVELS_DIRECTOR){
 
   var throttle = function(lambda, ms){
     var allow = true;
@@ -45,7 +30,6 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       game_over: false,
       paused: false,
       post_game_completed : false,
-      resources_loaded: false,
       background_speed: 0.3,
       game_speed: 1.0
     };
@@ -59,7 +43,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       lastFire :0,
       lastTime: Date.now(),
       gameTime: 0,
-      realSeconds:0
+      realSeconds:0,
+      shootSpriteTime: 0
     };
   }
 
@@ -92,62 +77,66 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   //Touch inputs
   var touchInputs;
 
-  var SOUNDS = {
-    death: new Howl({
-      urls: ['sounds/cut_grunt2.wav'],
-      volume: 0.1
-    }),
-    shoot: new Howl({
-      urls: ['sounds/laser5.wav'],
-      volume: 0.1
-    }),
-    ambient: new Howl({
-     //urls: ['sounds/April_Kisses.mp3'],
-      urls: ['sounds/songs/intro.mp3'],
-      volume: 0.5,
-      loop: true
-    }),
-    yeah: new Howl({
-      urls: ['sounds/oh_yeah_wav_cut.wav']
-    }),
-    levelup: new Howl({
-      urls: ['sounds/upmid.wav']
-    }),
-    rick: new Howl({
-      urls: ['sounds/rickcut2.wav'],
-      volume: 0.5
-    }),
-    killer: new Howl({
-      urls: ['sounds/killer.mp3'],
-      volume: 0.5
-    }),
-    grunt: new Howl({
-      urls: ['sounds/grunt.mp3'],
-      volume: 0.5
-    }),
-    power: new Howl({
-      urls: ['sounds/power.mp3'],
-      volume: 0.5
-    }),
-    ouch:  new Howl({
-      urls: ['sounds/ohmy.wav']
-    }),
-    explosions: [
-      new Howl({
-          urls: ['sounds/explosions/atari_boom2.wav'],
-          volume: 0.6
-      }),
-      new Howl({
-          urls: ['sounds/explosions/explodemini.wav'],
-          volume: 0.3
-      }),
-      new Howl({
-          urls: ['sounds/explosions/explode.wav'],
-          volume: 0.3
-      })
+  var SOUNDS;
 
-    ]
-  };
+  function preloadSounds(){
+    SOUNDS = {
+      death: new Howl({
+        urls: ['sounds/cut_grunt2.wav'],
+        volume: 0.1
+      }),
+      shoot: new Howl({
+        urls: ['sounds/laser5.wav'],
+        volume: 0.1
+      }),
+      ambient: new Howl({
+       //urls: ['sounds/April_Kisses.mp3'],
+        urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
+        volume: 0.5,
+        loop: true
+      }),
+      yeah: new Howl({
+        urls: ['sounds/oh_yeah_wav_cut.wav']
+      }),
+      levelup: new Howl({
+        urls: ['sounds/upmid.wav']
+      }),
+      rick: new Howl({
+        urls: ['sounds/rickcut2.wav'],
+        volume: 0.5
+      }),
+      killer: new Howl({
+        urls: ['sounds/killer.mp3'],
+        volume: 0.2
+      }),
+      grunt: new Howl({
+        urls: ['sounds/grunt.mp3'],
+        volume: 0.2
+      }),
+      power: new Howl({
+        urls: ['sounds/power.mp3'],
+        volume: 0.2
+      }),
+      ouch:  new Howl({
+        urls: ['sounds/ohmy.wav']
+      }),
+      explosions: [
+        new Howl({
+            urls: ['sounds/explosions/atari_boom2.wav'],
+            volume: 0.6
+        }),
+        new Howl({
+            urls: ['sounds/explosions/explodemini.wav'],
+            volume: 0.3
+        }),
+        new Howl({
+            urls: ['sounds/explosions/explode.wav'],
+            volume: 0.3
+        })
+
+      ]
+    };
+  }
 
   var MESSAGES = {
     killer: 'I am your killer...!',
@@ -160,15 +149,24 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     not: 'Your trip will know a deadly end... B**CH',
     tst: 'Tstsk... You will have to pass over my rainbow',
     ouch: 'Ouch @#¡%%!! :(',
-    levelUp: 'Leeevel up! :D'
+    levelUp: 'Leeevel up! :D',
+    space: {
+      moving: 'We are moving through space at the rate of 530km a second',
+      moon: 'Moons are like little planets, without the enough mass to hold an atmosphere',
+      sunlight: 'The sunlight we see today was created 30,000 years ago, in the core of the sun.',
+      sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
+    },
+    personal: {
+
+    }
   };
 
-  var main_character_name = 'cat';
-  //var main_character_name = 'supercooldog';
+  var main_character_name = 'cooldog';
   var main_enemy_name = 'creeper';
-  var main_character_super_damaged = 'saiyancatdamaged';
-  var main_character_damaged = 'catdamaged';
-  var main_character_super_name = 'saiyancat';
+  var main_character_super_damaged = 'cooldogdamaged';
+  var main_character_damaged = 'cooldogdamaged';
+  var main_character_super_name = 'cooldog';
+  var bonus_image_name = 'dog';
   //var main_character_super_name = 'supercooldog';
 
   var time_between_bullets = 0.300;
@@ -178,33 +176,19 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   ****************************
   ****************************/
 
-  //Resources loaded asynchronously
-  resources.load([
-      'images/newsprites.png',
-      'images/background.png',
-      'images/orbes/coin.png',
-      'images/enemies/tacnyan.png',
-      'images/bonusWeapon.png',
-      'images/creeper.png',
-      'images/weapons/twitter.png',
-      'images/doggy/cooldog.png',
-      'images/rick/rickrollsprite.png'
-  ]);
-
-
   // The main game loop
   var main = function() {
     var now = Date.now();
-    var dt = (now - TIMERS.lastTime);   
+    var dt = (now - TIMERS.lastTime);
 
     frames = (1000/ (dt * 60)) * 60;
     
     TIMERS.realSeconds += dt;
-    dt = (now - TIMERS.lastTime) / 1000.0;
-    dt = STATE.game_speed * dt;
+    var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
+    dt = STATE.game_speed * realtimeDt;
 
     if(!isGameOver() && !isPaused()){
-      update(dt);
+      update(dt,realtimeDt);
       render();
       TIMERS.lastTime = now;
       requestAnimFrame(main);
@@ -224,19 +208,16 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   };
 
   function start() {
-    if(!resources.isReady()){
-      requestAnimFrame(start);
-      return;
-    }
-
-    LEVELS_DIRECTOR.init(5,1);
+    preloadSounds();
+    LEVELS_DIRECTOR.init(5,1,20);
 
     initCanvas();
     toMouseListeners();
     reset();
     suscribeToEvents();
-    showMessages([MESSAGES.init, MESSAGES.not, MESSAGES.tst],[main_character_name, main_enemy_name, main_character_name], 4000,500);
     playSound(SOUNDS.ambient);
+
+    showInitialDialogs();
     main();
   };
 
@@ -368,6 +349,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   function reset() {
     var newState = getDefaultState();
     newState.sound_enabled = STATE.sound_enabled === false ? false: true;
+    newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
+    
     STATE = newState;
 
     bullets = [];
@@ -386,39 +369,53 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
   function suscribeToEvents(){
 
-    suscribeMaxPower(function(bool){
+    /*suscribeMaxPower(function(bool){
       if(bool){
-        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, {life:player.life, totalLife: player.totalLife});
+        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, player);
         player.sprite = superPlayerOptions.sprite;
         player.speed = superPlayerOptions.speed;
         player.damage = superPlayerOptions.damage;
         player.isSuperSaiyan = true;
         showMessages([MESSAGES.saiyan], [main_character_super_name]);
       }else{
-        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, {life:player.life, totalLife: player.totalLife});
+        console.log('ey')
+        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, player);
         player.sprite = normalPlayerOptions.sprite;
         player.speed = normalPlayerOptions.speed;
         player.isSuperSaiyan = false;
         player.damage = normalPlayerOptions.damage;
       }
-    });
+    });*/
 
     LEVELS_DIRECTOR.suscribeLevelUp(function(){
       SOUNDS['levelup'].play();
-      showMessages([MESSAGES.levelUp], ['dog']);
+      var message = new models.Message(MESSAGES.levelup, bonus_image_name);
+      showMessages([message]);
     })
     notifyLevelUp.map(function(fn){
       LEVELS_DIRECTOR.suscribeLevelUp(fn);
     });
-    
+  }
 
-    /*suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
-      STATE.game_speed = 0.4;
-      
-      window.setTimeout(function(){
-        STATE.game_speed = 1.0;
-      }, messages.length * (timeoutMessage+timeoutBetweenMessages));
-    });*/
+  function showInitialDialogs(){
+
+    var messageHero1 = new models.Message('I see the humanity...', main_character_name,3000);
+    var messageHero2 = new models.Message('... i felt them', main_character_name,3000);
+    var messageHero3 = new models.Message('...', main_character_name);
+    var messageHero4 = new models.Message('You have to recover your wisdom', main_character_name);
+    var messageHero5 = new models.Message('... if you want to survive', main_character_name);
+    var messageEnemy1 = new models.Message('I won\' allow you ' , main_enemy_name);
+    var messageHero6 = new models.Message('...wat', main_character_name);
+
+    showMessages([ 
+      messageHero1,
+      messageHero2,
+      messageHero3,
+      messageHero4,
+      messageHero5,
+      messageEnemy1,
+      messageHero6
+       ],0);
     
   }
 
@@ -482,27 +479,31 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     SOUNDS.ambient.stop();
   }
 
-  function showMessages(messages, senders, timeoutMessage,timeoutBetweenMessages){
-    timeoutMessage = timeoutMessage ? timeoutMessage : 2000;
-    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 500;
-
+  function showMessages(messages,timeoutBetweenMessages){
+    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 0;
     for(var i = 0; i < notifyMessages.length; i++){
+      //Clone the item, cause we dont want to send a referenced object ;)
       var messagesClone = messages.map(function(item){ return item });
-      var sendersClone = senders.map(function(item){ return item });
-      notifyMessages[i](messagesClone,sendersClone, timeoutMessage,timeoutBetweenMessages);
+      notifyMessages[i](messagesClone,timeoutBetweenMessages);
     }
   }
 
   function shoot(){
     if(!isGameOver() &&
       TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
+      
+      if(TIMERS.shootSpriteTime === 0){
+        changePlayerSpriteToShooting(true);
+      }
+      TIMERS.shootSpriteTime = 0.5;
+      
 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity(player.bullet, [player.pos[0] + player.sprite.getSize()[0],y], { damage: player.damage }));
-      bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
-      bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity('bulletBlue', [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], { damage: player.damage }));
+      //bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
+      //bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
     
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
@@ -631,17 +632,17 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   ****************************
   ****************************/
 
-  function update(dt) {
+  function update(dt,realtimeDt) {
     TIMERS.gameTime += dt;
-    updateLevelsDirector(dt);
+    updateLevelsDirector(dt,realtimeDt);
     handleInput(dt);
     updateEntities(dt);
     checkCollisions();
     checkGameEndConditions();
   };
 
-  function updateLevelsDirector(dt){
-    LEVELS_DIRECTOR.update(dt);
+  function updateLevelsDirector(dt,realtimeDt){
+    LEVELS_DIRECTOR.update(dt,realtimeDt);
 
     if(LEVELS_DIRECTOR.shouldAddEnemy() == true ){
       enemies.push(LEVELS_DIRECTOR.createEnemy([canvas.width, Math.random() * (canvas.height - 39)]));
@@ -657,7 +658,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     }
   }
 
-  function updateEntities(dt) {
+  function updateEntities(dt,realtimeDt) {
     updatePlayer(dt);
     updateBosses(dt);
     updateBullets(dt);
@@ -791,9 +792,13 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
 
   function moveInCircleAround(around, dt){
     var dt = dt;
-    var radius = around.sprite.getSize()[1] > around.sprite.getSize()[0] ? around.sprite.getSize()[1] : around.sprite.getSize()[0];
+    //TODO We are changing around / by player cause the reference is getting lost
+    
     return function(entity){ 
+      var radius = player.sprite.getSize()[1] > player.sprite.getSize()[0] ? player.sprite.getSize()[1] : player.sprite.getSize()[0];
       var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+      //TODO: This may cause the dogge to move from the center of the circle, the Phi calculus agains a game time
+      //it should be against something between 0 and 10 ? 
       var phi = velocityPerSeconds * TIMERS.gameTime;
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
@@ -801,8 +806,8 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       var xC = radius * Math.cos(angleInRadians)+phi;
       var yC = radius * Math.sin(angleInRadians)+phi;
 
-      xC = xC + around.pos[0];
-      yC = yC + around.pos[1];
+      xC = xC + player.pos[0];
+      yC = yC + player.pos[1];
       entity.pos =[xC,yC]
       return entity;
     }
@@ -921,12 +926,16 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   }
   function playAction(action, entity){
     if(action =='enemyShoot'){
+      console.log(entity.damage);
       enemyShoot(entity.pos, entity.damage);
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
+      
       playSound(SOUNDS[chosenPhrase]);
-      showMessages([MESSAGES[chosenPhrase]], [main_enemy_name]);
+      
+      var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
+      showMessages([message]);
     }else if(action == 'launchEnemy'){
       enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
     };
@@ -957,15 +966,32 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       return entity;
     }
   }
+
+  function changePlayerSpriteToShooting(shooting){
+    if(shooting){
+      player.sprite = EL.getEntity(main_character_name+'shooting', player.pos, player).sprite;
+    }else{
+      player.sprite = EL.getEntity(main_character_name, player.pos, player).sprite;
+    }
+  }
   /* Updates */
   function lerp3(start,end, speed, dt){
     return start + (end - start) * 0.1; 
   }
   function updatePlayer(dt){
+    if(TIMERS.shootSpriteTime > 0){
+      TIMERS.shootSpriteTime -= dt;
+      if(TIMERS.shootSpriteTime <= 0){
+        TIMERS.shootSpriteTime = 0;
+        changePlayerSpriteToShooting(false);
+      }
+    }
+
     if(touchInputs){
       player.pos[0] = lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
       player.pos[1] = lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
     }
+
     player.sprite.update(dt);
   }
   function movePlayer(dir,dt){
@@ -1026,7 +1052,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       .map(updateSprite(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionThrottled(0.5,dt)))
+      .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
       .map(resetBossActionsIfEmpty)
       .map(moveToPlayerVertically(dt)));
   }
@@ -1069,7 +1095,10 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
         entity.damage = entity.baseDamage + 50;
         bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
         playSound(SOUNDS.yeah);
-        showMessages([MESSAGES.wow], ['dog']);
+
+        var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
+        showMessages([message]);
+
       }
       return bonus;
     }
@@ -1104,7 +1133,9 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
   function playerDamaged(damage){
     playSound(SOUNDS.ouch);
     player.life -= damage;
-    showMessages([MESSAGES.ouch], [(player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged)]);
+
+    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged))
+    showMessages([messageOuch]);
   }
 
   function killEnemy(enemy){
@@ -1144,7 +1175,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
     enemies = collisionToEnemyGroup(enemies);
     bosses = collisionToEnemyGroup(bosses);
 
-    enemyBullets = hu.compact(enemyBullets.map(ifCollidesApplyDamageTo(player))
+    enemyBullets = hu.compact(enemyBullets
         .map(removeIfCollideWithAndPlaySound(player)));
   }
 
@@ -1284,6 +1315,9 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       STATE.sound_enabled = bool;
     }
   }
+  function setDifficulty(speed){
+    STATE.game_speed = speed;
+  }
 
   /****************************
   ****************************
@@ -1300,6 +1334,7 @@ define( [ 'hu','game/entities', 'levelsDirector','resources','sprite','input'], 
       megaShoot : megaShoot,
       setSound : setSound,
       setSoundInGame: setSoundInGame,
+      setDifficulty: setDifficulty,
       endGame : endGame,
       start : start,
       restart : restart,

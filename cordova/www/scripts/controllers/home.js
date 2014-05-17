@@ -4,8 +4,11 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       ['$scope', 'localStorageSrv', 'settingsSrv', '$location',
       function ($scope, localStorageSrv, settingsSrv, $location) {
 
+        CocoonJS.Ad.getRectangle()
+        CocoonJS.Ad.showFullScreen()
+
         $scope.bestScore = localStorageSrv.getBestScore();
-                
+        
         $scope.getSound = function(){
           return settingsSrv.getSound() ? 'ON': 'Off';
         }
@@ -14,7 +17,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         }
 
         $scope.play = function(){
-          $location.path('/main');
+          $location.path('/difficulty');
         }
         
         $scope.highScores = function(){
@@ -27,7 +30,3 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
 
       }]);
 });
-
-
-
-

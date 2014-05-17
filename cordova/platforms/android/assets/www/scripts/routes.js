@@ -3,7 +3,8 @@ define([
   'app',
   'controllers/home',
   'controllers/badges',
-  'controllers/main'
+  'controllers/main',
+  'controllers/difficulty'
 ], function (angular, BombTouchApp) {
   BombTouchApp.config([
     '$routeProvider',
@@ -27,6 +28,10 @@ define([
       $routeProvider.when('/scores', {
         templateUrl: 'views/scores.html',
         controller: 'ScoresCtrl'
+      });
+      $routeProvider.when('/difficulty', {
+        templateUrl: 'views/difficulty.html',
+        controller: 'DifficultyCtrl'
       });
       $routeProvider.otherwise({ redirectTo: '/' });
     }

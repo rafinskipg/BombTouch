@@ -4,8 +4,11 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       ['$scope', 'localStorageSrv', 'settingsSrv', '$location',
       function ($scope, localStorageSrv, settingsSrv, $location) {
 
+        CocoonJS.Ad.getRectangle()
+        CocoonJS.Ad.showFullScreen()
+
         $scope.bestScore = localStorageSrv.getBestScore();
-                
+        
         $scope.getSound = function(){
           return settingsSrv.getSound() ? 'ON': 'Off';
         }

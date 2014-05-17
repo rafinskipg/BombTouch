@@ -291,7 +291,8 @@ module.exports = function (grunt) {
             'fonts/*',
             'sounds/**/**.**',
             'scripts/**/**.js',
-            '!scripts/main.js'
+            '!scripts/main.js',
+            '*.json'
           ]
         }, {
           expand: true,
@@ -377,10 +378,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('serverdist', [
-    'clean:server',
-      'concurrent:server',
-      'autoprefixer',
-      'connect:livereload:keepalive'
+   'connect:dist:keepalive'
   ]);
 
   grunt.registerTask('test', [

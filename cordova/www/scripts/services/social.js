@@ -8,7 +8,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       if(window.isMobile){
         var message = {
           url: 'http://ns4007672.ip-192-95-30.net:9000',
-          image: 'http://ns4007672.ip-192-95-30.net:9000/images/logo.png',
+          //image: 'http://ns4007672.ip-192-95-30.net:9000/images/logo.png',
           text:text
         };
         window.socialmessage.send(message);  
@@ -24,7 +24,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
              ',top='    + top    +
              ',left='   + left;
 
-        window.open('http://www.facebook.com/sharer.php?s=100&title=Nyan Cat adventures&summary=heyy&p[url]=http://ns4007672.ip-192-95-30.net:9000', 'twitter', opts);
+        window.open('http://www.facebook.com/sharer.php?s=100&title='+text+'&summary='+text+'&p[url]=http://ns4007672.ip-192-95-30.net:9000', 'twitter', opts);
       }
       
     }
