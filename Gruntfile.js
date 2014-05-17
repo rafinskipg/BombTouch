@@ -121,7 +121,7 @@ module.exports = function (grunt) {
           ]
         }]
       },
-      server: '.tmp'
+      server: '.tmp/styles/*'
     },
     jshint: {
       options: {
