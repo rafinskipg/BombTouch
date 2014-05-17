@@ -14,21 +14,21 @@ define( [ 'hu','game/entities'], function(hu, EL){
   var TIME_SINCE_LAST_GROUP_OUT;
   var ALLOW_ENEMY_OUT = false;
   var levelsStructure = {
-    time_between_groups: 6,
-    time_between_enemies:3,
-    time_between_levels: 10,
+    time_between_groups: 5,
+    time_between_enemies:1,
+    time_between_levels: 5,
     levels : [
       [
-      [1],[1,1],[1,2,1],[1,1,1,1]
+      [1],[1,1],[1,1,1],[1,1,1,1,1,1],[2]
       ],
       [
-      [2],[2,2,2],[2,3,2,1],[2,3,4,1,1,2,2]
+      [2],[2,1,2],[2,1,2,2],[2,2,2,2,3,3],[3,3,3]
       ],
       [
-      [3],[3,3],[3,4,3],[4,3,3,5,3,4,5]
+      [3,2],[3,3,2],[3,2,3,3],[4,4,5,4]
       ],
       [
-      [4],[4,4],[4,5,4],[4,5,4,3,4,4,5]
+      [4],[4,4],[4,3,4],[4,3,4,3,4,4,5,5], [4,5,5,5]
       ],
       [
       [5],[5,5],[5,5,4],[5,4,3,5,4,5,4,5]

@@ -14,7 +14,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         }
 
         $scope.play = function(){
-          $location.path('/main');
+          $location.path('/difficulty');
         }
         
         $scope.highScores = function(){
@@ -27,7 +27,3 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
 
       }]);
 });
-
-
-
-
