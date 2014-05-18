@@ -1,0 +1,17 @@
+<div class="container page difficulty">
+  <div class="row">
+    <div class="col-xs-12 intro-text">
+      <a class="btn btn-nyan" ng-click="goHome()">
+        <span class="glyphicon glyphicon-th-list"></span>Menu
+      </a>
+      <div>
+        <h1>Choose Prototype</h1>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="prototype in prototypes" ng-click="goToPrototype(prototype)">
+          {{prototype.name}}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

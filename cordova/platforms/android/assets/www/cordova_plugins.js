@@ -27,6 +27,13 @@ module.exports = [
         "merges": [
             "navigator.notification"
         ]
+    },
+    {
+        "file": "plugins/com.google.cordova.plugin.AdMobPlugin/www/AdMobPlugin.js",
+        "id": "com.google.cordova.plugin.AdMobPlugin.AdMob",
+        "clobbers": [
+            "window.admob"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -35,7 +42,8 @@ module.exports.metadata =
     "org.apache.cordova.console": "0.2.7",
     "org.apache.cordova.device": "0.2.8",
     "uk.co.ilee.socialmessage": "0.2.6",
-    "org.apache.cordova.dialogs": "0.2.7"
+    "org.apache.cordova.dialogs": "0.2.7",
+    "com.google.cordova.plugin.AdMobPlugin": "0.0.2"
 }
 // BOTTOM OF METADATA
 });

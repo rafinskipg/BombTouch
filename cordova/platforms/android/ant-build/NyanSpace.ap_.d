@@ -522,9 +522,12 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/sounds/songs/intro.mp3 \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/sounds/songs/rickcutt.mp4 \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/sounds/songs/thiaz_itch_bubblin_pipe.mp3 \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/com.google.cordova.plugin.AdMobPlugin \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/uk.co.ilee.socialmessage \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/org.apache.cordova.dialogs \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/org.apache.cordova.device \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/com.google.cordova.plugin.AdMobPlugin/www \
+/home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/com.google.cordova.plugin.AdMobPlugin/www/AdMobPlugin.js \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/uk.co.ilee.socialmessage/www \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/uk.co.ilee.socialmessage/www/socialmessage.js \
 /home/rafa/projects/BombTouch/cordova/platforms/android/assets/www/plugins/org.apache.cordova.dialogs/www \

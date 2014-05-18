@@ -201,8 +201,7 @@
     CocoonJS.Ad.preloadBanner();
     //TODO CHECK THIS: http://support.ludei.com/hc/communities/public/questions/200869726-Basic-Ad-Implementation-
     var bannerParams = {
-        "bannerAdUnit": "384920304a74405db071f834ca65afaa"
-        
+        "bannerAdUnit": "384920304a74405db071f834ca65afaa",
         refresh: 30 //Whatever you want
     }
     CocoonJS.Ad.preloadFullScreen(bannerParams);
@@ -214,6 +213,27 @@
     demo.params.fullscreen.status = "Downloading full screen...";
     demo.params.fullscreen.sub_status = "";
 
-    //demo.init();
+    var addInterstitial =  function() {
+        var successCreateBannerView = function() { console.log("addInterstitial Success"); 
+        admob.requestAd({'isTesting': true},success,error); };
+        var success = function() { console.log("requestAd Success"); };
+        var error = function(message) { console.log("Oopsie! " + message); };
+        
+        var options = {
+            'publisherId': 'ca-app-pub-6642955064281280/7366083050'
+        }
+        admob.createInterstitialView(options,successCreateBannerView,error);
+    };
+    
+    var killAd = function() {
+        var success = function() { console.log("killAd Success"); };
+        var error = function(message) { console.log("Oopsie! " + message); };
+        admob.killAd(success,error);
+    }
+
+    addInterstitial();
 
 })();
+
+
+

@@ -27,4 +27,12 @@
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/rafinskipg/nyanspace/R$drawable.class \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/rafinskipg/nyanspace/BuildConfig.class \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/rafinskipg/nyanspace/R$xml.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin$1.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin$5.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin$BannerListener.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin$2.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin$4.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin.class \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/classes/com/google/cordova/plugin/AdMobPlugin$3.class \
 /home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/dexedLibs/classes-df6f533ac9e475b01ff00bcee84063a1.jar \
+/home/rafa/projects/BombTouch/cordova/platforms/android/ant-build/dexedLibs/GoogleAdMobAdsSdk-6.4.1-66682361c2f32fd561f3b4de27c84243.jar \

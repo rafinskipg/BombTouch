@@ -4,21 +4,25 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9 "> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
   <head>
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
 
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>The Cool Dog adventures</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link href="http://fonts.googleapis.com/css?family=Permanent+Marker|Fugaz+One|Comfortaa|Orbitron|Julius+Sans+One" rel="stylesheet" type="text/css">
-    <meta property="og:title" content="The Cool Dog adventures!">
-    <meta property="og:description" content="Cool Dog has to complete this adventures, and needs your help!">
-    <meta property="og:image" content="http://ns4007672.ip-192-95-30.net:9000/images/doggy/logo.png">
+    <link rel="icon" 
+          type="image/png" 
+          href="favicon.png">
+    <link href='http://fonts.googleapis.com/css?family=Permanent+Marker|Fugaz+One|Comfortaa|Orbitron|Julius+Sans+One' rel='stylesheet' type='text/css'>
+    <meta property="og:title" content="The Cool Dog adventures!" />
+    <meta property="og:description" content="Cool Dog has to complete this adventures, and needs your help!" />
+    <meta property="og:image" content="http://ns4007672.ip-192-95-30.net:9000/images/doggy/logo.png" />
     <meta name="description" content="Cool Dog has to complete this adventures, and needs your help!">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <!-- build:css(.tmp) styles/main.css -->
         <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
 </head>
-  <body ng-app="">
+  <body ng-app >
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -32,11 +36,21 @@
     <div class="container" ng-view=""></div>
     <script src="cordova.js"></script>
     <script src="scripts/cocoon/cocoon.js"></script>
-    <script src="scripts/cocoon/myads.js">
+    <script  src="scripts/cocoon/myads.js">
     </script>
+    <script type="text/javascript"><!--
+    mopub_ad_unit = "bb79c9d0d25a48508fd9ee6c606df8a1";
+    mopub_ad_width = 320; // optional
+    mopub_ad_height = 50; // optional
+    //mopub_keywords = "custom keywords"; // optional
+    //-->
+    </script> 
+    <script src="http://ads.mopub.com/js/client/mopub.js"></script> 
     <script src="bower_components/hammerjs/hammer.min.js"></script>
     <script src="bower_components/requirejs/require.js"></script>
     <!-- endbuild -->
+    <!-- build:js({app,.tmp}) scripts/main.js -->
     <script src="scripts/main.js"></script>
+    <!-- endbuild -->
 </body>
 </html>

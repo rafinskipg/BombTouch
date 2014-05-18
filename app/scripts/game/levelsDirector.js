@@ -36,10 +36,15 @@ define( [ 'hu','game/entities'], function(hu, EL){
     ]
   }
 
-  function init(max, current, delay){
+  function init(max, current, delay, delayBetweenEnemies){
     MAX_LEVEL = max; 
     CURRENT_LEVEL = current;
     STARTING_DELAY = delay;
+    if( delayBetweenEnemies){
+      console.log(delayBetweenEnemies)
+      levelsStructure.time_between_enemies = delayBetweenEnemies;  
+    }
+    
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
     BOSS_OUT = false;

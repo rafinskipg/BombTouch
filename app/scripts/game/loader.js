@@ -26,7 +26,6 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     canvas = document.getElementById(canvasId);
     canvas.className = 'visible';
     ctx = canvas.getContext("2d");
-    
     //Seems to work
     ctx.webkitImageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
