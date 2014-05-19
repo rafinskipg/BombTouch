@@ -1,4 +1,4 @@
-define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, LEVELS_DIRECTOR){
+define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, BackgroundDirector, LEVELS_DIRECTOR){
 
   var throttle = function(lambda, ms){
     var allow = true;
