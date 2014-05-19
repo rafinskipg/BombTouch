@@ -65,7 +65,12 @@ define( [ ], function(){
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
-  var nebulaSpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 4 , [0], null, true]
+  var nebulaSpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0], null, true]
+  var nebula2SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0], null, true]
+  var galaxySpriteSheet = ['images/nebula/galaxy.png', [0,0], [600,600], 1 , [0], null, true]
+  var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0], null, true]
+  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [600,600], 1 , [0], null, true]
+  var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0], null, true]
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
@@ -196,14 +201,6 @@ define( [ ], function(){
 
   function Grave(pos){
     return new Entity(pos, graveSpriteSheet);
-  }
-
-   function Nebula(pos){
-    var entity =  new Entity(pos, nebulaSpriteSheet);
-    entity.sprite.resize(400, 350);
-    entity.speed = 50;
-    entity.dir = 'left';
-    return entity;
   }
 
   function Bonus(pos,opts){
@@ -343,8 +340,6 @@ define( [ ], function(){
       return new Life(pos, opts);
     }else if(name == 'bonusWeapon'){
       return new BonusWeapon(pos, opts);
-    }else if(name == 'nebula'){
-      return new Nebula(pos);
     }
   }
 
@@ -445,8 +440,42 @@ define( [ ], function(){
     return entity;
   }
 
+  function getBackgroundEntity(name, pos,speed, resizePercentage){
+    var entity;
+    if(name == 'nebula'){
+      entity = StaticEntity(pos,nebulaSpriteSheet,[400,350]);
+    }else if(name == 'nebula2'){
+      entity = StaticEntity(pos,nebula2SpriteSheet,[400,400]);
+    }else if(name == 'asteroids'){
+      entity = StaticEntity(pos,asteroidsSpriteSheet,[400,400]);
+    }else if(name == 'galaxy'){
+      entity = StaticEntity(pos,galaxySpriteSheet,[400,400]);
+    }else if(name == 'galaxy2'){
+      entity = StaticEntity(pos,galaxy2SpriteSheet,[400,400]);
+    }else if(name == 'blackhole'){
+      entity = StaticEntity(pos,blackholeSpriteSheet,[400,400]);
+    }
+    if(speed){
+      entity.speed = speed;
+    }
+    if(resizePercentage){
+      entity.sprite.resize(Math.floor(entity.sprite.size[0]*resizePercentage),Math.floor(entity.sprite.size[1]*resizePercentage) );
+    }
+    return entity;
+  }
+
+ function StaticEntity(pos,sprite,size){
+    var entity =  new Entity(pos, sprite);
+    entity.sprite.resize(size[0], size[1]);
+    entity.speed = 50;
+    entity.dir = 'left';
+    return entity;
+  }
+
+
   return {
     getEntity: getEntity,
+    getBackgroundEntity: getBackgroundEntity,
     getEnemy: getEnemy,
     getBoss: getBoss
   }
