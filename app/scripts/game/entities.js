@@ -65,6 +65,7 @@ define( [ ], function(){
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
+  var nebulaSpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 4 , [0], null, true]
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
@@ -195,6 +196,14 @@ define( [ ], function(){
 
   function Grave(pos){
     return new Entity(pos, graveSpriteSheet);
+  }
+
+   function Nebula(pos){
+    var entity =  new Entity(pos, nebulaSpriteSheet);
+    entity.sprite.resize(400, 350);
+    entity.speed = 50;
+    entity.dir = 'left';
+    return entity;
   }
 
   function Bonus(pos,opts){
@@ -334,6 +343,8 @@ define( [ ], function(){
       return new Life(pos, opts);
     }else if(name == 'bonusWeapon'){
       return new BonusWeapon(pos, opts);
+    }else if(name == 'nebula'){
+      return new Nebula(pos);
     }
   }
 
