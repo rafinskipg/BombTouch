@@ -52,16 +52,33 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
 
   var frames = 0;
 
-  var bullets = [],
-    enemies = [],
-    explosions = [],
-    specials = [],
-    bonuses = [],
-    bonusWeapons = [],
-    bosses = [],
-    enemyBullets = [],
-    graves = [],
+  var bullets,
+    enemies,
+    explosions,
+    specials,
+    bonuses,
+    bonusWeapons,
+    bosses,
+    enemyBullets,
+    graves,
+    bgElements,
+    player;
+
+  function setDefaultStateForEntities(){
+    bullets = [];
+    enemies = [];
+    explosions = [];
+    specials = [];
+    bonuses = [];
+    bonusWeapons = [];
+    bosses = [];
+    enemyBullets = [];
+    graves = [];
+    bgElements = [];
     player = {};
+
+    bgElements.push(EL.getEntity('nebula', [canvas.width, canvas.height/2]))
+  }
 
   var canvas, ctx, power = 0;
   var terrainPattern;
@@ -353,15 +370,8 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
     
     STATE = newState;
 
-    bullets = [];
-    enemies = [];
-    explosions = [];
-    specials = [];
-    bonuses = [];
-    bonusWeapons = [];
-    bosses = [];
-    enemyBullets = [];
-    graves = [];
+    setDefaultStateForEntities();
+
     player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
 
     TIMERS = getDefaultTimers();
@@ -399,13 +409,13 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
 
   function showInitialDialogs(){
 
-    var messageHero1 = new models.Message('I see the humanity...', main_character_name,3000);
-    var messageHero2 = new models.Message('... i felt them', main_character_name,3000);
+    var messageHero1 = new models.Message('ENEMY! I See your power, I saw your minions...', main_character_name,3000);
+    var messageHero2 = new models.Message('covering the universe, devouring it... i felt them', main_character_name,3000);
     var messageHero3 = new models.Message('...', main_character_name);
-    var messageHero4 = new models.Message('You have to recover your wisdom', main_character_name);
-    var messageHero5 = new models.Message('... if you want to survive', main_character_name);
-    var messageEnemy1 = new models.Message('I won\' allow you ' , main_enemy_name);
-    var messageHero6 = new models.Message('...wat', main_character_name);
+    var messageHero4 = new models.Message('I\'ll use my true power to defeat you!!', main_character_name);
+    var messageHero5 = new models.Message('Surrender now... if you want to survive', main_character_name);
+    var messageEnemy1 = new models.Message('I won\'t allow you, my vision is clear, all must die' , main_enemy_name);
+    var messageHero6 = new models.Message('...no way', main_character_name);
 
     showMessages([ 
       messageHero1,
@@ -668,6 +678,7 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
+    updateBackgroundElements(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -729,9 +740,9 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
     }  
   }
 
-  function isOutsideScreen(pos, sprite){
-    return(pos[1] + sprite.getSize()[1] < 0 || pos[1] - sprite.getSize()[1] > canvas.height ||
-       pos[0] + sprite.getSize()[0] >= canvas.width || pos[0] + sprite.getSize()[0] < 0);
+  function isOutsideScreen(pos, size){
+    return(pos[1] + size[1] < 0 || pos[1] - size[1] > canvas.height ||
+       pos[0] + size[0] >= canvas.width || pos[0] + size[0] < 0);
   }
 
   function isOnTheScreenEdges(pos,sprite){
@@ -740,7 +751,7 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
   }
 
   function removeIfOutsideScreen(entity){
-    if(!isOutsideScreen(entity.pos ,entity.sprite)){
+    if(!isOutsideScreen(entity.pos ,entity.sprite.getSize())){
       return entity;
     }
   }
@@ -753,7 +764,7 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
     if(entity.dirs.length > 0 ){
       return entity;
     }
-    if(!isOutsideScreen(entity.pos, entity.sprite)){
+    if(!isOutsideScreen(entity.pos, entity.sprite.getSize())){
       return entity;
     }
   }
@@ -891,7 +902,7 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
       margin = 0;
     }
     return function(entity){
-      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite)){
+      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite.getSize())){
         entity.readyForAction = true;
       }
       return entity;
@@ -1061,6 +1072,12 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
     graves = hu.compact(
       graves.map(updateSprite(dt))
       .map(endPostGameIfDone));
+  }
+
+  function updateBackgroundElements(dt){
+    bgElements = hu.compact(
+      bgElements.map(moveToDirection(dt))
+      .map(removeIfOutsideScreenleft));
   }
 
   /****************************
@@ -1238,6 +1255,7 @@ define( [ 'game/models/models', 'hu','game/entities','backgroundDirector', 'leve
     renderEntities(specials);
     renderEntities(bonuses);
     renderEntities(bosses);
+    renderEntities(bgElements);
     //drawFrames();
   };
 

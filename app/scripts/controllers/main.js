@@ -38,6 +38,7 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
               'images/messages/dog.png',
               'images/messages/creeper.png',
               'images/messages/cooldog.png',
+              'images/nebula/nebula2.png',
               'images/messages/cooldogdamaged.png',
               'images/messages/unknown.png',
               'sounds/cut_grunt2.wav',
