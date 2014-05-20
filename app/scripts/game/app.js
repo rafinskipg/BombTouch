@@ -249,7 +249,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     ctx.mozImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43;
+    canvas.height = window.innerHeight - 50;
   };
 
   function toMouseListeners(){
