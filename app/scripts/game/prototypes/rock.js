@@ -231,7 +231,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'game/prot
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
-    showInitialDialogs();
+    //showInitialDialogs();
     main();
   };
 
