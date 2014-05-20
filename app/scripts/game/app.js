@@ -231,7 +231,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
-    showInitialDialogs();
+    //showInitialDialogs();
     main();
   };
 
@@ -369,7 +369,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
     setDefaultStateForEntities();
 
-    player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
+    player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
     SCENARIO = new Scenario(canvas,ctx);
     TIMERS = getDefaultTimers();
   };
@@ -435,7 +435,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function endGame() {
     STATE.game_over = true;
     stopAmbientSound();
-    graves.push(EL.getEntity('grave', player.pos));
+    graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
       postGame();  
@@ -508,9 +508,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
 
-      bullets.push(EL.getEntity('bulletBlue', [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], { damage: player.damage }));
-      //bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
-      //bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
+      bullets.push(EL.getEntity('bluebullet', {pos: [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], damage: player.damage }));
     
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
@@ -518,13 +516,13 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function blueShoot(pos){
-    bullets.push(EL.getEntity('bulletBlue', pos, {damage: 200}));
+    bullets.push(EL.getEntity('bluebullet', {pos: pos,damage: 200}));
     playSound(SOUNDS.shoot);
   }
 
   function enemyShoot(pos, damage){
-    var bullet = EL.getEntity('bullet', pos, { damage: damage });
-    bullet.dir = 'left';
+    var bullet = EL.getEntity('bullet', {pos: pos, damage: damage });
+    bullet.angle = 1;
     bullet.speed = 300;
     enemyBullets.push(bullet);
     playSound(SOUNDS.shoot);
@@ -541,9 +539,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       [35,65]
     ];
     var opts  = {
-      size : randomFromArray(possibleRickSizes)
+      size : randomFromArray(possibleRickSizes),
+      pos:  [0, Math.random()* (canvas.height -39)]
     }
-     specials.push(EL.getEntity('rick', [0, Math.random()* (canvas.height -39)], opts));
+     specials.push(EL.getEntity('rick', opts));
   }, 300);
   
   var createRicks = function(ammount){
@@ -551,7 +550,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       createRick();
 
       if(specials.length < ammount){
-        requestAnimFrame(createRicks(ammount))
+        requestAnimFrame(createRicks(ammount-1))
       }  
     }
   }
@@ -568,7 +567,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   var megaShoot = throttle(megaShootUntrottled, 1000);
 
   function addExplosion(pos){
-    explosions.push(EL.getEntity('explosion',pos));
+    explosions.push(EL.getEntity('explosion',{pos: pos}));
     var number = parseInt(Math.random()*SOUNDS.explosions.length);
     playSound(SOUNDS.explosions[number]);
   }
@@ -755,10 +754,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     
     return function(entity){ 
       var radius = player.sprite.getSize()[1] > player.sprite.getSize()[0] ? player.sprite.getSize()[1] : player.sprite.getSize()[0];
-      var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+     
       //TODO: This may cause the dogge to move from the center of the circle, the Phi calculus agains a game time
       //it should be against something between 0 and 10 ? 
-      var phi = velocityPerSeconds * TIMERS.gameTime;
+      var phi =  TIMERS.gameTime;
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
       var angleInRadians = Math.atan(entity.pos[0]+1000, entity.pos[1]) + phi;
@@ -928,9 +927,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function changePlayerSpriteToShooting(shooting){
     if(shooting){
-      player.sprite = EL.getEntity(main_character_name+'shooting', player.pos, player).sprite;
+      player.sprite = EL.getEntity(main_character_name+'shooting', player).sprite;
     }else{
-      player.sprite = EL.getEntity(main_character_name, player.pos, player).sprite;
+      player.sprite = EL.getEntity(main_character_name, player).sprite;
     }
   }
   /* Updates */
@@ -958,7 +957,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
       entities.map(updateSprite(dt))
-      .map(petra.moveToDirection(dt))
+      .map(petra.moveByAngle(dt))
       .map(removeIfOutsideScreen));
   }
   function updateBullets(dt){
@@ -972,7 +971,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateEnemies(dt){
     enemies = hu.compact(
       enemies.map(updateSprite(dt))
-      .map(petra.moveToDirection(dt))
+      .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
   }
 

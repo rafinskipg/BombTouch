@@ -23,6 +23,21 @@ define( ['hu'], function(hu){
       }
     }
 
+    Petra.radianToDegree  = function(radians){
+      return radians * (180/Math.PI)
+    }
+    Petra.moveByAngle = function(dt){
+      return function(entity){
+        var angleInDegrees = Petra.radianToDegree(entity.angle*Math.PI);
+        var newPos = [];
+        
+        newPos[0] = entity.pos[0] + dt * entity.speed * Math.cos(entity.angle*Math.PI);
+        newPos[1] = entity.pos[1] + dt * entity.speed * Math.sin(entity.angle*Math.PI);
+        entity.pos = newPos;
+        return entity;
+      }
+    }
+
     Petra.removeIfOutsideScreenleft = function(entity){
       if(! (entity.pos[0] + entity.sprite.getSize()[0] < 0) ) {
         return entity;

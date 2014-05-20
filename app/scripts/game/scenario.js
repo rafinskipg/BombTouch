@@ -30,11 +30,11 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     TIME_SINCE_LAST_OUT += dt;
 
     this.frontElements = hu.compact(
-      this.frontElements.map(petra.moveToDirection(dt))
+      this.frontElements.map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft)); 
 
     this.bgElements = hu.compact(
-      this.bgElements.map(petra.moveToDirection(dt))
+      this.bgElements.map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
 
     if(TIME_SINCE_LAST_OUT >= DELAY){
