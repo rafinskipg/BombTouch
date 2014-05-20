@@ -69,7 +69,7 @@ define( [ ], function(){
   var nebula2SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0], null, true]
   var galaxySpriteSheet = ['images/nebula/galaxy.png', [0,0], [600,600], 1 , [0], null, true]
   var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0], null, true]
-  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [600,600], 1 , [0], null, true]
+  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [1994,1147], 1 , [0], null, true]
   var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0], null, true]
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];

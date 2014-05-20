@@ -1,4 +1,4 @@
-define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, LEVELS_DIRECTOR){
+define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDirector','game/petra','resources','sprite','input','game/raf'], function(models, hu, EL, Scenario, LEVELS_DIRECTOR, petra){
 
   var throttle = function(lambda, ms){
     var allow = true;
@@ -52,18 +52,32 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   var frames = 0;
 
-  var bullets = [],
-    enemies = [],
-    explosions = [],
-    specials = [],
-    bonuses = [],
-    bonusWeapons = [],
-    bosses = [],
-    enemyBullets = [],
-    graves = [],
+  var bullets,
+    enemies,
+    explosions,
+    specials,
+    bonuses,
+    bonusWeapons,
+    bosses,
+    enemyBullets,
+    graves,
+    player;
+
+  function setDefaultStateForEntities(){
+    bullets = [];
+    enemies = [];
+    explosions = [];
+    specials = [];
+    bonuses = [];
+    bonusWeapons = [];
+    bosses = [];
+    enemyBullets = [];
+    graves = [];
     player = {};
+  }
 
   var canvas, ctx, power = 0;
+  var SCENARIO;
   var terrainPattern;
 
   //Suscribe to events of the game
@@ -209,7 +223,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,2,7);
+    LEVELS_DIRECTOR.init(5,1,20);
 
     initCanvas();
     toMouseListeners();
@@ -217,7 +231,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
-    //showInitialDialogs();
+    showInitialDialogs();
     main();
   };
 
@@ -353,17 +367,10 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     
     STATE = newState;
 
-    bullets = [];
-    enemies = [];
-    explosions = [];
-    specials = [];
-    bonuses = [];
-    bonusWeapons = [];
-    bosses = [];
-    enemyBullets = [];
-    graves = [];
-    player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
+    setDefaultStateForEntities();
 
+    player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
+    SCENARIO = new Scenario(canvas,ctx);
     TIMERS = getDefaultTimers();
   };
 
@@ -399,13 +406,13 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function showInitialDialogs(){
 
-    var messageHero1 = new models.Message('I see the humanity...', main_character_name,3000);
-    var messageHero2 = new models.Message('... i felt them', main_character_name,3000);
+    var messageHero1 = new models.Message('ENEMY! I See your power, I saw your minions...', main_character_name,3000);
+    var messageHero2 = new models.Message('covering the universe, devouring it... i felt them', main_character_name,3000);
     var messageHero3 = new models.Message('...', main_character_name);
-    var messageHero4 = new models.Message('You have to recover your wisdom', main_character_name);
-    var messageHero5 = new models.Message('... if you want to survive', main_character_name);
-    var messageEnemy1 = new models.Message('I won\' allow you ' , main_enemy_name);
-    var messageHero6 = new models.Message('...wat', main_character_name);
+    var messageHero4 = new models.Message('I\'ll use my true power to defeat you!!', main_character_name);
+    var messageHero5 = new models.Message('Surrender now... if you want to survive', main_character_name);
+    var messageEnemy1 = new models.Message('I won\'t allow you, my vision is clear, all must die' , main_enemy_name);
+    var messageHero6 = new models.Message('...no way', main_character_name);
 
     showMessages([ 
       messageHero1,
@@ -663,11 +670,13 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
+    updateShield(dt);
     updateSpecials(dt);
     updateExplosions(dt);
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
+    SCENARIO.update(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -682,56 +691,9 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     };
   }
 
-  function moveLeft(pos, speed, dt){
-    return [pos[0] - speed * dt, pos[1]];
-  }
-  function moveRight(pos, speed, dt){
-    return [pos[0] + speed * dt, pos[1]];
-  }
-  function moveDown(pos, speed, dt){
-    return [pos[0], pos[1] + speed * dt];
-  }
-  function moveUp(pos, speed, dt){
-    return [pos[0], pos[1] - speed * dt];
-  }
-  function calculateNextDirection(entity, dt){
-    var pos = [entity.pos[0], entity.pos[1]];
-    if(entity.dir == 'up') {
-      pos = moveUp(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'down'){
-      pos = moveDown(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'left'){
-      pos = moveLeft(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'right'){
-      pos = moveRight(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'upleft'){
-      pos[1] = entity.pos[1] - entity.speed * dt;
-      pos[0] = entity.pos[0] - entity.speed * dt;
-    }else if(entity.dir == 'upright'){
-      pos[1] = entity.pos[1] - entity.speed * dt;
-      pos[0] = entity.pos[0] + entity.speed * dt;
-    }else if(entity.dir == 'downleft'){
-      pos[1] = entity.pos[1] + entity.speed * dt;
-      pos[0] = entity.pos[0] - entity.speed * dt;
-    }else if(entity.dir == 'downright'){
-      pos[1] = entity.pos[1] + entity.speed * dt;
-      pos[0] = entity.pos[0] + entity.speed * dt;
-    }else {
-      pos[0] = entity.pos[0] - entity.speed * dt;
-    }
-    return pos;
-  }
-  function moveToDirection(dt){
-    return function(entity){
-      var newPos = calculateNextDirection(entity, dt);
-      entity.pos = newPos;
-      return entity;
-    }  
-  }
-
-  function isOutsideScreen(pos, sprite){
-    return(pos[1] + sprite.getSize()[1] < 0 || pos[1] - sprite.getSize()[1] > canvas.height ||
-       pos[0] + sprite.getSize()[0] >= canvas.width || pos[0] + sprite.getSize()[0] < 0);
+  function isOutsideScreen(pos, size){
+    return(pos[1] + size[1] < 0 || pos[1] - size[1] > canvas.height ||
+       pos[0] + size[0] >= canvas.width || pos[0] + size[0] < 0);
   }
 
   function isOnTheScreenEdges(pos,sprite){
@@ -740,20 +702,16 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   }
 
   function removeIfOutsideScreen(entity){
-    if(!isOutsideScreen(entity.pos ,entity.sprite)){
+    if(!isOutsideScreen(entity.pos ,entity.sprite.getSize())){
       return entity;
     }
   }
-  function removeIfOutsideScreenleft(entity){
-    if(! (entity.pos[0] + entity.sprite.getSize()[0] < 0) ) {
-      return entity;
-    }
-  }
+ 
   function removeIfOutsideScreenAndNoDirectionsAvailable(entity){
     if(entity.dirs.length > 0 ){
       return entity;
     }
-    if(!isOutsideScreen(entity.pos, entity.sprite)){
+    if(!isOutsideScreen(entity.pos, entity.sprite.getSize())){
       return entity;
     }
   }
@@ -780,7 +738,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function changeDirectionIfAvailable(dt){
     return function(entity){
-      var nextDirection = calculateNextDirection(entity,dt);
+      var nextDirection = petra.calculateNextDirection(entity,dt);
       if(isOnTheScreenEdges(nextDirection, entity.sprite)){
         if(entity.dirs && entity.dirs.length > 0){
           entity.dir = entity.dirs.pop();  
@@ -871,16 +829,16 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     }
     return function(entity){
       if(entity.pos[0] + entity.sprite.getSize()[0] + margin >= canvas.width) {
-        entity.pos = moveLeft(entity.pos, entity.speed, dt);
+        entity.pos = petra.moveLeft(entity.pos, entity.speed, dt);
       }
       if(entity.pos[1] > canvas.height){
-        entity.pos = moveUp(entity.pos, entity.speed, dt);
+        entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
       if(entity.pos[0] + entity.sprite.getSize()[0] < 0){
-        entity.pos = moveRight(entity.pos, entity.speed, dt);
+        entity.pos = petra.moveRight(entity.pos, entity.speed, dt);
       }
       if(entity.pos[1]  + entity.sprite.getSize()[1] < 0){
-        entity.pos = moveDown(entity.pos, entity.speed, dt);
+        entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
       return entity;
     }
@@ -891,7 +849,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       margin = 0;
     }
     return function(entity){
-      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite)){
+      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite.getSize())){
         entity.readyForAction = true;
       }
       return entity;
@@ -956,15 +914,29 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function moveToPlayerVertically(dt){
     return function(entity){
       if(player.pos[1] < entity.pos[1]){
-        entity.pos = moveUp(entity.pos, entity.speed, dt);
+        entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
       if(player.pos[1] > entity.pos[1]){
-        entity.pos = moveDown(entity.pos, entity.speed, dt);
+        entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 
       return entity;
     }
+  }
+
+  function addShieldToTheFirst(group){
+    var isTheNearest; 
+    var limitX = canvas.width;
+    for(var i = 0; i < group.length; i++){
+      group[i].hasShield = false;
+      if(group[i].pos[0] < limitX){
+        isTheNearest = i*1;
+        limitX = group[i].pos[0]
+      }
+    }
+    group[isTheNearest].hasShield = true;
+    return group;
   }
 
   function changePlayerSpriteToShooting(shooting){
@@ -975,9 +947,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     }
   }
   /* Updates */
-  function lerp3(start,end, speed, dt){
-    return start + (end - start) * 0.1; 
-  }
+  
   function updatePlayer(dt){
     if(TIMERS.shootSpriteTime > 0){
       TIMERS.shootSpriteTime -= dt;
@@ -988,20 +958,20 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     }
 
     if(touchInputs){
-      player.pos[0] = lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
-      player.pos[1] = lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      player.pos[0] = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      player.pos[1] = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
     }
 
     player.sprite.update(dt);
   }
   function movePlayer(dir,dt){
     player.dir = dir;
-    player = moveToDirection(dt)(player);
+    player = petra.moveToDirection(dt)(player);
   }
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
       entities.map(updateSprite(dt))
-      .map(moveToDirection(dt))
+      .map(petra.moveToDirection(dt))
       .map(removeIfOutsideScreen));
   }
   function updateBullets(dt){
@@ -1015,8 +985,10 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function updateEnemies(dt){
     enemies = hu.compact(
       enemies.map(updateSprite(dt))
-      .map(moveToDirection(dt))
-      .map(removeIfOutsideScreenleft));
+      .map(petra.moveToDirection(dt))
+      .map(petra.removeIfOutsideScreenleft));
+
+    enemies = addShieldTotheFirst(enemies);
   }
 
   
@@ -1034,7 +1006,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
-      .map(wrapperReadyForActionOnly(moveToDirection(dt)))
+      .map(wrapperReadyForActionOnly(petra.moveToDirection(dt)))
       .map(ifCollidesApplyBonusTo(player))
       .map(removeIfOutsideScreenAndNoDirectionsAvailable))
       .map(removeIfCollideWith(player)));
@@ -1112,6 +1084,16 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     }
   }
 
+  function ifCollidesAndHasShieldApplyDamageTo(entity)
+    return function(item){
+      if(entity.hasShield){
+        return ifCollidesApplyDamageTo(entity)(item);
+      }else{
+        return item;
+      }
+    }
+  }
+
   function removeIfCollideWith(entity){
     return function(item){
       if(!entitiesCollide(entity, item)){
@@ -1149,7 +1131,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function collisionToEnemyGroup(enemyGroup){
       enemyGroup = hu.compact(enemyGroup.map(function(enemy){
 
-        bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+        bullets = hu.compact(bullets.map(ifCollidesAndHasShieldApplyDamageTo(enemy))
           .map(removeIfCollideWith(enemy)));
           
         specials
@@ -1223,62 +1205,30 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       BGx =0;
     }
   
-    if(!isGameOver()) {
-      renderEntity(player);
+   
+    var entitiesToRender = [
+      bullets,
+      enemyBullets,
+      enemies,
+      explosions,
+      specials,
+      bonuses,
+      bosses
+      ];
+
+   if(!isGameOver()) {
+      entitiesToRender.push([player]);
       if(player.hasBonus){
-        renderEntities(bonusWeapons);
+        entitiesToRender.push(bonusWeapons);
       }
     }else{
-      renderEntities(graves);
+      entitiesToRender.push(graves);
     }
-    renderEntities(bullets);
-    renderEntities(enemyBullets);
-    renderEntities(enemies);
-    renderEntities(explosions);
-    renderEntities(specials);
-    renderEntities(bonuses);
-    renderEntities(bosses);
-    //drawFrames();
+
+    SCENARIO.render(entitiesToRender)
   };
 
-  function renderEntities(list) {
-    for(var i=0; i<list.length; i++) {
-      renderEntity(list[i]);
-    }    
-  }
-
-  function renderEntity(entity) {
-    ctx.save();
-    ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-    entity.sprite.render(ctx);
-    ctx.restore();
-    if(entity.life){
-      drawLife(entity);
-    }
-  }
-  function drawFrames(){
-    ctx.fillStyle = "blue";
-    ctx.font = "bold 16px Arial";
-    ctx.fillText(frames, 100, 100);
-  }
-  function drawLife(entity){
-    var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
-    var x = Math.round(entity.pos[0]);
-    var y = Math.round(entity.pos[1]);
-    ctx.beginPath();
-    ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
-    ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black'; 
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.rect(x+ (entity.sprite.getSize()[0]-lifeTotal), y + entity.sprite.getSize()[1], lifeTotal, 7);
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
-    ctx.fill();
-    ctx.stroke();
-  }
+  
 
   /****************************
   ****************************
