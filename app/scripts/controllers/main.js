@@ -1,4 +1,4 @@
-define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouchApp , GAME, LOADER){
+define(['angular', 'app','game/assets', 'maingame','game/loader'], function(angular, BombTouchApp , ASSETSList , GAME, LOADER){
     'use strict';
     return BombTouchApp.controller('MainCtrl',
       ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location','badgesSrv',
@@ -25,41 +25,7 @@ define(['angular', 'app', 'maingame','game/loader'], function(angular, BombTouch
           theGame.setSound(settingsSrv.getSound());
           theGame.setDifficulty(settingsSrv.getDifficulty());
           LOADER.init('canvas2');
-          LOADER.load([
-              'images/newsprites.png',
-              'images/background.png',
-              'images/orbes/coin.png',
-              'images/enemies/tacnyan.png',
-              'images/bonusWeapon.png',
-              'images/creeper.png',
-              'images/doggy/pixeleddog.png',
-              'images/doggy/dog2.png',
-              'images/rick/rickrollsprite.png',
-              'images/messages/dog.png',
-              'images/messages/creeper.png',
-              'images/messages/cooldog.png',
-              'images/nebula/nebula2.png',
-              'images/nebula/nebula3.png',
-              'images/nebula/asteroids.png',
-              'images/nebula/blackhole.png',
-              'images/nebula/galaxy.png',
-              'images/nebula/galaxy2.png',
-              'images/messages/cooldogdamaged.png',
-              'images/messages/unknown.png',
-              'sounds/cut_grunt2.wav',
-              'sounds/laser5.wav',
-              'sounds/songs/thiaz_itch_bubblin_pipe.mp3',
-              'sounds/oh_yeah_wav_cut.wav',
-              'sounds/upmid.wav',
-              'sounds/rickcut2.wav',
-              'sounds/killer.mp3',
-              'sounds/grunt.mp3',
-              'sounds/power.mp3',
-              'sounds/ohmy.wav',
-              'sounds/explosions/atari_boom2.wav',
-              'sounds/explosions/explodemini.wav',
-              'sounds/explosions/explode.wav'
-          ], theGame.start)
+          LOADER.load(ASSETSList, theGame.start)
           
         } 
 

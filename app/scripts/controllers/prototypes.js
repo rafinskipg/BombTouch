@@ -8,6 +8,10 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
           {
             name : 'Shield Prototype',
             id: 'shield'
+          },
+          {
+            name : 'VS Rocks Prototype',
+            id: 'rock'
           }
         ];
 

@@ -174,8 +174,8 @@ define( [ 'hu','game/entities'], function(hu, EL){
     TIME_SINCE_LAST_ENEMY_OUT = 0;
     var enemyID = levelsStructure.levels[CURRENT_LEVEL-1][CURRENT_GROUP][CURRENT_ENEMY];
     CURRENT_ENEMY++;
-    var enemy =  EL.getEnemy(pos,enemyID);
-    //var enemy =  EL.getSpaceInvader(pos,enemyID);
+    //var enemy =  EL.getEnemy(pos,enemyID);
+    var enemy =  EL.getSpaceInvader(pos,enemyID);
     enemy.level = CURRENT_LEVEL;
     return enemy;
   }

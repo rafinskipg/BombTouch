@@ -71,9 +71,14 @@ define( [ ], function(){
   var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0], null, true]
   var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [1994,1147], 1 , [0], null, true]
   var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0], null, true]
+  var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0], null, true]
+  var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0], null, true]
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
+
+  //Var Space invaders version
+  var spaceInvaderSpriteSchema = ['images/enemies/rock.png', [0,0], [55,55],8,[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]]
 
   //Thanks dr.axel. 
   if (!Function.prototype.construct) {
@@ -448,6 +453,10 @@ define( [ ], function(){
       entity = StaticEntity(pos,nebula2SpriteSheet,[400,400]);
     }else if(name == 'asteroids'){
       entity = StaticEntity(pos,asteroidsSpriteSheet,[400,400]);
+    }else if(name == 'asteroids2'){
+      entity = StaticEntity(pos,asteroids2SpriteSheet,[400,400]);
+    }else if(name == 'asteroids3'){
+      entity = StaticEntity(pos,asteroids3SpriteSheet,[400,400]);
     }else if(name == 'galaxy'){
       entity = StaticEntity(pos,galaxySpriteSheet,[400,400]);
     }else if(name == 'galaxy2'){
@@ -472,11 +481,26 @@ define( [ ], function(){
     return entity;
   }
 
+  function getSpaceInvader(pos){
+    return new SpaceInvader(pos);
+  }
 
+  function SpaceInvader(pos){
+    var entity = new Entity(pos, spaceInvaderSpriteSchema);
+    entity.speed = 100;
+    entity.dir = 'left';
+    entity.damage = 100;
+    entity.life = 100;  
+    entity.points = 100;
+    entity.totalLife = 100;
+    entity.sprite.resize(40,40);
+    return entity;
+  }
   return {
     getEntity: getEntity,
     getBackgroundEntity: getBackgroundEntity,
     getEnemy: getEnemy,
+    getSpaceInvader: getSpaceInvader,
     getBoss: getBoss
   }
 });

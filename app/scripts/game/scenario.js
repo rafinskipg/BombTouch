@@ -9,6 +9,8 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     'nebula',
     'nebula2',
     'asteroids',
+    'asteroids2',
+    'asteroids3',
     'blackhole',
     'galaxy',
     'galaxy2'
