@@ -9,14 +9,16 @@ define( ['hu'], function(hu){
     Petra.random = function(min, max){
       return Math.floor(Math.random()*max)+min;
     }
-
+    Petra.randomFloat = function(min, max){
+      return (Math.random() * (max - min) + max).toFixed(4);
+    }
     Petra.flipCoin = function(){
       return Math.floor( Math.random() * 2 ) == 1
     }
 
     Petra.moveToDirection = function(dt){
       return function(entity){
-        var newPos = calculateNextDirection(entity, dt);
+        var newPos = calculateNextPosition(entity, dt);
         entity.pos = newPos;
     
         return entity;
@@ -26,13 +28,10 @@ define( ['hu'], function(hu){
     Petra.radianToDegree  = function(radians){
       return radians * (180/Math.PI)
     }
+
     Petra.moveByAngle = function(dt){
       return function(entity){
-        var angleInDegrees = Petra.radianToDegree(entity.angle*Math.PI);
-        var newPos = [];
-        
-        newPos[0] = entity.pos[0] + dt * entity.speed * Math.cos(entity.angle*Math.PI);
-        newPos[1] = entity.pos[1] + dt * entity.speed * Math.sin(entity.angle*Math.PI);
+        var newPos = calculateNextPositionByAngle(entity, dt);
         entity.pos = newPos;
         return entity;
       }
@@ -43,11 +42,23 @@ define( ['hu'], function(hu){
         return entity;
       }
     }
+    //http://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
+    Petra.calculateBounceAngle = function(entity){
+
+    }
+
     Petra.lerp3 = function(start,end, speed, dt){
       return start + (end - start) * 0.1; 
     }
     //Direction helpers
-    var calculateNextDirection = Petra.calculateNextDirection = function(entity, dt){
+    var calculateNextPositionByAngle = Petra.calculateNextPositionByAngle = function(entity, dt){
+      var pos = [entity.pos[0], entity.pos[1]];
+      pos[0] +=  dt * entity.speed * Math.cos(entity.angle*Math.PI);
+      pos[1] +=  dt * entity.speed * Math.sin(entity.angle*Math.PI);
+      return pos;
+    }
+
+    var calculateNextPosition = Petra.calculateNextPosition = function(entity, dt){
       var pos = [entity.pos[0], entity.pos[1]];
       if(entity.dir == 'up') {
         pos = moveUp(entity.pos, entity.speed, dt);

@@ -200,7 +200,7 @@ define( [ 'hu','game/entities'], function(hu, EL){
   //BONUS
   function createBonus(pos){
     bonusAdded();
-    return EL.getEntity('bonus',pos);
+    return EL.getEntity('bonus',{pos:pos});
   }
   function bonusAdded(){
     BONUS_TIME = 0;

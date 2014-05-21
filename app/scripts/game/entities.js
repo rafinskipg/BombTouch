@@ -274,7 +274,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     var entity =  new GameEntity(entities[name], opts);
     if(name == 'bonus'){
       entity.angle = petra.randomFloat(7/12,17/12);
-      entity.maxBounces = 5;
+      entity.bounces = 5;
     }
     return entity;
   }

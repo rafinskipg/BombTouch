@@ -223,7 +223,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,20);
+    LEVELS_DIRECTOR.init(5,1,1);
 
     initCanvas();
     toMouseListeners();
@@ -707,8 +707,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
  
-  function removeIfOutsideScreenAndNoDirectionsAvailable(entity){
-    if(entity.dirs.length > 0 ){
+  function removeIfOutsideScreenAndNoBouncesLeft(entity){
+    if(entity.bounces > 0 ){
       return entity;
     }
     if(!isOutsideScreen(entity.pos, entity.sprite.getSize())){
@@ -738,11 +738,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function changeDirectionIfAvailable(dt){
     return function(entity){
-      var nextDirection = petra.calculateNextDirection(entity,dt);
-      if(isOnTheScreenEdges(nextDirection, entity.sprite)){
-        if(entity.dirs && entity.dirs.length > 0){
-          entity.dir = entity.dirs.pop();  
-        }
+      var nextPosition = petra.calculateNextPosition(entity,dt);
+      if(isOnTheScreenEdges(nextPosition, entity.sprite)){
+        entity.bounces -= 1;
+        entity.angle = petra.calculateNextDirection(entity);
       }
       return entity;
     }
@@ -992,7 +991,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
       .map(wrapperReadyForActionOnly(petra.moveToDirection(dt)))
       .map(ifCollidesApplyBonusTo(player))
-      .map(removeIfOutsideScreenAndNoDirectionsAvailable))
+      .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
   }
 
