@@ -86,63 +86,63 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     'bombarea' : {
       sprite : bombareaSpriteSchema,
       damage: 5,
-      speed: 0
+      speed: [0,0]
     },
     'special' : {
       sprite: specialSpriteSchema,
       damage: 100,
-      speed: 0
+      speed: [0,0]
     },
     'explosion' : {
       sprite: explosionSpriteSchema,
       damage: 0,
-      speed: 0
+      speed: [0,0]
     },
     'bomb' : {
       sprite: bombSpriteSchema,
       damage: 0,
-      speed: 0
+      speed: [0,0]
     },
     'rick' : {
       sprite: rickrollSpriteSchema,
       damage: 100,
-      speed: 300,
+      speed: [300,300],
       resize: [70,110],
       angle: 1,
     },
     'grave': {
       sprite: graveSpriteSheet,
-      speed: 0,
+      speed: [0,0],
       resize : [30,30]
     },
     'bullet' : {
       sprite: normalBulletSpriteSchema,
       damage: 50,
-      speed: 500, 
+      speed: [500,500], 
       angle : 0
     },
     'bottomBullet' : {
       sprite: normalBulletSpriteSchema,
       damage: 25,
-      speed: 500, 
+      speed: [500,500], 
       angle : 3/2
     },
     'topBullet' : {
       sprite: normalBulletSpriteSchema,
       damage: 25,
-      speed: 500, 
+      speed: [500,500], 
       angle : 1/2
     },
     'nyanbullet' : {
       sprite: nyanBulletSpriteSchema,
       damage: 50,
-      speed: 500, 
+      speed: [500,500], 
       angle : 0
     },
     'bluebullet' : {
       sprite: blueBulletSpriteSchema,
       damage: 50,
-      speed: 500,
+      speed: [500,500],
       angle: 0,
       resize: [20,20]
     },
@@ -150,7 +150,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       sprite: coolDogSpriteSchema,
       damage: 80,
       baseDamage: 80,
-      speed: 200,
+      speed: [200,200],
       angle: 0,
       life: 1000,
       totalLife: 1000,
@@ -164,7 +164,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       sprite: coolDogShootingSpriteSchema,
       damage: 80,
       baseDamage: 80,
-      speed: 200,
+      speed: [200,200],
       angle: 0,
       life: 1000,
       totalLife: 1000,
@@ -172,18 +172,18 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       isSuperSaiyan: false
     },
     'bonus': {
-      speed: 200,
+      speed: [200,200],
       resize: [50,50],
       sprite: bonusSpriteSchema,
       angle : 1
     },
     'bonusWeapon':{
       sprite: bonusWeaponSpriteSchema,
-      speed: 20
+      speed: [20,20]
     },
     'enemy1' : {
       sprite: tacnyanSpriteSchema,
-      speed: 45,
+      speed: [45,45],
       points: 100,
       angle: 1,
       life: 100,
@@ -193,7 +193,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     },
     'enemy2' : {
       sprite: dolanSpriteSchema,
-      speed: 55,
+      speed: [55,55],
       points: 200,
       angle: 1,
       life: 200,
@@ -203,7 +203,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     },
     'enemy3' : {
       sprite: flappySpriteSchema,
-      speed: 65,
+      speed: [65,65],
       points: 300,
       angle: 1,
       life: 300,
@@ -213,7 +213,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     },
     'enemy4' : {
       sprite: dramaticSpriteSchema,
-      speed: 75,
+      speed: [75,75],
       points: 400,
       angle: 1,
       life: 400,
@@ -223,7 +223,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     },
     'enemy5' : {
       sprite: level5SpriteSchema,
-      speed: 85,
+      speed: [85,85],
       points: 500,
       angle: 1,
       life: 500,
@@ -231,7 +231,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       damage: 180
     },
     'boss':{
-      speed: 25, 
+      speed: [25,25],
       points: 10000,
       totalLife: 10000,
       life: 10000,
@@ -330,7 +330,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
  function StaticEntity(pos,sprite,size){
     var entity =  new Models.Entity({pos: pos, sprite: sprite} );
     entity.sprite.resize(size[0], size[1]);
-    entity.speed = 50;
+    entity.speed = [50,50];
     entity.dir = 'left';
     return entity;
   }
@@ -341,7 +341,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
 
   function SpaceInvader(pos){
     var entity = new Models.Entity({pos:pos, sprite: spaceInvaderSpriteSchema});
-    entity.speed = 100;
+    entity.speed = [100,100];
     entity.dir = 'left';
     entity.damage = 100;
     entity.life = 100;  

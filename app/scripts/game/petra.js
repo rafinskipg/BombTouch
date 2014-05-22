@@ -43,9 +43,14 @@ define( ['hu'], function(hu){
       }
     }
     //http://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
-    Petra.calculateBounceAngle = function(entity){
-
+    //http://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision
+    Petra.calculateBounceAngle = function(entity, normalVector){
+      var angle = Petra.calculateAngleAgainstVector(entity.pos, entity.angle, normalVector);
+      var u1 = (Petra.vectorDotProduct(entity.speed, normalVector, angle ) / Petra.vectorDotProduct(normalVector,normalVector, 0);
+      var u = Petra.vectorDotProduct(ui, normalVector);
+      var w = Petra.vectorSubstract(entity.speed, u);
     }
+
 
     Petra.lerp3 = function(start,end, speed, dt){
       return start + (end - start) * 0.1; 
@@ -53,8 +58,8 @@ define( ['hu'], function(hu){
     //Direction helpers
     var calculateNextPositionByAngle = Petra.calculateNextPositionByAngle = function(entity, dt){
       var pos = [entity.pos[0], entity.pos[1]];
-      pos[0] +=  dt * entity.speed * Math.cos(entity.angle*Math.PI);
-      pos[1] +=  dt * entity.speed * Math.sin(entity.angle*Math.PI);
+      pos[0] +=  dt * entity.speed[0] * Math.cos(entity.angle*Math.PI);
+      pos[1] +=  dt * entity.speed[1] * Math.sin(entity.angle*Math.PI);
       return pos;
     }
 
