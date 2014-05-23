@@ -50,12 +50,18 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   }
 
   Scenario.prototype.addItem = function(item){
-    if(petra.flipCoin()){
-      this.bgElements.push(EL.getBackgroundEntity(item, [this.canvas.width, petra.random(0, this.canvas.height)], petra.random(20,50),Math.random().toFixed(2)));  
-    }else{
-      this.frontElements.push(EL.getBackgroundEntity(item, [this.canvas.width, petra.random(0, this.canvas.height)],petra.random(50,70),1+Math.random().toFixed(2)));  
+    var opts = {
+      pos : [this.canvas.width, petra.random(0, this.canvas.height)],
+      speed: [petra.random(20,50),petra.random(20,50)],
+      resizePercentage: Math.random().toFixed(2)
     }
-    
+    if(petra.flipCoin()){
+      this.bgElements.push(EL.getBackgroundEntity(item, opts));  
+    }else{
+      opts.speed = [petra.random(50,70),petra.random(50,70)];
+      opts.resizePercentage = 1+Math.random().toFixed(2);
+      this.frontElements.push(EL.getBackgroundEntity(item, opts));  
+    }
   }
 
   Scenario.prototype.render = function(listOfEntitiesArrays){

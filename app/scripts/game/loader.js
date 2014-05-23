@@ -62,7 +62,6 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     this.vel = {};
     this.vel.x = Math.ceil(Math.random() * 5) * 10;
     this.vel.y = Math.ceil(Math.random() * 5) * 10;
-    console.log(this)
     this.acc = {
       x : 0,
       y : 0

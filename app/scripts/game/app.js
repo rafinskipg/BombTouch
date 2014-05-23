@@ -523,7 +523,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function enemyShoot(pos, damage){
     var bullet = EL.getEntity('bullet', {pos: pos, damage: damage });
     bullet.angle = 1;
-    bullet.speed = 300;
+    bullet.speed = [300,300];
     enemyBullets.push(bullet);
     playSound(SOUNDS.shoot);
   }
@@ -696,9 +696,18 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
        pos[0] + size[0] >= canvas.width || pos[0] + size[0] < 0);
   }
 
-  function isOnTheScreenEdges(pos,sprite){
-    return(pos[1] <= 0 || pos[1] + sprite.getSize()[1] >= canvas.height ||
-       pos[0] + sprite.getSize()[0] >= canvas.width);
+  function checkCanvasLimits(pos,size){
+    if(pos[1] <= 0){
+      return 0;
+    } else if(pos[1] + size[1] >= canvas.height ){
+      return 1;
+    } else if(pos[0] + size[0] >= canvas.width) {
+      return 1/2;
+    } else if(pos[0] <= 0){
+      return 3/2;
+    }else{
+      return null;
+    }
   }
 
   function removeIfOutsideScreen(entity){
@@ -738,10 +747,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function changeDirectionIfAvailable(dt){
     return function(entity){
-      var nextPosition = petra.calculateNextPosition(entity,dt);
-      if(isOnTheScreenEdges(nextPosition, entity.sprite)){
+      var nextPosition = petra.calculateNextPositionByAngle(entity,dt);
+      var reflectionAngle = checkCanvasLimits(nextPosition, entity.sprite.getSize());
+      if(reflectionAngle != null){
         entity.bounces -= 1;
-        entity.angle = petra.calculateNextDirection(entity);
+        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle);
       }
       return entity;
     }
@@ -950,8 +960,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     player.sprite.update(dt);
   }
   function movePlayer(dir,dt){
-    player.dir = dir;
-    player = petra.moveToDirection(dt)(player);
+    player = petra.moveToDirection(dt, dir)(player);
   }
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
@@ -989,7 +998,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
-      .map(wrapperReadyForActionOnly(petra.moveToDirection(dt)))
+      .map(wrapperReadyForActionOnly(petra.moveByAngle(dt)))
       .map(ifCollidesApplyBonusTo(player))
       .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
@@ -1048,7 +1057,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         addPoints(200);
         entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
         entity.damage = entity.baseDamage + 50;
-        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
+        bonusWeapons = [EL.getEntity('bonusWeapon', {pos:[entity.pos[0] , entity.pos[1]]})];
         playSound(SOUNDS.yeah);
 
         var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);

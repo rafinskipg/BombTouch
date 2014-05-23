@@ -239,10 +239,60 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       damage: 400,
       resize:[60,60]
     }
-
-
   };
 
+
+
+  var backgroundEntities ={
+    'nebula': {
+      speed: 10,
+      size: [400,350],
+      sprite: nebulaSpriteSheet,
+      angle: 1
+    },
+    'nebula2': {
+      speed:10 ,
+      size: [400,400],
+      sprite: nebula2SpriteSheet,
+      angle: 1
+    },
+    'asteroids': {
+      speed: 50,
+      size: [400,400],
+      sprite: asteroidsSpriteSheet ,
+      angle: 1
+    },
+    'asteroids2': {
+      speed: 50,
+      size: [400,400],
+      sprite: asteroids2SpriteSheet,
+      angle: 1
+    },
+    'asteroids3': {
+      speed: 50,
+      size: [400,400],
+      sprite: asteroids3SpriteSheet,
+      angle: 1
+    },
+    'blackhole': {
+      speed: 5,
+      size: [400,400],
+      sprite: blackholeSpriteSheet,
+      angle: 1
+    },
+    'galaxy': {
+      speed: 10,
+      size: [400,400],
+      sprite: galaxySpriteSheet,
+      angle: 1
+    },
+    'galaxy2':{
+      speed: 10,
+      size: [400,400],
+      sprite: galaxy2SpriteSheet,
+      angle: 1
+    }
+  }
 
   function GameEntity(entityDefinition, opts){
     entityDefinition.pos = opts.pos;
@@ -263,22 +313,33 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     if(opts.totalLife){
       entity.totalLife = opts.totalLife;
     }
-    return entity;
-  }
-
-  //Public
-  function getEntity(name, opts){
-    if(!opts){
-      opts = {};
-    } 
-    var entity =  new GameEntity(entities[name], opts);
-    if(name == 'bonus'){
-      entity.angle = petra.randomFloat(7/12,17/12);
-      entity.bounces = 5;
+    if(opts.resizePercentage){
+      entity.sprite.resize(Math.floor(entity.sprite.size[0]*opts.resizePercentage),Math.floor(entity.sprite.size[1]*opts.resizePercentage) );
     }
     return entity;
   }
 
+  //Public
+  function getEntity(name, opts, entityList){
+    if(!entityList){
+      entityList = entities;
+    }
+    if(!opts){
+      opts = {};
+    } 
+    var entity =  new GameEntity(entityList[name], opts);
+    if(name == 'bonus'){
+      entity.angle = petra.randomFloat(7/12,17/12);
+      console.log(entity.angle);
+      console.log(entity);
+      entity.bounces = 5;
+    }
+    return entity;
+  }
+ 
+  function getBackgroundEntity(name, opts){
+    return getEntity(name, opts, backgroundEntities);
+  }
   function getEnemy(pos, level){
     return getEntity('enemy'+level, {pos: pos});
   }
@@ -299,42 +360,6 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     return entity;
   }
 
-  function getBackgroundEntity(name, pos,speed, resizePercentage){
-    var entity;
-    if(name == 'nebula'){
-      entity = StaticEntity(pos,nebulaSpriteSheet,[400,350]);
-    }else if(name == 'nebula2'){
-      entity = StaticEntity(pos,nebula2SpriteSheet,[400,400]);
-    }else if(name == 'asteroids'){
-      entity = StaticEntity(pos,asteroidsSpriteSheet,[400,400]);
-    }else if(name == 'asteroids2'){
-      entity = StaticEntity(pos,asteroids2SpriteSheet,[400,400]);
-    }else if(name == 'asteroids3'){
-      entity = StaticEntity(pos,asteroids3SpriteSheet,[400,400]);
-    }else if(name == 'galaxy'){
-      entity = StaticEntity(pos,galaxySpriteSheet,[400,400]);
-    }else if(name == 'galaxy2'){
-      entity = StaticEntity(pos,galaxy2SpriteSheet,[400,400]);
-    }else if(name == 'blackhole'){
-      entity = StaticEntity(pos,blackholeSpriteSheet,[400,400]);
-    }
-    if(speed){
-      entity.speed = speed;
-    }
-    if(resizePercentage){
-      entity.sprite.resize(Math.floor(entity.sprite.size[0]*resizePercentage),Math.floor(entity.sprite.size[1]*resizePercentage) );
-    }
-    return entity;
-  }
-
- function StaticEntity(pos,sprite,size){
-    var entity =  new Models.Entity({pos: pos, sprite: sprite} );
-    entity.sprite.resize(size[0], size[1]);
-    entity.speed = [50,50];
-    entity.dir = 'left';
-    return entity;
-  }
-
   function getSpaceInvader(pos){
     return new SpaceInvader(pos);
   }
@@ -342,7 +367,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   function SpaceInvader(pos){
     var entity = new Models.Entity({pos:pos, sprite: spaceInvaderSpriteSchema});
     entity.speed = [100,100];
-    entity.dir = 'left';
+    entity.angle = 1;
     entity.damage = 100;
     entity.life = 100;  
     entity.points = 100;
