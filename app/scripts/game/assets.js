@@ -35,7 +35,8 @@ define( [], function(){
     'sounds/ohmy.wav',
     'sounds/explosions/atari_boom2.wav',
     'sounds/explosions/explodemini.wav',
-    'sounds/explosions/explode.wav'
+    'sounds/explosions/explode.wav',
+    'images/doggy/protomove_down.png'
   ];
   return list;
 });

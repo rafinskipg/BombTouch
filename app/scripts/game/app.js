@@ -500,7 +500,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
       
       if(TIMERS.shootSpriteTime === 0){
-        changePlayerSpriteToShooting(true);
+        player.shooting = true;
       }
       TIMERS.shootSpriteTime = 0.5;
       
@@ -607,20 +607,21 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function handleInput(dt) {
+    player.dir = null;
     if(input.isDown('DOWN') || input.isDown('s')) {
-      movePlayer('down', dt);
+      player.dir = 'down';
     }
 
     if(input.isDown('UP') || input.isDown('w')) {
-      movePlayer('up', dt);
+      player.dir = 'up';
     }
 
     if(input.isDown('LEFT') || input.isDown('a')) {
-      movePlayer('left', dt);
+      player.dir = 'left';
     }
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
-      movePlayer('right', dt);
+      player.dir = 'right';
     } 
 
     if(input.isDown('f')) {
@@ -934,34 +935,70 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  function changePlayerSpriteToShooting(shooting){
-    if(shooting){
-      player.setAnimation('shoot');
-    }else{
-      player.setDefaultAnimation();
-    }
-  }
   /* Updates */
   
   function updatePlayer(dt){
+    
+
+    
     if(TIMERS.shootSpriteTime > 0){
       TIMERS.shootSpriteTime -= dt;
       if(TIMERS.shootSpriteTime <= 0){
         TIMERS.shootSpriteTime = 0;
-        changePlayerSpriteToShooting(false);
+        player.shooting = false;
       }
     }
 
+    var previouslyMovingDown =  player.moving == 'down';
+    player.moving = null;
     if(touchInputs){
-      player.pos[0] = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
-      player.pos[1] = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      var newPosX = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      if(newPosY > player.pos[1]){
+        player.moving = 'down';
+      }else{
+        player.moving == null;
+      }
+      player.pos[0] = newPosX;
+      player.pos[1] =newPosY;
+    }else if(player.dir){
+      player = petra.moveToDirection(dt, player.dir)(player);
+      if(player.dir == 'down'){
+        player.moving = 'down';
+      }else{
+        player.moving = null;
+      }
     }
+
+    if(player.shooting){
+      if(player.moving == 'down'){
+        player.setAnimation('shootMoveDown');
+      }else{
+        player.setAnimation('shoot');
+      }
+    }else{
+      if(player.moving == 'down'){
+        player.setAnimation('moveDown');
+      }else{
+        player.setDefaultAnimation();
+      }
+    }
+
+
+    /*if(player.shooting && player.moving == 'down' && !previouslyMovingDown){
+      player.setAnimation('shootMoveDown');
+    }else if(player.shooting && player.moving != 'down'){
+      player.setAnimation('shoot');
+    }else if(player.moving == 'down' && !previouslyMovingDown && !player.shooting){
+      player.setAnimation('moveDown');
+    }else if(player.moving == null && previouslyMovingDown && !player.shooting){
+      player.setDefaultAnimation();
+    }*/
+    
 
     player.update(dt);
   }
-  function movePlayer(dir,dt){
-    player = petra.moveToDirection(dt, dir)(player);
-  }
+
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
       entities.map(updateSprite(dt))
