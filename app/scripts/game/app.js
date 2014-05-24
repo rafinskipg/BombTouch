@@ -684,7 +684,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateSprite(dt){
     return function(entity){
-      entity.sprite.update(dt);
+      entity.update(dt);
       return entity;
     };
   }
@@ -936,9 +936,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function changePlayerSpriteToShooting(shooting){
     if(shooting){
-      player.sprite = EL.getEntity(main_character_name+'shooting', player).sprite;
+      player.setAnimation('shoot');
     }else{
-      player.sprite = EL.getEntity(main_character_name, player).sprite;
+      player.setDefaultAnimation();
     }
   }
   /* Updates */
@@ -957,7 +957,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       player.pos[1] = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
     }
 
-    player.sprite.update(dt);
+    player.update(dt);
   }
   function movePlayer(dir,dt){
     player = petra.moveToDirection(dt, dir)(player);

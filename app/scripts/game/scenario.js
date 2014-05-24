@@ -82,7 +82,7 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     this.ctx.save();
 
     this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-    entity.sprite.render(this.ctx);
+    entity.render(this.ctx);
     this.ctx.restore();
     if(entity.life){
       this.drawLife(entity);

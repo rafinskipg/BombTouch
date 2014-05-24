@@ -158,18 +158,13 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       bullet: 'bullet',
       topBullet: 'topBullet',
       bottomBullet: 'bottomBullet',
-      isSuperSaiyan: false
-    },
-    'cooldogshooting' : {
-      sprite: coolDogShootingSpriteSchema,
-      damage: 80,
-      baseDamage: 80,
-      speed: [200,200],
-      angle: 0,
-      life: 1000,
-      totalLife: 1000,
-      resize: [80,56],
-      isSuperSaiyan: false
+      isSuperSaiyan: false, 
+      animations: [
+       {
+          name: 'shoot',
+          sprite: coolDogShootingSpriteSchema
+        }
+      ]
     },
     'bonus': {
       speed: [200,200],
@@ -188,7 +183,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       angle: 1,
       life: 100,
       totalLife: 100,
-      resize: [50,30],
+      resize: [90,60],
       damage: 100
     },
     'enemy2' : {
@@ -298,9 +293,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     entityDefinition.pos = opts.pos;
     
     var entity =  new Models.Entity(entityDefinition);
-    if(entityDefinition.resize){
-      entity.sprite.resize(entityDefinition.resize[0], entityDefinition.resize[1]);
-    }
+    
     if(opts.damage){
       entity.damage = opts.damage;  
     }
@@ -313,6 +306,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     if(opts.totalLife){
       entity.totalLife = opts.totalLife;
     }
+
     if(opts.resizePercentage){
       entity.sprite.resize(Math.floor(entity.sprite.size[0]*opts.resizePercentage),Math.floor(entity.sprite.size[1]*opts.resizePercentage) );
     }

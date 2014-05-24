@@ -30,13 +30,47 @@ define( [], function(){
     this.totalLife = opts.totalLife || 0;
     this.baseDamage = opts.baseDamage || 0;
     this.points = opts.points || 0;
-    this.sprite = Sprite.construct(opts.sprite);
+    this.sprite = Sprite.construct(opts.sprite)
+    this.animations = {};
+    if(opts.resize){
+      this.sprite.resize(opts.resize[0], opts.resize[1]);
+    }
+
+    if(opts.animations){
+      var self = this;
+      opts.animations.map(function(anim){ 
+        self.animations[anim.name] = Sprite.construct(anim.sprite);
+        if(opts.resize){
+          self.animations[anim.name].resize(opts.resize[0], opts.resize[1]);
+        }
+      });  
+    }
+    
+    this.enabledAnimation = 'default';
   }
 
   RenderableEntity.prototype.render = function(ctx){
-    
+    if(this.enabledAnimation == 'default'){
+      this.sprite.render(ctx);
+    }else{
+      this.animations[this.enabledAnimation].render(ctx);
+    }
   }
 
+  RenderableEntity.prototype.setAnimation = function(name){
+    this.enabledAnimation = name;
+  }
+  RenderableEntity.prototype.setDefaultAnimation = function(){
+    this.enabledAnimation = 'default';
+  }
+
+  RenderableEntity.prototype.update = function(dt){
+    if(this.enabledAnimation == 'default'){
+      this.sprite.update(dt);
+    }else{
+      this.animations[this.enabledAnimation].update(dt);
+    }
+  }
 
 
   return  {
