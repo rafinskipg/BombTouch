@@ -60,8 +60,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
 
   var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 100], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 200], [100,100], 8, [0, 1,2,3,4,5,6,7]];
-  var coolDogMovingDownSpriteSchema = ['images/doggy/protomove_down.png', [0, 0], [200,200], 5, [0, 1]];
-  var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/protomove_down.png', [400, 0], [200,200], 5, [0, 1]];
+  var coolDogMovingDownSpriteSchema = ['images/doggy/pixeleddog.png', [100, 400], [100,100], 10, [0, 1,2,3,4]];
+  var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [300, 300], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
