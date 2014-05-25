@@ -61,7 +61,7 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
       pos : [this.canvas.width+100, petra.random(-30, this.canvas.height + 30)],
       speed: [petra.random(20,50),petra.random(20,50)],
       resizePercentage: Math.random().toFixed(2),
-      rotateSprite : petra.flipCoin() ?  petra.randomFloat(-0.4, 0.4) : 0
+      //rotateSprite : petra.flipCoin() ?  petra.randomFloat(-0.4, 0.4) : 0
     }
     if(petra.flipCoin()){
       this.bgElements.push(EL.getBackgroundEntity(item, opts));  
