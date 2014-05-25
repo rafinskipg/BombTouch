@@ -32,6 +32,9 @@ define( ['hu'], function(hu){
     Petra.moveByAngle = function(dt){
       return function(entity){
         var newPos = calculateNextPositionByAngle(entity, dt);
+        if(newPos[1] > entity.pos[1]){
+          entity.moving = 'down';
+        }
         entity.pos = newPos;
         return entity;
       }
@@ -55,7 +58,6 @@ define( ['hu'], function(hu){
       return reflectionAngle;
     }
 
-
     Petra.lerp3 = function(start,end, speed, dt){
       return start + (end - start) * 0.1; 
     }
@@ -64,7 +66,7 @@ define( ['hu'], function(hu){
       var pos = [entity.pos[0], entity.pos[1]];
       var forX =  dt * entity.speed[0] * Math.cos(entity.angle*Math.PI);
       pos[0] += forX;
-      var forY =  dt * entity.speed[1] * Math.sin(entity.angle*Math.PI);
+      var forY =  dt * entity.speed[0] * Math.sin(entity.angle*Math.PI);
       pos[1] += forY;
       return pos;
     }

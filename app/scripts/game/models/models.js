@@ -32,6 +32,7 @@ define( [], function(){
     this.points = opts.points || 0;
     this.sprite = Sprite.construct(opts.sprite)
     this.animations = {};
+    this.rotateSprite = opts.rotateSprite ? opts.rotateSprite : null;
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
     }
@@ -51,9 +52,9 @@ define( [], function(){
 
   RenderableEntity.prototype.render = function(ctx){
     if(this.enabledAnimation == 'default'){
-      this.sprite.render(ctx);
+      this.sprite.render(ctx, this.rotateSprite);
     }else{
-      this.animations[this.enabledAnimation].render(ctx);
+      this.animations[this.enabledAnimation].render(ctx,this.rotateSprite);
     }
   }
 

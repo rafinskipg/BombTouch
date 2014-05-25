@@ -64,15 +64,18 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [300, 300], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
-  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
-  var nebulaSpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0], null, true]
-  var nebula2SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0], null, true]
-  var galaxySpriteSheet = ['images/nebula/galaxy.png', [0,0], [600,600], 1 , [0], null, true]
-  var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0], null, true]
-  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [1994,1147], 1 , [0], null, true]
-  var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0], null, true]
-  var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0], null, true]
-  var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0], null, true]
+  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true];
+
+  var nebulaSpriteSheet = ['images/nebula/nebula1.png', [0,0], [1030,780], 1 , [0]]
+  var nebula2SpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0]]
+  var nebula3SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0]]
+  var galaxySpriteSheet = ['images/nebula/galaxy.png', [0,0], [600,600], 1 , [0]]
+  var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0]]
+  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [1994,1147], 1 , [0]]
+  var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0]]
+  var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0]]
+  var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0]]
+  var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
@@ -251,57 +254,73 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var backgroundEntities ={
     'nebula': {
       speed: 10,
-      size: [400,350],
+      resize: [400,350],
       sprite: nebulaSpriteSheet,
       angle: 1
     },
     'nebula2': {
       speed:10 ,
-      size: [400,400],
+      resize: [400,400],
       sprite: nebula2SpriteSheet,
+      angle: 1
+    },'nebula3': {
+      speed:10 ,
+      resize: [400,400],
+      sprite: nebula3SpriteSheet,
       angle: 1
     },
     'asteroids': {
       speed: 50,
-      size: [400,400],
+      resize: [400,400],
       sprite: asteroidsSpriteSheet ,
       angle: 1
     },
     'asteroids2': {
       speed: 50,
-      size: [400,400],
+      resize: [400,400],
       sprite: asteroids2SpriteSheet,
       angle: 1
     },
     'asteroids3': {
       speed: 50,
-      size: [400,400],
+      resize: [400,400],
       sprite: asteroids3SpriteSheet,
       angle: 1
     },
     'blackhole': {
       speed: 5,
-      size: [400,400],
+      resize: [400,400],
       sprite: blackholeSpriteSheet,
       angle: 1
     },
     'galaxy': {
       speed: 10,
-      size: [400,400],
+      resize: [400,400],
       sprite: galaxySpriteSheet,
       angle: 1
     },
     'galaxy2':{
       speed: 10,
-      size: [400,400],
+      resize: [400,400],
       sprite: galaxy2SpriteSheet,
-      angle: 1
+      angle: 0.8,
+      rotateSprite: -0.8
+    },
+    'comet':{
+      speed: 10,
+      resize: [150,50],
+      sprite: cometSpriteSheet,
+      angle: 1.2,
+      rotateSprite: 0.2
     }
   }
 
   function GameEntity(entityDefinition, opts){
+    try{
     entityDefinition.pos = opts.pos;
-    
+    }catch(e){
+      console.log(e, entityDefinition, opts );
+    }
     var entity =  new Models.Entity(entityDefinition);
     
     if(opts.damage){
@@ -320,6 +339,11 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     if(opts.resizePercentage){
       entity.sprite.resize(Math.floor(entity.sprite.size[0]*opts.resizePercentage),Math.floor(entity.sprite.size[1]*opts.resizePercentage) );
     }
+
+    if(opts.rotateSprite){
+      entity.angle =  opts.rotateSprite * 1 +1 ;
+      entity.rotateSprite = opts.rotateSprite;
+    }
     return entity;
   }
 
@@ -334,15 +358,15 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     var entity =  new GameEntity(entityList[name], opts);
     if(name == 'bonus'){
       entity.angle = petra.randomFloat(7/12,17/12);
-      console.log(entity.angle);
-      console.log(entity);
       entity.bounces = 5;
     }
     return entity;
   }
  
   function getBackgroundEntity(name, opts){
-    return getEntity(name, opts, backgroundEntities);
+    var entity= getEntity(name, opts, backgroundEntities);
+    console.log(entity);
+    return entity;
   }
   function getEnemy(pos, level){
     return getEntity('enemy'+level, {pos: pos});

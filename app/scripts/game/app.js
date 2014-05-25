@@ -683,15 +683,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     return entity;
   }
 
-  function updateSprite(dt){
-    return function(entity){
-      entity.update(dt);
-      return entity;
-    };
-  }
-
-
-
   function isOutsideScreen(pos, size){
     return(pos[1] + size[1] < 0 || pos[1] - size[1] > canvas.height ||
        pos[0] + size[0] >= canvas.width || pos[0] + size[0] < 0);
@@ -741,7 +732,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
-      entities.map(updateSprite(dt))
+      entities.map(SCENARIO.updateSprite(dt))
         .map(removeIfDone)
     ); 
   }
@@ -1001,7 +992,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
-      entities.map(updateSprite(dt))
+      entities.map(SCENARIO.updateSprite(dt))
       .map(petra.moveByAngle(dt))
       .map(removeIfOutsideScreen));
   }
@@ -1015,7 +1006,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEnemies(dt){
     enemies = hu.compact(
-      enemies.map(updateSprite(dt))
+      enemies.map(SCENARIO.updateSprite(dt))
       .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
   }
@@ -1050,7 +1041,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateBosses(dt){
     bosses = hu.compact(bosses
-      .map(updateSprite(dt))
+      .map(SCENARIO.updateSprite(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
       .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
@@ -1060,7 +1051,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateGraves(dt){
     graves = hu.compact(
-      graves.map(updateSprite(dt))
+      graves.map(SCENARIO.updateSprite(dt))
       .map(endPostGameIfDone));
   }
 
