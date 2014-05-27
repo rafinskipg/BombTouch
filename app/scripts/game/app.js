@@ -179,11 +179,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         'Aeons have passed since I left my world in order to finish this war',
         'And today, i\'m close to my victory',
         'let your story end']
-      notafraid: 'I\'m not afraid of what you have prepared to me',
-      enemy_1 : 'Oh yeah? Just meet me if you are ready, after ending you I will destroy the universe',
-      forme: 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong'
-      enemy_2: 'You are a piece of nothing',
-      demonstrate : 'Lets demonstrate him that we are something... and remember to write a good end to this story.'
+  
 
 
     }
@@ -237,7 +233,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,1);
+    LEVELS_DIRECTOR.init(5,1,20);
 
     initCanvas();
     toMouseListeners();
@@ -245,7 +241,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
-    //showInitialDialogs();
+    showInitialDialogs();
     main();
   };
 
@@ -419,24 +415,17 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function showInitialDialogs(){
+    var messages = [];
+    messages.push( new models.Message('ENEMY! The end of this quest is near', main_character_name,3000))
+    messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', main_enemy_name,3000))
+    messages.push( new models.Message('...', main_character_name,500))
+    messages.push( new models.Message('I\'m not afraid of what you have got for me', main_character_name))
+    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', main_enemy_name))
+    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , main_character_name))
+    messages.push( new models.Message('You are a piece of nothing', main_enemy_name))
+    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', main_character_name))
 
-    var messageHero1 = new models.Message('ENEMY! I See your power, I saw your minions...', main_character_name,3000);
-    var messageHero2 = new models.Message('covering the universe, devouring it... i felt them', main_character_name,3000);
-    var messageHero3 = new models.Message('...', main_character_name);
-    var messageHero4 = new models.Message('I\'ll use my true power to defeat you!!', main_character_name);
-    var messageHero5 = new models.Message('Surrender now... if you want to survive', main_character_name);
-    var messageEnemy1 = new models.Message('I won\'t allow you, my vision is clear, all must die' , main_enemy_name);
-    var messageHero6 = new models.Message('...no way', main_character_name);
-
-    showMessages([ 
-      messageHero1,
-      messageHero2,
-      messageHero3,
-      messageHero4,
-      messageHero5,
-      messageEnemy1,
-      messageHero6
-       ],0);
+    showMessages(messages,0);
     
   }
 
