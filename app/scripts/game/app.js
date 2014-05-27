@@ -171,6 +171,20 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
     },
     personal: {
+      stories: ['Somebody told me once that we are made of stories...',
+        'All my life I believed somehow that i was going to find peace',
+        'and peace found me suddenly, when I was just living my life.',
+        'Now a dark entity has come to break the walls of peace and serenity',
+        'to you, who shall not pass, i say "If you want war, you will find defeat"',
+        'Aeons have passed since I left my world in order to finish this war',
+        'And today, i\'m close to my victory',
+        'let your story end']
+      notafraid: 'I\'m not afraid of what you have prepared to me',
+      enemy_1 : 'Oh yeah? Just meet me if you are ready, after ending you I will destroy the universe',
+      forme: 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong'
+      enemy_2: 'You are a piece of nothing',
+      demonstrate : 'Lets demonstrate him that we are something... GO!'
+
 
     }
   };
