@@ -183,7 +183,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       enemy_1 : 'Oh yeah? Just meet me if you are ready, after ending you I will destroy the universe',
       forme: 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong'
       enemy_2: 'You are a piece of nothing',
-      demonstrate : 'Lets demonstrate him that we are something... GO!'
+      demonstrate : 'Lets demonstrate him that we are something... and remember to write a good end to this story.'
 
 
     }
