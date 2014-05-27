@@ -418,14 +418,14 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var messages = [];
     messages.push( new models.Message('ENEMY! The end of this quest is near', main_character_name,3000))
     messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', main_enemy_name,3000))
-    messages.push( new models.Message('...', main_character_name,500))
-    messages.push( new models.Message('I\'m not afraid of what you have got for me', main_character_name))
-    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', main_enemy_name))
-    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , main_character_name))
-    messages.push( new models.Message('You are a piece of nothing', main_enemy_name))
-    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', main_character_name))
+    messages.push( new models.Message('...', main_character_name,700))
+    messages.push( new models.Message('I\'m not afraid of what you have got for me', main_character_name,2000))
+    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', main_enemy_name,3000))
+    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , main_character_name,3000))
+    messages.push( new models.Message('You are a piece of nothing', main_enemy_name,2000))
+    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', main_character_name,3000))
 
-    showMessages(messages,0);
+    showMessages(messages,0,'full');
     
   }
 
@@ -489,12 +489,12 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     SOUNDS.ambient.stop();
   }
 
-  function showMessages(messages,timeoutBetweenMessages){
+  function showMessages(messages,timeoutBetweenMessages, type){
     timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 0;
     for(var i = 0; i < notifyMessages.length; i++){
       //Clone the item, cause we dont want to send a referenced object ;)
       var messagesClone = messages.map(function(item){ return item });
-      notifyMessages[i](messagesClone,timeoutBetweenMessages);
+      notifyMessages[i](messagesClone,timeoutBetweenMessages,type);
     }
   }
 
