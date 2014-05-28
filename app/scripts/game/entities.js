@@ -60,7 +60,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
 
   var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 100], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 200], [100,100], 8, [0, 1,2,3,4,5,6,7]];
-  var coolDogMovingDownSpriteSchema = ['images/doggy/pixeleddog.png', [100, 400], [100,100], 10, [0, 1,2,3,4]];
+  var coolDogMovingDownSpriteSchema = ['images/doggy/pixeleddog.png', [100, 400], [100,100], 10, [3,4]];
+  var coolDogMovingUpSpriteSchema = ['images/doggy/pixeleddog.png', [100, 500], [100,100], 10, [0, 1,2]];
+  var coolDogMovingUpAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [100, 600], [100,100], 10, [0, 1,2,3,4,5,6,7,8]];
   var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [300, 300], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
@@ -172,10 +174,17 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
         {
           name: 'moveDown',
           sprite: coolDogMovingDownSpriteSchema
+        },{
+          name: 'moveUp',
+          sprite: coolDogMovingUpSpriteSchema
         },
         {
           name: 'shootMoveDown',
           sprite: coolDogMovingDownAndShootingSpriteSchema
+        },
+        {
+          name: 'shootMoveUp',
+          sprite: coolDogMovingUpAndShootingSpriteSchema
         }
       ]
     },

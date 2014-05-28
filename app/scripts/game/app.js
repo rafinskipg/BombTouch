@@ -950,6 +950,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
       if(newPosY > player.pos[1]){
         player.moving = 'down';
+      }else if(newPosY < player.pos[1]){
+        player.moving = 'up';
       }else{
         player.moving == null;
       }
@@ -957,23 +959,23 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       player.pos[1] =newPosY;
     }else if(player.dir){
       player = petra.moveToDirection(dt, player.dir)(player);
-      if(player.dir == 'down'){
-        player.moving = 'down';
-      }else{
-        player.moving = null;
-      }
+      player.moving =player.dir;
     }
 
     if(player.shooting){
       if(player.moving == 'down'){
         player.setAnimation('shootMoveDown');
+      }else if(player.moving == 'up'){
+        player.setAnimation('shootMoveUp');
       }else{
         player.setAnimation('shoot');
       }
     }else{
       if(player.moving == 'down'){
         player.setAnimation('moveDown');
-      }else{
+      }else if(player.moving == 'up'){
+        player.setAnimation('moveUp');
+      }else {
         player.setDefaultAnimation();
       }
     }
