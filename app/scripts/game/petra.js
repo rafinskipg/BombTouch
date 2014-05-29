@@ -44,6 +44,8 @@ define( ['hu'], function(hu){
     }
     //http://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
     //http://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision
+    //http://en.wikipedia.org/wiki/Unit_vector
+    //https://github.com/craftyjs/Crafty/blob/develop/src/math.js
     Petra.calculateBounceAngle = function(entity, normalVector){
       var angle = Petra.calculateAngleAgainstVector(entity.pos, entity.angle, normalVector);
       var u1 = (Petra.vectorDotProduct(entity.speed, normalVector, angle ) / Petra.vectorDotProduct(normalVector,normalVector, 0);
