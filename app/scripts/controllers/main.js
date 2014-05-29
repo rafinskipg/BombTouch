@@ -55,6 +55,7 @@ define(['angular', 'app','game/assets', 'maingame','game/loader'], function(angu
         function showMessages(messages, timeoutBetweenMessages){
           var message = messages.shift();
           showMessage(message);
+
           if(messages.length > 0){
             setTimeout(function() {
               showMessages(messages,timeoutBetweenMessages);
@@ -76,8 +77,10 @@ define(['angular', 'app','game/assets', 'maingame','game/loader'], function(angu
             $scope.$apply();
         });
 
-        theGame.suscribeMessages(function(messages,senders,timeoutMessage,timeoutBetweenMessages){
-          showMessages(messages,senders,timeoutMessage,timeoutBetweenMessages);
+        theGame.suscribeMessages(function(messages,timeoutMessage,type){
+          $scope.messsagesType = type;
+          console.log(type)
+          showMessages(messages,timeoutMessage);
         });
 
         theGame.suscribePower(function(power){

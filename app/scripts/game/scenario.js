@@ -8,12 +8,14 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   [
     'nebula',
     'nebula2',
+    'nebula3',
     'asteroids',
     'asteroids2',
     'asteroids3',
     'blackhole',
     'galaxy',
-    'galaxy2'
+    'galaxy2',
+    'comet'
   ];
 
 
@@ -28,13 +30,18 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   Scenario.prototype.update = function(dt){
     TIME +=dt;
     TIME_SINCE_LAST_OUT += dt;
+    var self = this;
 
     this.frontElements = hu.compact(
-      this.frontElements.map(petra.moveByAngle(dt))
+      this.frontElements
+      .map(self.updateSprite(dt))
+      .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft)); 
 
     this.bgElements = hu.compact(
-      this.bgElements.map(petra.moveByAngle(dt))
+      this.bgElements
+      .map(self.updateSprite(dt))
+      .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
 
     if(TIME_SINCE_LAST_OUT >= DELAY){
@@ -50,12 +57,19 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   }
 
   Scenario.prototype.addItem = function(item){
-    if(petra.flipCoin()){
-      this.bgElements.push(EL.getBackgroundEntity(item, [this.canvas.width, petra.random(0, this.canvas.height)], petra.random(20,50),Math.random().toFixed(2)));  
-    }else{
-      this.frontElements.push(EL.getBackgroundEntity(item, [this.canvas.width, petra.random(0, this.canvas.height)],petra.random(50,70),1+Math.random().toFixed(2)));  
+    var opts = {
+      pos : [this.canvas.width+100, petra.random(-30, this.canvas.height + 30)],
+      speed: [petra.random(20,50),petra.random(20,50)],
+      resizePercentage: Math.random().toFixed(2),
+      //rotateSprite : petra.flipCoin() ?  petra.randomFloat(-0.4, 0.4) : 0
     }
-    
+    if(petra.flipCoin()){
+      this.bgElements.push(EL.getBackgroundEntity(item, opts));  
+    }else{
+      opts.speed = [petra.random(70,90),petra.random(70,90)];
+      opts.resizePercentage = 1+Math.random().toFixed(2);
+      this.frontElements.push(EL.getBackgroundEntity(item, opts));  
+    }
   }
 
   Scenario.prototype.render = function(listOfEntitiesArrays){
@@ -76,13 +90,20 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     this.ctx.save();
 
     this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-    entity.sprite.render(this.ctx);
+    entity.render(this.ctx);
     this.ctx.restore();
     if(entity.life){
       this.drawLife(entity);
     }
- 
   }
+
+  Scenario.prototype.updateSprite = function(dt){
+    return function(entity){
+      entity.update(dt);
+      return entity;
+    };
+  }
+
 
   Scenario.prototype.drawFrames = function(frames){
     this.ctx.fillStyle = "blue";

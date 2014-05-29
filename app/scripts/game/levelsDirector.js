@@ -149,12 +149,6 @@ define( [ 'hu','game/entities'], function(hu, EL){
   }
   function shouldAddEnemy(){
     if(CURRENT_LEVEL <= MAX_LEVEL && !BOSS_OUT){
-      /*var value = Math.random() < 1 - Math.pow(.999, TIME);
-      if(value) {
-        return true;
-      }else{
-        return false;
-      }*/
       return ALLOW_ENEMY_OUT;
     }else{
       return false;

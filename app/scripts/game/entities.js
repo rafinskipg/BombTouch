@@ -58,21 +58,26 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var nyanCatSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
   var superNyanCatSpriteSchema = ['images/newsprites.png', [4, 400], [88,35], 5, [0, 1,2,3,4]];
 
- // var coolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 0], [755,932], 5, [0, 1,2,3]];
-  //var coolDogSpriteSchema = ['images/doggy/dog2.png', [0, 350], [350,350], 1, [0, 1,2,3,4,5,6,7,8,9]];
-  var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 20], [100,70], 10, [0, 1,2,3,4,5,6,7]];
-  var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 120], [100,70], 8, [0, 1,2,3,4,5,6,7]];
+  var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 100], [100,100], 10, [0, 1,2,3,4,5,6,7]];
+  var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 200], [100,100], 8, [0, 1,2,3,4,5,6,7]];
+  var coolDogMovingDownSpriteSchema = ['images/doggy/pixeleddog.png', [100, 400], [100,100], 10, [3,4]];
+  var coolDogMovingUpSpriteSchema = ['images/doggy/pixeleddog.png', [100, 500], [100,100], 10, [0, 1,2]];
+  var coolDogMovingUpAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [100, 600], [100,100], 10, [0, 1,2,3,4,5,6,7,8]];
+  var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [300, 300], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
-  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true]
-  var nebulaSpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0], null, true]
-  var nebula2SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0], null, true]
-  var galaxySpriteSheet = ['images/nebula/galaxy.png', [0,0], [600,600], 1 , [0], null, true]
-  var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0], null, true]
-  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [1994,1147], 1 , [0], null, true]
-  var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0], null, true]
-  var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0], null, true]
-  var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0], null, true]
+  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true];
+
+  var nebulaSpriteSheet = ['images/nebula/nebula1.png', [0,0], [1030,780], 1 , [0]]
+  var nebula2SpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0]]
+  var nebula3SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0]]
+  var galaxySpriteSheet = ['images/nebula/galaxy.png', [0,0], [600,600], 1 , [0]]
+  var galaxy2SpriteSheet = ['images/nebula/galaxy2.png', [0,0], [600,600], 1 , [0]]
+  var blackholeSpriteSheet = ['images/nebula/blackhole.png', [0,0], [1994,1147], 1 , [0]]
+  var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0]]
+  var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0]]
+  var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0]]
+  var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
@@ -154,22 +159,34 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       angle: 0,
       life: 1000,
       totalLife: 1000,
-      resize: [80,56],
+      hitArea: [80,56],
+      resize: [80,80],
+
       bullet: 'bullet',
       topBullet: 'topBullet',
       bottomBullet: 'bottomBullet',
-      isSuperSaiyan: false
-    },
-    'cooldogshooting' : {
-      sprite: coolDogShootingSpriteSchema,
-      damage: 80,
-      baseDamage: 80,
-      speed: [200,200],
-      angle: 0,
-      life: 1000,
-      totalLife: 1000,
-      resize: [80,56],
-      isSuperSaiyan: false
+      isSuperSaiyan: false, 
+      animations: [
+       {
+          name: 'shoot',
+          sprite: coolDogShootingSpriteSchema
+        },
+        {
+          name: 'moveDown',
+          sprite: coolDogMovingDownSpriteSchema
+        },{
+          name: 'moveUp',
+          sprite: coolDogMovingUpSpriteSchema
+        },
+        {
+          name: 'shootMoveDown',
+          sprite: coolDogMovingDownAndShootingSpriteSchema
+        },
+        {
+          name: 'shootMoveUp',
+          sprite: coolDogMovingUpAndShootingSpriteSchema
+        }
+      ]
     },
     'bonus': {
       speed: [200,200],
@@ -188,7 +205,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       angle: 1,
       life: 100,
       totalLife: 100,
-      resize: [50,30],
+      resize: [90,60],
       damage: 100
     },
     'enemy2' : {
@@ -239,18 +256,82 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       damage: 400,
       resize:[60,60]
     }
-
-
   };
 
 
-  function GameEntity(entityDefinition, opts){
-    entityDefinition.pos = opts.pos;
-    
-    var entity =  new Models.Entity(entityDefinition);
-    if(entityDefinition.resize){
-      entity.sprite.resize(entityDefinition.resize[0], entityDefinition.resize[1]);
+
+  var backgroundEntities ={
+    'nebula': {
+      speed: 10,
+      resize: [400,350],
+      sprite: nebulaSpriteSheet,
+      angle: 1
+    },
+    'nebula2': {
+      speed:10 ,
+      resize: [400,400],
+      sprite: nebula2SpriteSheet,
+      angle: 1
+    },'nebula3': {
+      speed:10 ,
+      resize: [400,400],
+      sprite: nebula3SpriteSheet,
+      angle: 1
+    },
+    'asteroids': {
+      speed: 50,
+      resize: [400,400],
+      sprite: asteroidsSpriteSheet ,
+      angle: 1
+    },
+    'asteroids2': {
+      speed: 50,
+      resize: [400,400],
+      sprite: asteroids2SpriteSheet,
+      angle: 1
+    },
+    'asteroids3': {
+      speed: 50,
+      resize: [400,400],
+      sprite: asteroids3SpriteSheet,
+      angle: 1
+    },
+    'blackhole': {
+      speed: 5,
+      resize: [400,400],
+      sprite: blackholeSpriteSheet,
+      angle: 1
+    },
+    'galaxy': {
+      speed: 10,
+      resize: [400,400],
+      sprite: galaxySpriteSheet,
+      angle: 1
+    },
+    'galaxy2':{
+      speed: 10,
+      resize: [400,400],
+      sprite: galaxy2SpriteSheet,
+      angle: 0.8,
+      rotateSprite: -0.8
+    },
+    'comet':{
+      speed: 10,
+      resize: [150,50],
+      sprite: cometSpriteSheet,
+      angle: 1.2,
+      rotateSprite: 0.2
     }
+  }
+
+  function GameEntity(entityDefinition, opts){
+    try{
+    entityDefinition.pos = opts.pos;
+    }catch(e){
+      console.log(e, entityDefinition, opts );
+    }
+    var entity =  new Models.Entity(entityDefinition);
+    
     if(opts.damage){
       entity.damage = opts.damage;  
     }
@@ -263,22 +344,39 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     if(opts.totalLife){
       entity.totalLife = opts.totalLife;
     }
+
+    if(opts.resizePercentage){
+      entity.sprite.resize(Math.floor(entity.sprite.size[0]*opts.resizePercentage),Math.floor(entity.sprite.size[1]*opts.resizePercentage) );
+    }
+
+    if(opts.rotateSprite){
+      entity.angle =  opts.rotateSprite * 1 +1 ;
+      entity.rotateSprite = opts.rotateSprite;
+    }
     return entity;
   }
 
   //Public
-  function getEntity(name, opts){
+  function getEntity(name, opts, entityList){
+    if(!entityList){
+      entityList = entities;
+    }
     if(!opts){
       opts = {};
     } 
-    var entity =  new GameEntity(entities[name], opts);
+    var entity =  new GameEntity(entityList[name], opts);
     if(name == 'bonus'){
       entity.angle = petra.randomFloat(7/12,17/12);
       entity.bounces = 5;
     }
     return entity;
   }
-
+ 
+  function getBackgroundEntity(name, opts){
+    var entity= getEntity(name, opts, backgroundEntities);
+    console.log(entity);
+    return entity;
+  }
   function getEnemy(pos, level){
     return getEntity('enemy'+level, {pos: pos});
   }
@@ -299,42 +397,6 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     return entity;
   }
 
-  function getBackgroundEntity(name, pos,speed, resizePercentage){
-    var entity;
-    if(name == 'nebula'){
-      entity = StaticEntity(pos,nebulaSpriteSheet,[400,350]);
-    }else if(name == 'nebula2'){
-      entity = StaticEntity(pos,nebula2SpriteSheet,[400,400]);
-    }else if(name == 'asteroids'){
-      entity = StaticEntity(pos,asteroidsSpriteSheet,[400,400]);
-    }else if(name == 'asteroids2'){
-      entity = StaticEntity(pos,asteroids2SpriteSheet,[400,400]);
-    }else if(name == 'asteroids3'){
-      entity = StaticEntity(pos,asteroids3SpriteSheet,[400,400]);
-    }else if(name == 'galaxy'){
-      entity = StaticEntity(pos,galaxySpriteSheet,[400,400]);
-    }else if(name == 'galaxy2'){
-      entity = StaticEntity(pos,galaxy2SpriteSheet,[400,400]);
-    }else if(name == 'blackhole'){
-      entity = StaticEntity(pos,blackholeSpriteSheet,[400,400]);
-    }
-    if(speed){
-      entity.speed = speed;
-    }
-    if(resizePercentage){
-      entity.sprite.resize(Math.floor(entity.sprite.size[0]*resizePercentage),Math.floor(entity.sprite.size[1]*resizePercentage) );
-    }
-    return entity;
-  }
-
- function StaticEntity(pos,sprite,size){
-    var entity =  new Models.Entity({pos: pos, sprite: sprite} );
-    entity.sprite.resize(size[0], size[1]);
-    entity.speed = [50,50];
-    entity.dir = 'left';
-    return entity;
-  }
-
   function getSpaceInvader(pos){
     return new SpaceInvader(pos);
   }
@@ -342,7 +404,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   function SpaceInvader(pos){
     var entity = new Models.Entity({pos:pos, sprite: spaceInvaderSpriteSchema});
     entity.speed = [100,100];
-    entity.dir = 'left';
+    entity.angle = 1;
     entity.damage = 100;
     entity.life = 100;  
     entity.points = 100;

@@ -13,12 +13,14 @@ define( [], function(){
     'images/messages/dog.png',
     'images/messages/creeper.png',
     'images/messages/cooldog.png',
+    'images/nebula/nebula1.png',
     'images/nebula/nebula2.png',
     'images/nebula/nebula3.png',
     'images/nebula/asteroids.png',
     'images/nebula/asteroids2.png',
     'images/nebula/asteroids3.png',
     'images/nebula/blackhole.png',
+    'images/nebula/comet.png',
     'images/nebula/galaxy.png',
     'images/nebula/galaxy2.png',
     'images/messages/cooldogdamaged.png',
@@ -35,7 +37,8 @@ define( [], function(){
     'sounds/ohmy.wav',
     'sounds/explosions/atari_boom2.wav',
     'sounds/explosions/explodemini.wav',
-    'sounds/explosions/explode.wav'
+    'sounds/explosions/explode.wav',
+    'images/doggy/protomove_down.png'
   ];
   return list;
 });

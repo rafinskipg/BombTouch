@@ -171,6 +171,16 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
     },
     personal: {
+      stories: ['Somebody told me once that we are made of stories...',
+        'All my life I believed somehow that i was going to find peace',
+        'and peace found me suddenly, when I was just living my life.',
+        'Now a dark entity has come to break the walls of peace and serenity',
+        'to you, who shall not pass, i say "If you want war, you will find defeat"',
+        'Aeons have passed since I left my world in order to finish this war',
+        'And today, i\'m close to my victory',
+        'let your story end']
+  
+
 
     }
   };
@@ -223,7 +233,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,1);
+    LEVELS_DIRECTOR.init(5,1,20);
 
     initCanvas();
     toMouseListeners();
@@ -231,7 +241,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
-    //showInitialDialogs();
+    showInitialDialogs();
     main();
   };
 
@@ -405,24 +415,17 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function showInitialDialogs(){
+    var messages = [];
+    messages.push( new models.Message('ENEMY! The end of this quest is near', main_character_name,3000))
+    messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', main_enemy_name,3000))
+    messages.push( new models.Message('...', main_character_name,700))
+    messages.push( new models.Message('I\'m not afraid of what you have got for me', main_character_name,2000))
+    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', main_enemy_name,3000))
+    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , main_character_name,3000))
+    messages.push( new models.Message('You are a piece of nothing', main_enemy_name,2000))
+    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', main_character_name,3000))
 
-    var messageHero1 = new models.Message('ENEMY! I See your power, I saw your minions...', main_character_name,3000);
-    var messageHero2 = new models.Message('covering the universe, devouring it... i felt them', main_character_name,3000);
-    var messageHero3 = new models.Message('...', main_character_name);
-    var messageHero4 = new models.Message('I\'ll use my true power to defeat you!!', main_character_name);
-    var messageHero5 = new models.Message('Surrender now... if you want to survive', main_character_name);
-    var messageEnemy1 = new models.Message('I won\'t allow you, my vision is clear, all must die' , main_enemy_name);
-    var messageHero6 = new models.Message('...no way', main_character_name);
-
-    showMessages([ 
-      messageHero1,
-      messageHero2,
-      messageHero3,
-      messageHero4,
-      messageHero5,
-      messageEnemy1,
-      messageHero6
-       ],0);
+    showMessages(messages,0,'full');
     
   }
 
@@ -486,12 +489,12 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     SOUNDS.ambient.stop();
   }
 
-  function showMessages(messages,timeoutBetweenMessages){
+  function showMessages(messages,timeoutBetweenMessages, type){
     timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 0;
     for(var i = 0; i < notifyMessages.length; i++){
       //Clone the item, cause we dont want to send a referenced object ;)
       var messagesClone = messages.map(function(item){ return item });
-      notifyMessages[i](messagesClone,timeoutBetweenMessages);
+      notifyMessages[i](messagesClone,timeoutBetweenMessages,type);
     }
   }
 
@@ -500,7 +503,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
       
       if(TIMERS.shootSpriteTime === 0){
-        changePlayerSpriteToShooting(true);
+        player.shooting = true;
       }
       TIMERS.shootSpriteTime = 0.5;
       
@@ -523,7 +526,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function enemyShoot(pos, damage){
     var bullet = EL.getEntity('bullet', {pos: pos, damage: damage });
     bullet.angle = 1;
-    bullet.speed = 300;
+    bullet.speed = [300,300];
     enemyBullets.push(bullet);
     playSound(SOUNDS.shoot);
   }
@@ -607,20 +610,21 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function handleInput(dt) {
+    player.dir = null;
     if(input.isDown('DOWN') || input.isDown('s')) {
-      movePlayer('down', dt);
+      player.dir = 'down';
     }
 
     if(input.isDown('UP') || input.isDown('w')) {
-      movePlayer('up', dt);
+      player.dir = 'up';
     }
 
     if(input.isDown('LEFT') || input.isDown('a')) {
-      movePlayer('left', dt);
+      player.dir = 'left';
     }
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
-      movePlayer('right', dt);
+      player.dir = 'right';
     } 
 
     if(input.isDown('f')) {
@@ -682,23 +686,23 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     return entity;
   }
 
-  function updateSprite(dt){
-    return function(entity){
-      entity.sprite.update(dt);
-      return entity;
-    };
-  }
-
-
-
   function isOutsideScreen(pos, size){
     return(pos[1] + size[1] < 0 || pos[1] - size[1] > canvas.height ||
        pos[0] + size[0] >= canvas.width || pos[0] + size[0] < 0);
   }
 
-  function isOnTheScreenEdges(pos,sprite){
-    return(pos[1] <= 0 || pos[1] + sprite.getSize()[1] >= canvas.height ||
-       pos[0] + sprite.getSize()[0] >= canvas.width);
+  function checkCanvasLimits(pos,size){
+    if(pos[1] <= 0){
+      return 0;
+    } else if(pos[1] + size[1] >= canvas.height ){
+      return 1;
+    } else if(pos[0] + size[0] >= canvas.width) {
+      return 1/2;
+    } else if(pos[0] <= 0){
+      return 3/2;
+    }else{
+      return null;
+    }
   }
 
   function removeIfOutsideScreen(entity){
@@ -731,17 +735,18 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
-      entities.map(updateSprite(dt))
+      entities.map(SCENARIO.updateSprite(dt))
         .map(removeIfDone)
     ); 
   }
 
   function changeDirectionIfAvailable(dt){
     return function(entity){
-      var nextPosition = petra.calculateNextPosition(entity,dt);
-      if(isOnTheScreenEdges(nextPosition, entity.sprite)){
+      var nextPosition = petra.calculateNextPositionByAngle(entity,dt);
+      var reflectionAngle = checkCanvasLimits(nextPosition, entity.sprite.getSize());
+      if(reflectionAngle != null){
         entity.bounces -= 1;
-        entity.angle = petra.calculateNextDirection(entity);
+        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle);
       }
       return entity;
     }
@@ -924,38 +929,75 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  function changePlayerSpriteToShooting(shooting){
-    if(shooting){
-      player.sprite = EL.getEntity(main_character_name+'shooting', player).sprite;
-    }else{
-      player.sprite = EL.getEntity(main_character_name, player).sprite;
-    }
-  }
   /* Updates */
   
   function updatePlayer(dt){
+    
+
+    
     if(TIMERS.shootSpriteTime > 0){
       TIMERS.shootSpriteTime -= dt;
       if(TIMERS.shootSpriteTime <= 0){
         TIMERS.shootSpriteTime = 0;
-        changePlayerSpriteToShooting(false);
+        player.shooting = false;
       }
     }
 
+    var previouslyMovingDown =  player.moving == 'down';
+    player.moving = null;
     if(touchInputs){
-      player.pos[0] = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
-      player.pos[1] = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      var newPosX = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      if(newPosY > player.pos[1]){
+        player.moving = 'down';
+      }else if(newPosY < player.pos[1]){
+        player.moving = 'up';
+      }else{
+        player.moving == null;
+      }
+      player.pos[0] = newPosX;
+      player.pos[1] =newPosY;
+    }else if(player.dir){
+      player = petra.moveToDirection(dt, player.dir)(player);
+      player.moving =player.dir;
     }
 
-    player.sprite.update(dt);
+    if(player.shooting){
+      if(player.moving == 'down'){
+        player.setAnimation('shootMoveDown');
+      }else if(player.moving == 'up'){
+        player.setAnimation('shootMoveUp');
+      }else{
+        player.setAnimation('shoot');
+      }
+    }else{
+      if(player.moving == 'down'){
+        player.setAnimation('moveDown');
+      }else if(player.moving == 'up'){
+        player.setAnimation('moveUp');
+      }else {
+        player.setDefaultAnimation();
+      }
+    }
+
+
+    /*if(player.shooting && player.moving == 'down' && !previouslyMovingDown){
+      player.setAnimation('shootMoveDown');
+    }else if(player.shooting && player.moving != 'down'){
+      player.setAnimation('shoot');
+    }else if(player.moving == 'down' && !previouslyMovingDown && !player.shooting){
+      player.setAnimation('moveDown');
+    }else if(player.moving == null && previouslyMovingDown && !player.shooting){
+      player.setDefaultAnimation();
+    }*/
+    
+
+    player.update(dt);
   }
-  function movePlayer(dir,dt){
-    player.dir = dir;
-    player = petra.moveToDirection(dt)(player);
-  }
+
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
-      entities.map(updateSprite(dt))
+      entities.map(SCENARIO.updateSprite(dt))
       .map(petra.moveByAngle(dt))
       .map(removeIfOutsideScreen));
   }
@@ -969,7 +1011,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEnemies(dt){
     enemies = hu.compact(
-      enemies.map(updateSprite(dt))
+      enemies.map(SCENARIO.updateSprite(dt))
       .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
   }
@@ -989,7 +1031,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
-      .map(wrapperReadyForActionOnly(petra.moveToDirection(dt)))
+      .map(wrapperReadyForActionOnly(petra.moveByAngle(dt)))
       .map(ifCollidesApplyBonusTo(player))
       .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
@@ -1004,7 +1046,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateBosses(dt){
     bosses = hu.compact(bosses
-      .map(updateSprite(dt))
+      .map(SCENARIO.updateSprite(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
       .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
@@ -1014,7 +1056,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateGraves(dt){
     graves = hu.compact(
-      graves.map(updateSprite(dt))
+      graves.map(SCENARIO.updateSprite(dt))
       .map(endPostGameIfDone));
   }
 
@@ -1048,7 +1090,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         addPoints(200);
         entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
         entity.damage = entity.baseDamage + 50;
-        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
+        bonusWeapons = [EL.getEntity('bonusWeapon', {pos:[entity.pos[0] , entity.pos[1]]})];
         playSound(SOUNDS.yeah);
 
         var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
