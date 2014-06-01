@@ -51,7 +51,7 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
 
     for(var i = 0; i < 6; i ++ ){
       particles.push(new Particle( Math.round(Math.random()*canvas.width) , Math.round(Math.random()*canvas.height)))
-      //TODO IMPLEMENT Burnes Hut tree algorightm for gravity
+      //TODO IMPLEMENT Burnes Hut tree algorightm for gravity between particles
       //quad.insert(particles[i]);
     }
   }
