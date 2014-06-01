@@ -179,9 +179,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         'Aeons have passed since I left my world in order to finish this war',
         'And today, i\'m close to my victory',
         'let your story end']
-  
-
-
     }
   };
 
@@ -199,43 +196,48 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     GAME Initialization
   ****************************
   ****************************/
-
+  var rafID ;
   // The main game loop
   var main = function() {
-    var now = Date.now();
-    var dt = (now - TIMERS.lastTime);
+    SCENARIO.update = function(){
+      var now = Date.now();
+      var dt = (now - TIMERS.lastTime);
 
-    frames = (1000/ (dt * 60)) * 60;
-    
-    TIMERS.realSeconds += dt;
-    var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
-    dt = STATE.game_speed * realtimeDt;
+      frames = (1000/ (dt * 60)) * 60;
+      
+      TIMERS.realSeconds += dt;
+      var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
+      dt = STATE.game_speed * realtimeDt;
 
-    if(!isGameOver() && !isPaused()){
-      update(dt,realtimeDt);
-      render();
-      TIMERS.lastTime = now;
-      requestAnimFrame(main);
+      if(!isGameOver() && !isPaused()){
+        update(dt,realtimeDt);
+        TIMERS.lastTime = now;
+      }
     }
   };
 
   var postGame = function(){
-    var now = Date.now();
-    var dt = (now - TIMERS.lastTime) / 1000.0;
-    if(!STATE.post_game_completed){
-      updateGraves(dt);
-      updateExplosions(dt);
-      render();
-      TIMERS.lastTime = now;
-      requestAnimFrame(postGame);
-    }
+    
+      SCENARIO.update = function(dt){
+        if(!STATE.post_game_completed){
+          updateGraves(dt);
+          updateExplosions(dt);
+        }
+      }
+      
   };
 
   function start() {
     preloadSounds();
     LEVELS_DIRECTOR.init(5,1,20);
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    SCENARIO = new Scenario("canvas", endGame);
+    SCENARIO.setRenderEntities(getEntitiesToRender);
+    SCENARIO.init();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 50;
 
-    initCanvas();
     toMouseListeners();
     reset();
     suscribeToEvents();
@@ -250,17 +252,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     playSound(SOUNDS.ambient);
     main();
   }
-
-  function initCanvas(){
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    //Seems to work
-    ctx.webkitImageSmoothingEnabled = false;
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 50;
-  };
 
   function toMouseListeners(){
     canvas.addEventListener('touchmove', function(ev){
@@ -374,13 +365,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var newState = getDefaultState();
     newState.sound_enabled = STATE.sound_enabled === false ? false: true;
     newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
-    
     STATE = newState;
-
     setDefaultStateForEntities();
-
     player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
-    SCENARIO = new Scenario(canvas,ctx);
     TIMERS = getDefaultTimers();
   };
 
@@ -438,6 +425,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function endGame() {
     STATE.game_over = true;
     stopAmbientSound();
+    cancelAnimationFrame(rafID);
     graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
@@ -448,6 +436,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function endPostGame(){
+    cancelAnimationFrame(rafID);
     STATE.post_game_completed = true;
     STATE.levelsInfo = LEVELS_DIRECTOR.getLevelsInfo();
     for(var i = 0; i<notifyGameEnd.length; i++){
@@ -553,7 +542,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       createRick();
 
       if(specials.length < ammount){
-        requestAnimFrame(createRicks(ammount-1))
+        requestAnimationFrame(createRicks(ammount-1))
       }  
     }
   }
@@ -678,7 +667,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
-    SCENARIO.update(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -1209,11 +1197,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   ****************************/   
   var BGx = 0;
 
-  function render() {
+  function getEntitiesToRender() {
     BGx -= STATE.background_speed * STATE.game_speed;
-    ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
-    ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
-    ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
+    //ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
+    //ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
+    //ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
  
     // If the image scrolled off the screen, reset
     if (BGx < -canvas.width){
@@ -1240,7 +1228,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       entitiesToRender.push(graves);
     }
 
-    SCENARIO.render(entitiesToRender)
+    return entitiesToRender;
   };
 
   

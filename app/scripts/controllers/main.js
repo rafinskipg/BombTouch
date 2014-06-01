@@ -1,4 +1,4 @@
-define(['angular', 'app','game/assets', 'maingame','game/loader'], function(angular, BombTouchApp , ASSETSList , GAME, LOADER){
+define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'], function(angular, BombTouchApp  , GAME, sceneIntro,LOADER){
     'use strict';
     return BombTouchApp.controller('MainCtrl',
       ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location','badgesSrv',
@@ -24,8 +24,7 @@ define(['angular', 'app','game/assets', 'maingame','game/loader'], function(angu
           $scope.puntos = 0;
           theGame.setSound(settingsSrv.getSound());
           theGame.setDifficulty(settingsSrv.getDifficulty());
-          LOADER.init('canvas2');
-          LOADER.load(ASSETSList, theGame.start)
+          sceneIntro.init( 'canvas', theGame.start);
           
         } 
 

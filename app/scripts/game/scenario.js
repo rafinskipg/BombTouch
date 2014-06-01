@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
+define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'], function(hu, EL, petra, ASSETSList, models){
   var TIME,
     TIME_SINCE_LAST_OUT,
     BG_X,
@@ -19,15 +19,39 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   ];
 
 
-  var Scenario = function(canvas, ctx){
-    this.canvas = canvas;
-    this.ctx = ctx;
+
+  var Scenario = function(canvasId, endCallback){
     TIME_SINCE_LAST_OUT = 0; TIME = 0; DELAY = 0;
-    this.bgElements = [];
-    this.frontElements = [];
+    this.scene = new models.Scene(ASSETSList ,canvasId, endCallback);
   };
   
-  Scenario.prototype.update = function(dt){
+  Scenario.prototype.init = function() {
+    this.bgElements = [];
+    this.frontElements = [];
+    
+    this.scene.init = (function(){
+      
+    }).bind(this.scene);
+
+    this.scene.update = (function(dt){ this.update(dt); this.updateBackgrounds(dt);}).bind(this);
+
+    this.scene.load();
+  }
+
+  Scenario.prototype.setRenderEntities = function(fn){
+    var self = this;
+    this.scene.render = (function(){
+      var listOfEntitiesArrays = fn();
+      console.log(listOfEntitiesArrays);
+      this.renderEntities(self.bgElements);
+      for(var i = 0; i < listOfEntitiesArrays.length; i++){
+        this.renderEntities(listOfEntitiesArrays[i]);
+      }
+      this.renderEntities(self.frontElements);
+    }).bind(this.scene);
+  }
+
+  Scenario.prototype.updateBackgrounds = function(dt){
     TIME +=dt;
     TIME_SINCE_LAST_OUT += dt;
     var self = this;
@@ -51,6 +75,13 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     }
   }
 
+  Scenario.prototype.updateSprite = function updateSprite(dt){
+    return function(entity){
+      entity.update(dt);
+      return entity;
+    };
+  }
+
   Scenario.prototype.addBackground = function(){
     var index = petra.random(0, backgroundEntities.length);
     this.addItem(backgroundEntities[index]);
@@ -58,7 +89,7 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
 
   Scenario.prototype.addItem = function(item){
     var opts = {
-      pos : [this.canvas.width+100, petra.random(-30, this.canvas.height + 30)],
+      pos : [this.scene.canvas.width+100, petra.random(-30, this.scene.canvas.height + 30)],
       speed: [petra.random(20,50),petra.random(20,50)],
       resizePercentage: Math.random().toFixed(2),
       //rotateSprite : petra.flipCoin() ?  petra.randomFloat(-0.4, 0.4) : 0
@@ -72,62 +103,5 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     }
   }
 
-  Scenario.prototype.render = function(listOfEntitiesArrays){
-    this.renderEntities(this.bgElements);
-    for(var i = 0; i < listOfEntitiesArrays.length; i++){
-      this.renderEntities(listOfEntitiesArrays[i]);
-    }
-    this.renderEntities(this.frontElements);
-  }
-
-  Scenario.prototype.renderEntities = function(list) {
-    for(var i=0; i<list.length; i++) {
-      this.renderEntity(list[i]);
-    }
-  }
-
-  Scenario.prototype.renderEntity = function(entity) {
-    this.ctx.save();
-
-    this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-    entity.render(this.ctx);
-    this.ctx.restore();
-    if(entity.life){
-      this.drawLife(entity);
-    }
-  }
-
-  Scenario.prototype.updateSprite = function(dt){
-    return function(entity){
-      entity.update(dt);
-      return entity;
-    };
-  }
-
-
-  Scenario.prototype.drawFrames = function(frames){
-    this.ctx.fillStyle = "blue";
-    this.ctx.font = "bold 16px Arial";
-    this.ctx.fillText(frames, 100, 100);
-  }
-
-  Scenario.prototype.drawLife = function(entity){
-    var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
-    var x = Math.round(entity.pos[0]);
-    var y = Math.round(entity.pos[1]);
-    this.ctx.beginPath();
-    this.ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
-    this.ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
-    this.ctx.fill();
-    this.ctx.lineWidth = 1;
-    this.ctx.strokeStyle = 'black'; 
-    this.ctx.stroke();
-
-    this.ctx.beginPath();
-    this.ctx.rect(x+ (entity.sprite.getSize()[0]-lifeTotal), y + entity.sprite.getSize()[1], lifeTotal, 7);
-    this.ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
-    this.ctx.fill();
-    this.ctx.stroke();
-  }
   return Scenario;
 });

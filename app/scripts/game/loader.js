@@ -4,6 +4,7 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
   var particles = [];
   var quad;
   var gravity = 0.5; 
+  var id ;
 
   function load(elements, cb){
     if(!previouslyLoaded){
@@ -11,18 +12,20 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
       resources.load(elements);
     }
     if(!resources.isReady()){
-      paintCanvas();
+      mainLoop();
       
-      requestAnimFrame(function(){
+      id =requestAnimationFrame(function(){
         load(elements,cb);
       });
       return;
     }
     canvas.className = '';
+    cancelAnimationFrame(id);
     cb();
   }
 
   function init(canvasId){
+    previouslyLoaded = false;
     canvas = document.getElementById(canvasId);
     canvas.className = 'visible';
     ctx = canvas.getContext("2d");
@@ -90,7 +93,7 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     }
   }
 
-  function paintCanvas(){
+  function mainLoop(){
     var now = Date.now();
     var dt = (now - then);
     then = now;

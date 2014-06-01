@@ -1,4 +1,4 @@
-define( [], function(){
+define( ['game/models/scene'], function(Scene){
   
   //Thanks dr.axel. 
   //Allows Sprite to accept array as args
@@ -76,7 +76,8 @@ define( [], function(){
 
   return  {
     Message: Message,
-    Entity: RenderableEntity
+    Entity: RenderableEntity,
+    Scene: Scene
   };
 
 });
