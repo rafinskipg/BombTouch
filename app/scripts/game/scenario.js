@@ -42,7 +42,6 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     var self = this;
     this.scene.render = (function(){
       var listOfEntitiesArrays = fn();
-      console.log(listOfEntitiesArrays);
       this.renderEntities(self.bgElements);
       for(var i = 0; i < listOfEntitiesArrays.length; i++){
         this.renderEntities(listOfEntitiesArrays[i]);

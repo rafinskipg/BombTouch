@@ -30,7 +30,8 @@ define( ['game/models/scene'], function(Scene){
     this.totalLife = opts.totalLife || 0;
     this.baseDamage = opts.baseDamage || 0;
     this.points = opts.points || 0;
-    this.sprite = Sprite.construct(opts.sprite)
+    this.sprite = Sprite.construct(opts.sprite);
+    this.renderTranslated = opts.renderTranslated || null;
     this.animations = {};
     this.rotateSprite = opts.rotateSprite ? opts.rotateSprite : null;
     if(opts.resize){
@@ -52,9 +53,9 @@ define( ['game/models/scene'], function(Scene){
 
   RenderableEntity.prototype.render = function(ctx){
     if(this.enabledAnimation == 'default'){
-      this.sprite.render(ctx, this.rotateSprite);
+      this.sprite.render(ctx, this.rotateSprite, this.renderTranslated);
     }else{
-      this.animations[this.enabledAnimation].render(ctx,this.rotateSprite);
+      this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
     }
   }
 

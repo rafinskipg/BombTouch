@@ -43,7 +43,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   //var twitterBulletSpriteSchema = ['images/weapons/twitter.png', [0, 0], [150, 150], 4, [0,1,2, 3]];
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
-  var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 5, [0,1,2,3]];
+  var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 10, [0,1,2,3]];
+  var blueraySpriteSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 15, [0,1,2,3,4,5]];
 
   //Enemies
   var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
@@ -67,6 +68,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true];
+  var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null, true];
+  var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13], null, true];
+  var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
 
   var nebulaSpriteSheet = ['images/nebula/nebula1.png', [0,0], [1030,780], 1 , [0]]
   var nebula2SpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0]]
@@ -147,9 +151,16 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     'bluebullet' : {
       sprite: blueBulletSpriteSchema,
       damage: 50,
-      speed: [500,500],
+      speed: [400,400],
       angle: 0,
       resize: [20,20]
+    },'blueray' : {
+      sprite: blueraySpriteSchema,
+      damage: 50,
+      speed: [500,500],
+      angle: 0,
+      resize: [20,20],
+      renderTranslated: [0, 5]
     },
     'cooldog' : {
       sprite: coolDogSpriteSchema,
@@ -255,6 +266,24 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       sprite: bossSpriteSchema,
       damage: 400,
       resize:[60,60]
+    },
+    'shootfire': {
+      sprite: shootFireSpriteSheet,
+      resize: [50,50],
+      renderTranslated: [10,20],
+      speed: [0,0]
+    },
+    'bulletcasing':{
+      sprite: bulletCasingSpriteSheet,
+      resize: [100,100],
+      renderTranslated: [-20,40],
+      speed: [0,0]
+    },
+    'spark':{
+      sprite: sparkSpriteSheet,
+      resize: [50,50],
+      renderTranslated: [10, 15],
+      speed: [0,0]
     }
   };
 
@@ -343,6 +372,14 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     }
     if(opts.totalLife){
       entity.totalLife = opts.totalLife;
+    }
+
+    if(opts.angle){
+      entity.angle = opts.angle;
+    }
+
+    if(opts.resize){
+      entity.sprite.resize(opts.resize[0], opts.resize[1]);
     }
 
     if(opts.resizePercentage){

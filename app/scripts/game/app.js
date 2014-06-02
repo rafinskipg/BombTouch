@@ -55,6 +55,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   var bullets,
     enemies,
     explosions,
+    miscelanea,
     specials,
     bonuses,
     bonusWeapons,
@@ -67,6 +68,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bullets = [];
     enemies = [];
     explosions = [];
+    miscelanea = [];
     specials = [];
     bonuses = [];
     bonusWeapons = [];
@@ -229,7 +231,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,20);
+    LEVELS_DIRECTOR.init(5,1,1);
+    //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     SCENARIO = new Scenario("canvas", endGame);
@@ -243,7 +246,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
-    showInitialDialogs();
+    //showInitialDialogs();
     main();
   };
 
@@ -499,9 +502,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
       var x = player.pos[0] + player.sprite.getSize()[0] / 2;
       var y = player.pos[1] + player.sprite.getSize()[1] / 2;
+      var bulletpos = [player.pos[0] + player.sprite.getSize()[0] - 10,y -5];
 
-      bullets.push(EL.getEntity('bluebullet', {pos: [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], damage: player.damage }));
-    
+      bullets.push(EL.getEntity('blueray', {pos: bulletpos, damage: player.damage }));
+      addShootFire(bulletpos);
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
     }
@@ -558,10 +562,20 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   var megaShoot = throttle(megaShootUntrottled, 1000);
 
-  function addExplosion(pos){
-    explosions.push(EL.getEntity('explosion',{pos: pos}));
+  function addExplosion(pos, size){
+    explosions.push(EL.getEntity('explosion',{pos: pos, resize: size}));
     var number = parseInt(Math.random()*SOUNDS.explosions.length);
     playSound(SOUNDS.explosions[number]);
+  }
+
+  function addBulletCasing(pos,speed, angle){
+    miscelanea.push(EL.getEntity('bulletcasing', {pos: pos, speed: speed, angle: angle}));
+  }
+  function addSpark(pos,speed, angle){
+    miscelanea.push(EL.getEntity('spark', {pos: pos, speed: speed, angle: angle}));
+  }
+  function addShootFire(pos,speed, angle){
+    miscelanea.push(EL.getEntity('shootfire', {pos: pos, speed: speed, angle: angle}));
   }
 
   function addPoints(pts){
@@ -664,6 +678,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     updateEnemies(dt);
     updateSpecials(dt);
     updateExplosions(dt);
+    updateMiscelanea(dt);
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
@@ -724,6 +739,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
       entities.map(SCENARIO.updateSprite(dt))
+        .map(petra.moveByAngle(dt))
         .map(removeIfDone)
     ); 
   }
@@ -876,7 +892,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
   function playAction(action, entity){
     if(action =='enemyShoot'){
-      console.log(entity.damage);
       enemyShoot(entity.pos, entity.damage);
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
@@ -1011,6 +1026,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   
   function updateExplosions(dt){
     explosions = updateEntitiesAndRemoveIfDone(explosions, dt);        
+  } 
+  function updateMiscelanea(dt){
+    miscelanea = updateEntitiesAndRemoveIfDone(miscelanea, dt);        
   }
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses
@@ -1097,6 +1115,17 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
+  function ifCollidesAddSpark(entity){
+    return function(item){
+      if(entitiesCollide(entity,item)){
+        var portionofspeed = [item.speed[0] * 0.8, item.speed[1] * 0.8];
+        addSpark(item.pos, entity.speed, entity.angle);
+        addBulletCasing(item.pos, [item.speed[0] - portionofspeed[0], item.speed[1] - portionofspeed[1]], item.angle);
+      }
+      return item;
+    }
+  }
+
   function removeIfCollideWith(entity){
     return function(item){
       if(!entitiesCollide(entity, item)){
@@ -1128,13 +1157,14 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     addPoints(enemy.points);
     addPower(enemy.points);
     playSound(SOUNDS.death);
-    addExplosion(enemy.pos);    
+    addExplosion(enemy.pos, enemy.sprite.getSize());    
   }
 
   function collisionToEnemyGroup(enemyGroup){
       enemyGroup = hu.compact(enemyGroup.map(function(enemy){
 
         bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(ifCollidesAddSpark(enemy))
           .map(removeIfCollideWith(enemy)));
           
         specials
@@ -1216,7 +1246,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       explosions,
       specials,
       bonuses,
-      bosses
+      bosses,
+      miscelanea
       ];
 
    if(!isGameOver()) {

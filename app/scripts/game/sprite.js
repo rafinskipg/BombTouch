@@ -23,7 +23,7 @@
             this.expectedSize = [width,height];
         },
 
-        render: function(ctx,angle) {
+        render: function(ctx,angle, translation) {
             var frame;
 
             if(this.speed > 0) {
@@ -54,10 +54,17 @@
                 ctx.rotate(angle * Math.PI);                 
             }
 
+            var origX = 0;
+            var origY = 0;
+            if(translation){
+                origX -= translation[0];
+                origY -= translation[1];
+            }
+
             ctx.drawImage(resources.get(this.url),
-                          Math.round(x), Math.round(y),
+                        Math.round(x),  Math.round(y),
                           this.size[0], this.size[1],
-                          0, 0,
+                          origX, origY,
                           this.expectedSize[0], this.expectedSize[1]);
         }
     };
