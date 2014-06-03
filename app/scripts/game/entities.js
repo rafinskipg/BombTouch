@@ -159,8 +159,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       damage: 50,
       speed: [500,500],
       angle: 0,
-      resize: [20,20],
-      renderTranslated: [0, 5]
+      resize: [10,10],
+      renderTranslated: [0, 0]
     },
     'cooldog' : {
       sprite: coolDogSpriteSchema,

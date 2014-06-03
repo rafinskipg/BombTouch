@@ -30,7 +30,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       game_over: false,
       paused: false,
       post_game_completed : false,
-      background_speed: 0.3,
+      background_speed: 50,
       game_speed: 1.0
     };
     return options;
@@ -78,7 +78,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     player = {};
   }
 
-  var canvas, ctx, power = 0;
+  var canvas, power = 0;
   var SCENARIO;
   var terrainPattern;
 
@@ -234,15 +234,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     LEVELS_DIRECTOR.init(5,1,1);
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    SCENARIO = new Scenario("canvas", endGame);
-    SCENARIO.setRenderEntities(getEntitiesToRender);
-    SCENARIO.init();
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 50;
-
-    toMouseListeners();
     reset();
+    toMouseListeners();
     suscribeToEvents();
     playSound(SOUNDS.ambient);
 
@@ -369,6 +362,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     newState.sound_enabled = STATE.sound_enabled === false ? false: true;
     newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
     STATE = newState;
+    SCENARIO = new Scenario("canvas", endGame, STATE.game_speed, STATE.background_speed);
+    SCENARIO.setRenderEntities(getEntitiesToRender);
+    SCENARIO.init();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 50;
     setDefaultStateForEntities();
     player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
     TIMERS = getDefaultTimers();
@@ -453,6 +451,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function pause(){
     STATE.paused = true;
+    SCENARIO.pause();
     pauseAmbientSound();
   }
 
@@ -462,6 +461,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   
   function resume(){
     STATE.paused = false;
+    SCENARIO.pause();
     playSound(SOUNDS.ambient);
     TIMERS.lastTime = Date.now();
     main();
@@ -1225,20 +1225,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     Drawables
   ****************************
   ****************************/   
-  var BGx = 0;
 
   function getEntitiesToRender() {
-    BGx -= STATE.background_speed * STATE.game_speed;
-    //ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
-    //ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
-    //ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
- 
-    // If the image scrolled off the screen, reset
-    if (BGx < -canvas.width){
-      BGx =0;
-    }
-  
-   
     var entitiesToRender = [
       bullets,
       enemyBullets,

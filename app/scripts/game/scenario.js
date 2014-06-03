@@ -20,9 +20,13 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
 
 
 
-  var Scenario = function(canvasId, endCallback){
+  var Scenario = function(canvasId, endCallback, scenespeed, bgspeed){
     TIME_SINCE_LAST_OUT = 0; TIME = 0; DELAY = 0;
-    this.scene = new models.Scene(ASSETSList ,canvasId, endCallback);
+    this.scene = new models.Scene(ASSETSList ,canvasId, endCallback , {
+      scenespeed: scenespeed,
+      bgspeed : bgspeed,
+      BGx : 0
+    });
   };
   
   Scenario.prototype.init = function() {
@@ -34,8 +38,22 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     }).bind(this.scene);
 
     this.scene.update = (function(dt){ this.update(dt); this.updateBackgrounds(dt);}).bind(this);
-
+    
+    this.scene.updateBackground = (function(dt){ 
+      this.BGx -= dt;
+      this.ctx.drawImage(resources.get('images/background.png'), this.BGx, 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get('images/background.png'), this.BGx + this.canvas.width, 0,this.canvas.width, this.canvas.height);
+     
+      // If the image scrolled off the screen, reset
+      if (this.BGx < -this.canvas.width){
+        this.BGx =0;
+      }
+    }).bind(this.scene);
     this.scene.load();
+  }
+
+  Scenario.prototype.pause = function(){
+    this.scene.pause();
   }
 
   Scenario.prototype.setRenderEntities = function(fn){
