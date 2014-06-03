@@ -53,7 +53,26 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,0,0,0,0,1,2,3,4,5,6,7,8,9,9,9]];
   var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7]];
   //Bosses
-  var bossSpriteSchema = ['images/creeper.png', [0,35], [30,30], 4, [0,1,2,1,2,1]];
+  var bossSpriteDefinition ={
+    normal: {
+      standby :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4]],
+      shooting :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4,3,3,2,1,0,1,0]],
+      talking :['images/enemies/boss_1.png', [0,0], [40,75], 4, [5,4,5,6,5,4]],
+      happy :['images/enemies/boss_1.png', [0,0], [40,75], 4, [7]]
+    },
+    damaged: {
+      standby :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4]],
+      shooting :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4,3,3,2,1,0,1,0]],
+      talking :['images/enemies/boss_1.png', [0,75], [40,75], 4, [5,4,5,6,5,4]],
+      happy :['images/enemies/boss_1.png', [0,75], [40,75], 4, [7]]
+    },
+    verydamaged: {
+      standby :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4]],
+      shooting :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4,3,3,2,1,0,1,0]],
+      talking :['images/enemies/boss_1.png', [0,150], [40,75], 4, [5,4,5,6,5,4]],
+      happy :['images/enemies/boss_1.png', [0,150], [40,75], 4, [7]]
+    }
+  } 
  
   //Player
   var nyanCatSpriteSchema = ['images/newsprites.png', [7, 304], [88,35], 4, [0, 1,2,3,4]];
@@ -263,9 +282,49 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       points: 10000,
       totalLife: 10000,
       life: 10000,
-      sprite: bossSpriteSchema,
+      sprite: bossSpriteDefinition.normal.standby,
+      animations: [
+       {
+          name: 'shootnormal',
+          sprite:  bossSpriteDefinition.normal.shooting
+        },
+        {
+          name: 'standbynormal',
+          sprite:  bossSpriteDefinition.normal.standby
+        },
+        {
+          name: 'talknormal',
+          sprite:  bossSpriteDefinition.normal.talking
+        },{
+          name: 'happy',
+          sprite: bossSpriteDefinition.normal.happy
+        },
+        {
+          name: 'shootdamaged',
+          sprite:  bossSpriteDefinition.damaged.shooting
+        },
+        {
+          name: 'standbydamaged',
+          sprite:  bossSpriteDefinition.damaged.standby
+        },
+        {
+          name: 'talkdamaged',
+          sprite:  bossSpriteDefinition.damaged.talking
+        },{
+          name: 'shootverydamaged',
+          sprite:  bossSpriteDefinition.verydamaged.shooting
+        },
+        {
+          name: 'standbyverydamaged',
+          sprite:  bossSpriteDefinition.verydamaged.standby
+        },
+        {
+          name: 'talkverydamaged',
+          sprite:  bossSpriteDefinition.verydamaged.talking
+        }
+      ],
       damage: 400,
-      resize:[60,60]
+      resize:[40,75]
     },
     'shootfire': {
       sprite: shootFireSpriteSheet,

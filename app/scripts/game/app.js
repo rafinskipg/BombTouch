@@ -185,7 +185,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   };
 
   var main_character_name = 'cooldog';
-  var main_enemy_name = 'creeper';
+  var main_enemy_name = 'boss_1';
   var main_character_super_damaged = 'cooldogdamaged';
   var main_character_damaged = 'cooldogdamaged';
   var main_character_super_name = 'cooldog';
@@ -892,17 +892,19 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
   function playAction(action, entity){
     if(action =='enemyShoot'){
+      entity.setAnimation('shootnormal');
       enemyShoot(entity.pos, entity.damage);
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
-      
+      entity.setAnimation('talknormal');
       playSound(SOUNDS[chosenPhrase]);
       
       var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
       enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
+      entity.setAnimation('standbynormal');
     };
   }
 
