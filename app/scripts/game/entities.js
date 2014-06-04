@@ -506,7 +506,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       'launchEnemy',
       'enemyShoot',
       'enemyShoot',
-      'enemyShoot',
+      'doubleShoot',
       'talk'
     ];
 

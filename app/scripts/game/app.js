@@ -877,7 +877,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     
     if(action =='enemyShoot'){
       entity.setAnimation('shoot'+life);
-      enemyShoot(entity);
+      enemyShoot(entity,  entity.angle);
+    }else if(action =='doubleShoot'){
+      entity.setAnimation('shoot'+life);
+      enemyShoot(entity,0.8 );
+      enemyShoot(entity,1.2 );
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
@@ -895,10 +899,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     };
   }
 
-  function enemyShoot(entity){
-    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: entity.angle });
+  function enemyShoot(entity, angle){
+    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: angle });
     bullet.speed = [300,300];
-    enemyBullets.push(bullet);
+    enemyBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
     playSound(SOUNDS.shoot);
   }
