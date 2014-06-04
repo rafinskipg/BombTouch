@@ -56,7 +56,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var bossSpriteDefinition ={
     normal: {
       standby :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4]],
-      shooting :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4,3,3,2,1,0,1,0]],
+      shooting :['images/enemies/boss_1.png', [0,0], [40,75], 15, [4,3,2,1,0,0,2,3,4]],
       talking :['images/enemies/boss_1.png', [0,0], [40,75], 4, [5,4,5,6,5,4]],
       happy :['images/enemies/boss_1.png', [0,0], [40,75], 4, [7]]
     },
@@ -90,7 +90,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null, true];
   var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13], null, true];
   var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
-  var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
+  var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7,8,9,10,11], null, true];
   var portalBackSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
   var portalFrontSpriteSheet = ['images/sparks/sparks.png', [0,400], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
   
@@ -346,8 +346,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     },
     'bossShootFire':{
       sprite: bossShotFireSpriteSheet,
-      resize: [25,25],
-      renderTranslated: [15,5],
+      resize: [50,50],
+      renderTranslated: [25,20],
       speed: [0,0]
     },
     'portal_front':{
