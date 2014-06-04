@@ -34,6 +34,8 @@ define( ['game/models/scene'], function(Scene){
     this.renderTranslated = opts.renderTranslated || null;
     this.animations = {};
     this.rotateSprite = opts.rotateSprite ? opts.rotateSprite : null;
+    this.bulletName = opts.bulletName || null;
+    this.bulletShotFireName = opts.bulletShotFireName || null;
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
     }

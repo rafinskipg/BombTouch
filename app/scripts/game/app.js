@@ -231,7 +231,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,1);
+    LEVELS_DIRECTOR.init(5,6,1);
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
@@ -513,14 +513,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function blueShoot(pos){
     bullets.push(EL.getEntity('bluebullet', {pos: pos,damage: 200}));
-    playSound(SOUNDS.shoot);
-  }
-
-  function enemyShoot(pos, damage){
-    var bullet = EL.getEntity('bullet', {pos: pos, damage: damage });
-    bullet.angle = 1;
-    bullet.speed = [300,300];
-    enemyBullets.push(bullet);
     playSound(SOUNDS.shoot);
   }
 
@@ -891,21 +883,39 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     });
   }
   function playAction(action, entity){
+    var lifePercent = entity.life / entity.totalLife;
+    var life = 'normal';
+    if(lifePercent < 0.7 && lifePercent > 0.4 ){
+      life = 'damaged';
+    }else if(lifePercent < 0.4){
+      life = 'verydamaged';
+    }
+    
     if(action =='enemyShoot'){
-      entity.setAnimation('shootnormal');
-      enemyShoot(entity.pos, entity.damage);
+      entity.setAnimation('shoot'+life);
+      enemyShoot(entity);
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
-      entity.setAnimation('talknormal');
+      entity.setAnimation('talk'+life);
       playSound(SOUNDS[chosenPhrase]);
       
       var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
-      enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
-      entity.setAnimation('standbynormal');
+      var enemy = EL.getEnemy([entity.pos[0] - 30,entity.pos[1]], Math.ceil(Math.random() *5 ));
+      enemies.push(enemy);
+      miscelanea.push(EL.getEntity('portal', {pos: enemy.pos, speed: entity.speed, angle: entity.angle}));
+      entity.setAnimation('standby'+life);
     };
+  }
+
+  function enemyShoot(entity){
+    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: entity.angle });
+    bullet.speed = [300,300];
+    enemyBullets.push(bullet);
+    miscelanea.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
+    playSound(SOUNDS.shoot);
   }
 
   function getBossActions(){
