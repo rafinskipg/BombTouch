@@ -91,8 +91,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13], null, true];
   var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
   var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
-  var portalSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 20 , [0,1,2,3,4,5,6,5,4,3,2,1,0], null, true];
-
+  var portalBackSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
+  var portalFrontSpriteSheet = ['images/sparks/sparks.png', [0,400], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
+  
   var nebulaSpriteSheet = ['images/nebula/nebula1.png', [0,0], [1030,780], 1 , [0]]
   var nebula2SpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0]]
   var nebula3SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0]]
@@ -348,10 +349,17 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       resize: [25,25],
       renderTranslated: [15,5],
       speed: [0,0]
-    },'portal':{
-      sprite: portalSpriteSheet,
+    },
+    'portal_front':{
+      sprite: portalFrontSpriteSheet,
       resize: [100,100],
-      renderTranslated: [10,30],
+      renderTranslated: [20,30],
+      speed: [0,0]
+    },
+    'portal_back':{
+      sprite: portalBackSpriteSheet,
+      resize: [100,100],
+      renderTranslated: [20,30],
       speed: [0,0]
     },
     'spark':{

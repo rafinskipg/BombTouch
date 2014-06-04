@@ -41,21 +41,18 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function getDefaultTimers(){
     return {
       lastFire :0,
-      lastTime: Date.now(),
       gameTime: 0,
-      realSeconds:0,
       shootSpriteTime: 0
     };
   }
 
   var TIMERS = getDefaultTimers();
 
-  var frames = 0;
-
   var bullets,
     enemies,
     explosions,
-    miscelanea,
+    miscelanea_front,
+    miscelanea_back,
     specials,
     bonuses,
     bonusWeapons,
@@ -68,7 +65,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bullets = [];
     enemies = [];
     explosions = [];
-    miscelanea = [];
+    miscelanea_front = [];
+    miscelanea_back =  [];
     specials = [];
     bonuses = [];
     bonusWeapons = [];
@@ -199,34 +197,22 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   ****************************
   ****************************/
   var rafID ;
-  // The main game loop
+  
   var main = function() {
-    SCENARIO.update = function(){
-      var now = Date.now();
-      var dt = (now - TIMERS.lastTime);
-
-      frames = (1000/ (dt * 60)) * 60;
-      
-      TIMERS.realSeconds += dt;
-      var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
-      dt = STATE.game_speed * realtimeDt;
-
+    SCENARIO.update = function(dt,realtimeDt){
       if(!isGameOver() && !isPaused()){
         update(dt,realtimeDt);
-        TIMERS.lastTime = now;
       }
     }
   };
 
   var postGame = function(){
-    
-      SCENARIO.update = function(dt){
-        if(!STATE.post_game_completed){
-          updateGraves(dt);
-          updateExplosions(dt);
-        }
+    SCENARIO.update = function(dt){
+      if(!STATE.post_game_completed){
+        updateGraves(dt);
+        updateExplosions(dt);
       }
-      
+    }
   };
 
   function start() {
@@ -426,7 +412,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function endGame() {
     STATE.game_over = true;
     stopAmbientSound();
-    cancelAnimationFrame(rafID);
     graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
@@ -437,7 +422,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function endPostGame(){
-    cancelAnimationFrame(rafID);
     STATE.post_game_completed = true;
     STATE.levelsInfo = LEVELS_DIRECTOR.getLevelsInfo();
     for(var i = 0; i<notifyGameEnd.length; i++){
@@ -463,7 +447,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     STATE.paused = false;
     SCENARIO.pause();
     playSound(SOUNDS.ambient);
-    TIMERS.lastTime = Date.now();
     main();
   }
 
@@ -561,13 +544,13 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function addBulletCasing(pos,speed, angle){
-    miscelanea.push(EL.getEntity('bulletcasing', {pos: pos, speed: speed, angle: angle}));
+    miscelanea_front.push(EL.getEntity('bulletcasing', {pos: pos, speed: speed, angle: angle}));
   }
   function addSpark(pos,speed, angle){
-    miscelanea.push(EL.getEntity('spark', {pos: pos, speed: speed, angle: angle}));
+    miscelanea_front.push(EL.getEntity('spark', {pos: pos, speed: speed, angle: angle}));
   }
   function addShootFire(pos,speed, angle){
-    miscelanea.push(EL.getEntity('shootfire', {pos: pos, speed: speed, angle: angle}));
+    miscelanea_front.push(EL.getEntity('shootfire', {pos: pos, speed: speed, angle: angle}));
   }
 
   function addPoints(pts){
@@ -663,14 +646,15 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  function updateEntities(dt,realtimeDt) {
+  function updateEntities(dt) {
     updatePlayer(dt);
     updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
     updateSpecials(dt);
     updateExplosions(dt);
-    updateMiscelanea(dt);
+    updateMiscelanea_front(dt);
+    updateMiscelanea_back(dt);
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
@@ -903,9 +887,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
-      var enemy = EL.getEnemy([entity.pos[0] - 30,entity.pos[1]], Math.ceil(Math.random() *5 ));
+      var enemy = EL.getEnemy([entity.pos[0] - 80,entity.pos[1]], Math.ceil(Math.random() *5 ));
       enemies.push(enemy);
-      miscelanea.push(EL.getEntity('portal', {pos: enemy.pos, speed: entity.speed, angle: entity.angle}));
+      miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.sprite.getSize(), 2)}));
+      miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.sprite.getSize(), 2)}));
       entity.setAnimation('standby'+life);
     };
   }
@@ -914,7 +899,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: entity.angle });
     bullet.speed = [300,300];
     enemyBullets.push(bullet);
-    miscelanea.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
     playSound(SOUNDS.shoot);
   }
 
@@ -1039,8 +1024,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateExplosions(dt){
     explosions = updateEntitiesAndRemoveIfDone(explosions, dt);        
   } 
-  function updateMiscelanea(dt){
-    miscelanea = updateEntitiesAndRemoveIfDone(miscelanea, dt);        
+  function updateMiscelanea_front(dt){
+    miscelanea_front = updateEntitiesAndRemoveIfDone(miscelanea_front, dt);        
+  }
+  function updateMiscelanea_back(dt){
+    miscelanea_back = updateEntitiesAndRemoveIfDone(miscelanea_back, dt);        
   }
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses
@@ -1242,12 +1230,13 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var entitiesToRender = [
       bullets,
       enemyBullets,
+      bosses,
+      miscelanea_back,
       enemies,
       explosions,
       specials,
       bonuses,
-      bosses,
-      miscelanea
+      miscelanea_front
       ];
 
    if(!isGameOver()) {

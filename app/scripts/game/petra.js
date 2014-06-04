@@ -101,6 +101,22 @@ define( ['hu'], function(hu){
       return [pos[0], pos[1] - speed[1] * dt];
     }
 
+    //Operations to arrays.
+    Petra.sumIntegerToArray = function(arr, int){
+      var arrret = [];
+      for(var i = 0; i < arr.length; i++){
+        arrret.push(arr[i] + int);
+      }
+      return arrret;
+    }
+    Petra.multIntegerToArray = function(arr, int){
+      var arrret = [];
+      for(var i = 0; i < arr.length; i++){
+        arrret.push(arr[i] * int);
+      }
+      return arrret;
+    }
+
 
   return Petra;
 });

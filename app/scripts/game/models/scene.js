@@ -22,7 +22,6 @@ define( ['game/loader','game/raf'], function(Loader){
     for(var opt in opts){
       this[opt] = opts[opt];
     }
-    console.log(this.scenespeed);
   }
 
   Scene.prototype.load = function(){
@@ -55,10 +54,12 @@ define( ['game/loader','game/raf'], function(Loader){
     var now = Date.now();
     var dt = (now - this.then);
     this.then = now;
+    //frames = (1000/ (dt * 60)) * 60;
+    var realtimeDt = dt / 1000.0;
     
     if(!this.completed){
-      this.update((dt/1000.0) * this.scenespeed);
-      this.updateBackground((dt/1000.0) * this.bgspeed);
+      this.update(realtimeDt * this.scenespeed, realtimeDt);
+      this.updateBackground(realtimeDt * this.bgspeed);
       this.render();
       this.rafID = requestAnimationFrame(this.mainLoop.bind(this));  
     }else{
