@@ -882,6 +882,17 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       entity.setAnimation('shoot'+life);
       enemyShoot(entity,0.8 );
       enemyShoot(entity,1.2 );
+    }else if(action =='teleport'){
+      entity.setAnimation('teleport'+life, function(frame){
+        console.log(frame);
+        console.log('ey')
+       /*if(frame == 6){
+          entity.pos = [player.pos[0] + 100, player.pos[1]];  
+        }else if(frame == 13){
+          entity.setDefaultAnimation();
+        }*/
+      });
+
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];

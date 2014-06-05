@@ -10,6 +10,11 @@
         this.url = url;
         this.dir = dir || 'horizontal';
         this.once = once;
+        this.setFrameChangeCallback = (function(cb){
+            this.frameChangeCallback = cb;
+            console.log('applied',cb, this.frameChangeCallback, this)
+        }).bind(this);
+        this.frameChangeCallback = function(){}
     };
 
     Sprite.prototype = {
@@ -31,6 +36,8 @@
                 var idx = Math.floor(this._index);
                 frame = this.frames[idx % max];
 
+                this.frameChangeCallback(frame);
+                
                 if(this.once && idx >= max) {
                     this.done = true;
                     return;

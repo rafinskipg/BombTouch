@@ -58,19 +58,22 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       standby :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4]],
       shooting :['images/enemies/boss_1.png', [0,0], [40,75], 15, [4,3,2,1,0,0,2,3,4]],
       talking :['images/enemies/boss_1.png', [0,0], [40,75], 4, [5,4,5,6,5,4]],
-      happy :['images/enemies/boss_1.png', [0,0], [40,75], 4, [7]]
+      happy :['images/enemies/boss_1.png', [0,0], [40,75], 4, [7]],
+      teleport :['images/enemies/boss_1.png', [80,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0], 'vertical']
     },
     damaged: {
       standby :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4]],
       shooting :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4,3,3,2,1,0,1,0]],
       talking :['images/enemies/boss_1.png', [0,75], [40,75], 4, [5,4,5,6,5,4]],
-      happy :['images/enemies/boss_1.png', [0,75], [40,75], 4, [7]]
+      happy :['images/enemies/boss_1.png', [0,75], [40,75], 4, [7]],
+      teleport :['images/enemies/boss_1.png', [40,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0], 'vertical']
     },
     verydamaged: {
       standby :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4]],
       shooting :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4,3,3,2,1,0,1,0]],
       talking :['images/enemies/boss_1.png', [0,150], [40,75], 4, [5,4,5,6,5,4]],
-      happy :['images/enemies/boss_1.png', [0,150], [40,75], 4, [7]]
+      happy :['images/enemies/boss_1.png', [0,150], [40,75], 4, [7]],
+      teleport :['images/enemies/boss_1.png', [0,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0], 'vertical']
     }
   } 
  
@@ -302,6 +305,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
           name: 'talknormal',
           sprite:  bossSpriteDefinition.normal.talking
         },{
+          name:'teleportnormal',
+          sprite: bossSpriteDefinition.normal.teleport
+        },{
           name: 'happy',
           sprite: bossSpriteDefinition.normal.happy
         },
@@ -317,6 +323,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
           name: 'talkdamaged',
           sprite:  bossSpriteDefinition.damaged.talking
         },{
+          name:'teleportdamaged',
+          sprite: bossSpriteDefinition.damaged.teleport
+        },{
           name: 'shootverydamaged',
           sprite:  bossSpriteDefinition.verydamaged.shooting
         },
@@ -327,6 +336,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
         {
           name: 'talkverydamaged',
           sprite:  bossSpriteDefinition.verydamaged.talking
+         },{
+          name:'teleportverydamaged',
+          sprite: bossSpriteDefinition.verydamaged.teleport
         }
       ],
       damage: 400,
@@ -504,6 +516,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       'enemyShoot',
       'move',
       'launchEnemy',
+      'teleport',
+      'doubleShoot',
       'enemyShoot',
       'enemyShoot',
       'doubleShoot',

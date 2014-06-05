@@ -61,8 +61,12 @@ define( ['game/models/scene'], function(Scene){
     }
   }
 
-  RenderableEntity.prototype.setAnimation = function(name){
+  RenderableEntity.prototype.setAnimation = function(name, cb){
     this.enabledAnimation = name;
+    if(cb){
+      console.log(cb);
+      this.sprite.setFrameChangeCallback(cb);
+    }
   }
   RenderableEntity.prototype.setDefaultAnimation = function(){
     this.enabledAnimation = 'default';
