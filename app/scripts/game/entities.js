@@ -502,7 +502,6 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
  
   function getBackgroundEntity(name, opts){
     var entity= getEntity(name, opts, backgroundEntities);
-    console.log(entity);
     return entity;
   }
   function getEnemy(pos, level){

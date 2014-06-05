@@ -60,12 +60,21 @@ define( ['game/models/scene'], function(Scene){
       this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
     }
   }
+  RenderableEntity.prototype.resetAnimation = function(animation){
+    if(animation == 'default'){
+      this.sprite.reset();
+    }else{
+      this.animations[this.enabledAnimation].reset();
+    }
+  }
 
-  RenderableEntity.prototype.setAnimation = function(name, cb){
+  RenderableEntity.prototype.setAnimation = function(name, cb,reset){
     this.enabledAnimation = name;
     if(cb){
-      console.log(cb);
-      this.sprite.setFrameChangeCallback(cb);
+      this.animations[this.enabledAnimation].setFrameChangeCallback(cb);
+    }
+    if(reset){
+      this.resetAnimation(this.enabledAnimation);
     }
   }
   RenderableEntity.prototype.setDefaultAnimation = function(){

@@ -12,7 +12,6 @@
         this.once = once;
         this.setFrameChangeCallback = (function(cb){
             this.frameChangeCallback = cb;
-            console.log('applied',cb, this.frameChangeCallback, this)
         }).bind(this);
         this.frameChangeCallback = function(){}
     };
@@ -27,16 +26,19 @@
         resize: function(width, height){
             this.expectedSize = [width,height];
         },
-
+        reset: function(){
+            this._index = 0;
+        },
         render: function(ctx,angle, translation) {
             var frame;
 
             if(this.speed > 0) {
                 var max = this.frames.length;
                 var idx = Math.floor(this._index);
-                frame = this.frames[idx % max];
+                var arrayIndex = idx % max;
+                frame = this.frames[arrayIndex];
 
-                this.frameChangeCallback(frame);
+                this.frameChangeCallback(frame,arrayIndex);
                 
                 if(this.once && idx >= max) {
                     this.done = true;

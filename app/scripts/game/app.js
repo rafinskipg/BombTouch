@@ -527,7 +527,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function megaShootUntrottled(){
-    console.log(STATE.power)
     if(STATE.power == STATE.max_power){
       setPower(0);
       playSound(SOUNDS.rick);
@@ -883,15 +882,16 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       enemyShoot(entity,0.8 );
       enemyShoot(entity,1.2 );
     }else if(action =='teleport'){
-      entity.setAnimation('teleport'+life, function(frame){
-        console.log(frame);
-        console.log('ey')
-       /*if(frame == 6){
-          entity.pos = [player.pos[0] + 100, player.pos[1]];  
-        }else if(frame == 13){
-          entity.setDefaultAnimation();
-        }*/
-      });
+
+      entity.setAnimation('teleport'+life, function(frame,index){
+        var times = 0;
+        if(frame == 6 && times < 1){
+          entity.pos = [player.pos[0] + 300, player.pos[1]];
+          times = 1;
+        }else if(index == 13){
+            entity.setDefaultAnimation();
+        }
+      }, true);
 
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
