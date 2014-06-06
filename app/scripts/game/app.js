@@ -886,7 +886,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       entity.setAnimation('teleport'+life, function(frame,index){
         var times = 0;
         if(frame == 6 && times < 1){
-          entity.pos = [player.pos[0] + 300, player.pos[1]];
+          entity.pos = [player.pos[0] + 300, player.pos[1] + petra.random(-30, 30)];
           times = 1;
         }else if(index == 13){
             entity.setDefaultAnimation();
@@ -932,11 +932,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function moveToPlayerVertically(dt){
     return function(entity){
-      if(player.pos[1] < entity.pos[1]){
+      if(player.pos[1] < entity.pos[1] - 40){
         entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
-      if(player.pos[1] > entity.pos[1]){
+      if(player.pos[1] > entity.pos[1] - 40){
         entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 

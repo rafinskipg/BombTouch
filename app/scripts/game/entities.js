@@ -517,13 +517,15 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
 
     entity.actions = [
       'enemyShoot',
+      'doubleShoot',
       'move',
+      'enemyShoot',
       'launchEnemy',
+      'doubleShoot',
       'teleport',
-      'doubleShoot',
-      'enemyShoot',
       'enemyShoot',
       'doubleShoot',
+      'enemyShoot',
       'talk'
     ];
 
