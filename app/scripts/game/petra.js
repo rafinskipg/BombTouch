@@ -109,6 +109,13 @@ define( ['hu'], function(hu){
       }
       return arrret;
     }
+    Petra.sumArrays = function(arr, arr2){
+      var arrReturn = [];
+      arr.map(function(item, i){
+        arrReturn.push(item+arr2[i]);
+      })
+      return arrReturn;
+    }
     Petra.multIntegerToArray = function(arr, int){
       var arrret = [];
       for(var i = 0; i < arr.length; i++){

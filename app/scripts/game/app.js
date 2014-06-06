@@ -1090,15 +1090,16 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   }
 
-  function boxCollides(pos, size, pos2, size2) {
-    return collides(pos[0], pos[1],
-                    pos[0] + size[0], pos[1] + size[1],
-                    pos2[0], pos2[1],
-                    pos2[0] + size2[0], pos2[1] + size2[1]);
+  function boxCollides(hitboxA, hitboxB) {
+    return collides(hitboxA.pos[0], hitboxA.pos[1],
+                    hitboxA.pos[0] + hitboxA.size[0], hitboxA.pos[1] + hitboxA.size[1],
+                    hitboxB.pos[0], hitboxB.pos[1],
+                    hitboxB.pos[0] + hitboxB.size[0], hitboxB.pos[1] + hitboxB.size[1]);
   }
 
   function entitiesCollide(a,b){
-    return boxCollides(a.pos, a.sprite.getSize(), b.pos, b.sprite.getSize());
+
+    return boxCollides(a.getHitBox(), b.getHitBox());
   }
 
   

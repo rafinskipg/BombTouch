@@ -1,4 +1,4 @@
-define( ['game/models/scene'], function(Scene){
+define( ['game/models/scene', 'game/petra'], function(Scene, petra){
   
   //Thanks dr.axel. 
   //Allows Sprite to accept array as args
@@ -51,9 +51,37 @@ define( ['game/models/scene'], function(Scene){
     }
     
     this.enabledAnimation = 'default';
+    this.hitbox = opts.hitbox || null;
   }
 
+  RenderableEntity.prototype.getHitBox = function() {
+    if(!this.hitbox){
+      return { 
+        pos: this.pos,
+        size: this.sprite.getSize()
+      };
+    }else{
+      return {
+        pos: petra.sumArrays(this.pos, this.hitbox.pos),
+        size: this.hitbox.size
+      };
+    }
+  };
   RenderableEntity.prototype.render = function(ctx){
+
+    ctx.beginPath();
+       var hitbox = this.getHitBox();
+       var pos = [0,0];
+     if(this.hitbox){
+      pos = this.hitbox.pos
+     
+      ctx.rect(pos[0], pos[1], hitbox.size[0], hitbox.size[1]);
+      ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'black'; 
+      ctx.stroke();
+    }
     if(this.enabledAnimation == 'default'){
       this.sprite.render(ctx, this.rotateSprite, this.renderTranslated);
     }else{

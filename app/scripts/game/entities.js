@@ -191,6 +191,10 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       sprite: coolDogSpriteSchema,
       damage: 80,
       baseDamage: 80,
+      hitbox: {
+        pos: [25,30],
+        size: [30,40]
+      },
       speed: [200,200],
       angle: 0,
       life: 1000,
