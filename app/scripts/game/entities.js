@@ -109,6 +109,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
 
   var bonusSpriteSchema = ['images/orbes/coin.png', [0,0], [200,200], 1, [0]];
+  var bonus2SpriteSchema = ['images/weapons/bonus.png', [0,0], [150,85], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Var Space invaders version
@@ -228,6 +229,10 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       speed: [200,200],
       resize: [50,50],
       sprite: bonusSpriteSchema,
+      angle : 1
+    }, 'bonus2': {
+      speed: [200,200],
+      sprite: bonus2SpriteSchema,
       angle : 1
     },
     'bonusWeapon':{
@@ -493,7 +498,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       opts = {};
     } 
     var entity =  new GameEntity(entityList[name], opts);
-    if(name == 'bonus'){
+    if(name == 'bonus' || name == 'bonus2'{
       entity.angle = petra.randomFloat(7/12,17/12);
       entity.bounces = 5;
     }

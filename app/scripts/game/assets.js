@@ -15,6 +15,7 @@ define( [], function(){
     'images/messages/cooldog.png',
     'images/sparks/sparks.png',
     'images/weapons/bullets.png',
+    'images/weapons/bonus.png',
     'images/nebula/nebula1.png',
     'images/nebula/nebula2.png',
     'images/nebula/nebula3.png',
