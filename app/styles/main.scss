@@ -2,6 +2,7 @@ $iconSpritePath: "../images/glyphicons-halflings.png";
 $iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
 
 @import "sass-bootstrap/lib/bootstrap";
+@import "animation";
 
 
 
@@ -19,8 +20,8 @@ box-sizing: border-box;
 }
 
 body {
-    background: url('../images/background.png');
-    
+    background: url('../images/hud/home_bg.png');
+    background-size:cover;
 }
 
 .container{
@@ -51,8 +52,6 @@ a {
         margin-left: 0px;
     }
 }
-
-
 
 img {
     max-width:  100%;
@@ -99,22 +98,37 @@ img {
             min-height: 200px;
             font-family: 'Julius Sans One', 'sans-serif';
             color:black;
-            background: rgba(36, 161, 172, 0.74);
+           
             padding: 0;
             list-style: none;
             li {
-                padding:10px;
                 font-size: 18px;
                 text-align: center;
                 width: 100%;
                 text-transform: uppercase;
                 position: relative;
+                padding: 10px;
+                font-size: 18px;
+                text-align: center;
+            
+                width: 100%;
+                text-transform: uppercase;
+                position: relative;
+                margin: 10px;
+                background-size: 15px;
+                background-size: 34px;
+                background: rgba(40, 49, 150, 1);
+                border: 3px solid rgb(70, 121, 24);
+                
             }
+           
             li a{
                 text-decoration: none;
                 color: white;
                 font-weight: bold;
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                 -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                -moz-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 .sound{
                     color:rgb(246, 139, 78);
                 }
@@ -124,7 +138,7 @@ img {
                 top: 50%;
                 right: 0px;
                 left: auto;
-               
+                
                 display: block;
                 content: "";
                 width: 0%;
@@ -135,9 +149,6 @@ img {
                 transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
             li:hover {
-                a{
-                     zoom: 150%
-                }
                 a:after{
                     width: 100%;
                 }
@@ -147,6 +158,7 @@ img {
     .donation{
         background: rgba(128, 50, 50, 0.86);
         padding: 20px;
+        margin-top: 70px;
     }
     .donationBag{
         width: 5em;
@@ -545,5 +557,6 @@ img {
         }   
     }
 }
+@import "home";
 @import "mobile";
 

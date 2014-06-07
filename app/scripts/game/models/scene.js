@@ -89,29 +89,15 @@ define( ['game/loader','game/raf'], function(Loader){
     this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
     entity.render(this.ctx);
     this.ctx.restore();
+    this.ctx.save();
     if(entity.life){
-      this.drawLife(entity);
+      this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1] + entity.getHeight()));
+      entity.drawLife(this.ctx);
+      this.ctx.restore();
     }
+
   }
 
-  Scene.prototype.drawLife = function(entity){
-    var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
-    var x = Math.round(entity.pos[0]);
-    var y = Math.round(entity.pos[1]);
-    this.ctx.beginPath();
-    this.ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
-    this.ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
-    this.ctx.fill();
-    this.ctx.lineWidth = 1;
-    this.ctx.strokeStyle = 'black'; 
-    this.ctx.stroke();
-
-    this.ctx.beginPath();
-    this.ctx.rect(x+ (entity.sprite.getSize()[0]-lifeTotal), y + entity.sprite.getSize()[1], lifeTotal, 7);
-    this.ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
-    this.ctx.fill();
-    this.ctx.stroke();
-  }
 
   Scene.prototype.drawFrames = function(frames){
     this.ctx.fillStyle = "blue";

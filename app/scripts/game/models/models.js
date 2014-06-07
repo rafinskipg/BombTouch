@@ -47,9 +47,9 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
         if(opts.resize){
           self.animations[anim.name].resize(opts.resize[0], opts.resize[1]);
         }
-      });  
+      });
     }
-    
+
     this.enabledAnimation = 'default';
     this.hitbox = opts.hitbox || null;
   }
@@ -87,7 +87,51 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     }else{
       this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
     }
+   
   }
+
+  RenderableEntity.prototype.getSprite = function(){
+    if(this.enabledAnimation == 'default'){
+      return this.sprite;
+    }else{
+      return this.animations[this.enabledAnimation];
+    }
+  }
+
+  RenderableEntity.prototype.getSize = function(){
+    return this.getSprite().getSize();
+  }
+
+  RenderableEntity.prototype.getHeight = function(){
+    return this.getSize()[1];
+  }
+   RenderableEntity.prototype.getWidth = function(){
+    return this.getSize()[1];
+  }
+
+  RenderableEntity.prototype.drawLife = function(ctx){
+    var lifeTotal = (this.getWidth() - 10 ) * (this.life/ this.totalLife);
+    var x = Math.round(this.pos[0]);
+    var y = Math.round(this.pos[1]);
+    ctx.beginPath();
+    ctx.rect(5, 0, this.getWidth() - 10, 7);
+    ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black'; 
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.rect( (this.getWidth() - lifeTotal -5), 0, lifeTotal, 7);
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
+    ctx.fill();
+    ctx.stroke();
+
+    if(this.lifeBox){
+      this.lifeBox.render(ctx, this.rotateSprite, this.renderTranslated);
+    }
+  }
+
   RenderableEntity.prototype.resetAnimation = function(animation){
     if(animation == 'default'){
       this.sprite.reset();

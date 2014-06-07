@@ -45,6 +45,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 10, [0,1,2,3]];
   var blueraySpriteSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 15, [0,1,2,3,4,5]];
+  var lifeSpriteSchema = ['images/weapons/bullets.png', [0, 10], [55, 10], 1, [0]];
 
   //Enemies
   var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
@@ -346,7 +347,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
         }
       ],
       damage: 400,
-      resize:[40,75]
+      //resize:[40,75]
+      resize:[60,107]
     },
     'shootfire': {
       sprite: shootFireSpriteSheet,
@@ -383,6 +385,10 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       resize: [50,50],
       renderTranslated: [10, 15],
       speed: [0,0]
+    },
+    'life':{
+      sprite: lifeSpriteSchema,
+      speed:[0,0]
     }
   };
 
@@ -454,6 +460,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
 
   function GameEntity(entityDefinition, opts){
     entityDefinition.pos = opts.pos;
+
     var entity =  new Models.Entity(entityDefinition);
     
     if(opts.damage){
@@ -484,6 +491,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     if(opts.rotateSprite){
       entity.angle =  opts.rotateSprite * 1 +1 ;
       entity.rotateSprite = opts.rotateSprite;
+    }
+    if(entityDefinition.totalLife){
+      entity.lifeBox = getEntity('life', {resize: [entity.getWidth(), 15]});
     }
     return entity;
   }

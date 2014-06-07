@@ -3,7 +3,8 @@ define( ['game/models/models', 'game/petra','game/entities', 'resources','game/r
 
   function init(canvasId, endCallback){
     scene = new models.Scene([
-      'images/doggy/pixeleddog.png'
+      'images/doggy/pixeleddog.png',
+      'images/weapons/bullets.png'
       ],canvasId, endCallback);
 
     scene.init = (function(){

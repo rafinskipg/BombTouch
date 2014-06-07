@@ -1,0 +1,35 @@
+span.shadow {
+	box-shadow: 0px -38px 150px 28px white;
+	width: 100%;
+	display: block;
+}
+
+#intro_imagetitle{
+    background: url('../images/hud/home_title.png');
+    background-size:cover;
+}
+
+.home_header{
+    /*REMOVE*/
+        /* color: #c7cfd5; */
+    text-align: center;
+    /* text-shadow: 2px 2px 1px #1F1911; */
+    font-weight: bold;
+    font-weight: 3000000;
+    /* font-size: 28px; */
+    background: #6893b5;
+    /* box-shadow: 5px -62px 155px -19px rgba(255, 255, 255, 0.4); */
+    border-radius: 30px;
+    border: 9px solid rgb(226, 112, 21);
+}
+
+
+.planet{
+    img{
+        -webkit-animation-name: rotate;
+        -webkit-animation-duration: 25s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: linear;
+
+    }
+}
