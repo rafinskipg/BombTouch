@@ -217,7 +217,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,6,1);
+    LEVELS_DIRECTOR.init(5,1,1);
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
@@ -492,8 +492,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  function blueShoot(pos){
-    bullets.push(EL.getEntity('bluebullet', {pos: pos,damage: 200}));
+  function blueShoot(entity){
+    bullets.push(EL.getEntity('bluebullet', {pos: [entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2],damage: 200}));
     playSound(SOUNDS.shoot);
   }
 
@@ -851,9 +851,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  function shootThrottled(time, dt){
+  function shootThrottled(time, dt, shootType){
     return entityStepsInTime(time,dt)(function(entity){
-      blueShoot([entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2]);
+      shootType(entity, entity.angle);
       return entity;
     });
   }
@@ -1029,6 +1029,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     enemies = hu.compact(
       enemies.map(SCENARIO.updateSprite(dt))
       .map(petra.moveByAngle(dt))
+      .map(shootThrottled(1.2, dt, enemyShoot))
       .map(petra.removeIfOutsideScreenleft));
   }
 
@@ -1062,7 +1063,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateBonusWeapons(dt){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
-      .map(shootThrottled(0.5, dt))
+      .map(shootThrottled(0.5, dt, blueShoot))
       .map(removeBonusIfTImeGreaterThan(15)));
   }
 

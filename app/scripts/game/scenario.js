@@ -37,7 +37,7 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
       
     }).bind(this.scene);
 
-    this.scene.update = (function(dt){ this.update(dt); this.updateBackgrounds(dt);}).bind(this);
+    this.scene.update = (function(dt,realtimeDt){ this.update(dt,realtimeDt); this.updateBackgrounds(dt,realtimeDt);}).bind(this);
     
     this.scene.updateBackground = (function(dt){ 
       this.BGx -= dt;

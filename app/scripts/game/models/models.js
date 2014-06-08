@@ -34,8 +34,8 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     this.renderTranslated = opts.renderTranslated || null;
     this.animations = {};
     this.rotateSprite = opts.rotateSprite ? opts.rotateSprite : null;
-    this.bulletName = opts.bulletName || null;
-    this.bulletShotFireName = opts.bulletShotFireName || null;
+    this.bulletShotFireName = opts.bulletShotFireName || 'bossShootFire';
+    this.bulletName =  opts.bulletName || 'bullet';
     
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
