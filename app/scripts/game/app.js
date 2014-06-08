@@ -243,7 +243,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       touchInputs = {
         pos: {
           x : x ,
-          y : y - player.sprite.getSize()[1]/2
+          y : y - player.getHeight()/2
         }
       }
 
@@ -257,7 +257,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       touchInputs = {
         pos: {
           x : x ,
-          y : y - player.sprite.getSize()[1]/2
+          y : y - player.getHeight()/2
         }
       }
        
@@ -482,10 +482,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       }
       TIMERS.shootSpriteTime = 0.5;
       
-
-      var x = player.pos[0] + player.sprite.getSize()[0] / 2;
-      var y = player.pos[1] + player.sprite.getSize()[1] / 2;
-      var bulletpos = [player.pos[0] + player.sprite.getSize()[0] - 10,y -5];
+      var y = player.pos[1] + player.getHeight() / 2;
+      var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
 
       bullets.push(EL.getEntity('blueray', {pos: bulletpos, damage: player.damage }));
       addShootFire(bulletpos);
@@ -660,7 +658,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
-    entity.pos = [player.pos[0]+ player.sprite.getSize()[0],player.pos[1]- player.sprite.getSize()[1]/2];
+    entity.pos = [player.pos[0]+ player.getWidth(),player.pos[1]- player.getHeight()/2];
     return entity;
   }
 
@@ -684,7 +682,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function removeIfOutsideScreen(entity){
-    if(!isOutsideScreen(entity.pos ,entity.sprite.getSize())){
+    if(!isOutsideScreen(entity.pos ,entity.getSize())){
       return entity;
     }
   }
@@ -693,7 +691,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     if(entity.bounces > 0 ){
       return entity;
     }
-    if(!isOutsideScreen(entity.pos, entity.sprite.getSize())){
+    if(!isOutsideScreen(entity.pos, entity.getSize())){
       return entity;
     }
   }
@@ -722,7 +720,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function changeDirectionIfAvailable(dt){
     return function(entity){
       var nextPosition = petra.calculateNextPositionByAngle(entity,dt);
-      var reflectionAngle = checkCanvasLimits(nextPosition, entity.sprite.getSize());
+      var reflectionAngle = checkCanvasLimits(nextPosition, entity.getSize());
       if(reflectionAngle != null){
         entity.bounces -= 1;
         entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle);
@@ -736,14 +734,14 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     //TODO We are changing around / by player cause the reference is getting lost
     
     return function(entity){ 
-      var radius = player.sprite.getSize()[1] > player.sprite.getSize()[0] ? player.sprite.getSize()[1] : player.sprite.getSize()[0];
+      var radius = player.getHeight() > player.getWidth() ? player.getHeight() : player.getWidth();
      
       //TODO: This may cause the dogge to move from the center of the circle, the Phi calculus agains a game time
       //it should be against something between 0 and 10 ? 
       var phi =  TIMERS.gameTime;
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
-      var angleInRadians = Math.atan(entity.pos[0]+1000, entity.pos[1]) + phi;
+      var angleInRadians = Math.atan(entity.getX()+1000, entity.getY()) + phi;
       var xC = radius * Math.cos(angleInRadians)+phi;
       var yC = radius * Math.sin(angleInRadians)+phi;
 
@@ -811,16 +809,16 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       margin = 0;
     }
     return function(entity){
-      if(entity.pos[0] + entity.sprite.getSize()[0] + margin >= canvas.width) {
+      if(entity.getX() + entity.getWidth() + margin >= canvas.width) {
         entity.pos = petra.moveLeft(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[1] > canvas.height){
+      if(entity.getY() > canvas.height){
         entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[0] + entity.sprite.getSize()[0] < 0){
+      if(entity.getX() + entity.getWidth() < 0){
         entity.pos = petra.moveRight(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[1]  + entity.sprite.getSize()[1] < 0){
+      if(entity.getY()  + entity.getHeight() < 0){
         entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
       return entity;
@@ -832,7 +830,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       margin = 0;
     }
     return function(entity){
-      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite.getSize())){
+      if(!isOutsideScreen([entity.getX() + margin, entity.getY()], entity.getSize())){
         entity.readyForAction = true;
       }
       return entity;
@@ -855,7 +853,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function shootThrottled(time, dt){
     return entityStepsInTime(time,dt)(function(entity){
-      blueShoot([entity.pos[0] + entity.sprite.getSize()[0], entity.pos[1] + entity.sprite.getSize()[1]/2]);
+      blueShoot([entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2]);
       return entity;
     });
   }
@@ -876,11 +874,14 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     
     if(action =='enemyShoot'){
       entity.setAnimation('shoot'+life);
-      enemyShoot(entity,  entity.angle);
+      enemyShoot(entity,  entity.angle );
     }else if(action =='doubleShoot'){
       entity.setAnimation('shoot'+life);
+      enemyShoot(entity,0.6 );
       enemyShoot(entity,0.8 );
+      enemyShoot(entity,1.0 );
       enemyShoot(entity,1.2 );
+      enemyShoot(entity,1.4 );
     }else if(action =='teleport'){
 
       entity.setAnimation('teleport'+life, function(frame,index){
@@ -902,10 +903,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
-      var enemy = EL.getEnemy([entity.pos[0] - 80,entity.pos[1]], Math.ceil(Math.random() *5 ));
+      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], Math.ceil(Math.random() *5 ));
       enemies.push(enemy);
-      miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.sprite.getSize(), 2)}));
-      miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.sprite.getSize(), 2)}));
+      miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
+      miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
       entity.setAnimation('standby'+life);
     };
   }
@@ -919,7 +920,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function getBossActions(){
-    var bossTemp = EL.getBoss(canvas.width, canvas.height);
+    var bossTemp = EL.getBoss([canvas.width, canvas.height]);
     return bossTemp.actions;
   }
 
@@ -932,11 +933,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function moveToPlayerVertically(dt){
     return function(entity){
-      if(player.pos[1] < entity.pos[1] - 40){
+      if(player.pos[1] < entity.getY() - 40){
         entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
-      if(player.pos[1] > entity.pos[1] - 40){
+      if(player.pos[1] > entity.getY() - 40){
         entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 
@@ -1112,7 +1113,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         addPoints(200);
         entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
         entity.damage = entity.baseDamage + 50;
-        bonusWeapons = [EL.getEntity('bonusWeapon', {pos:[entity.pos[0] , entity.pos[1]]})];
+        bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
         playSound(SOUNDS.yeah);
 
         var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
@@ -1173,7 +1174,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     addPoints(enemy.points);
     addPower(enemy.points);
     playSound(SOUNDS.death);
-    addExplosion(enemy.pos, enemy.sprite.getSize());    
+    addExplosion(enemy.pos, enemy.getSize());    
   }
 
   function collisionToEnemyGroup(enemyGroup){
@@ -1224,15 +1225,15 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     if(player.pos[0] < 0) {
       player.pos[0] = 0;
     }
-    else if(player.pos[0] > canvas.width - player.sprite.getSize()[0]) {
-      player.pos[0] = canvas.width - player.sprite.getSize()[0];
+    else if(player.pos[0] > canvas.width - player.getWidth()) {
+      player.pos[0] = canvas.width - player.getWidth();
     }
 
     if(player.pos[1] < 0) {
       player.pos[1] = 0;
     }
-    else if(player.pos[1] > canvas.height - player.sprite.getSize()[1]) {
-      player.pos[1] = canvas.height - player.sprite.getSize()[1];
+    else if(player.pos[1] > canvas.height - player.getHeight()) {
+      player.pos[1] = canvas.height - player.getHeight();
     }
   }
 

@@ -23,7 +23,7 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
   /*RenderableEntity*/
   function RenderableEntity(opts){
     this.pos = opts.pos;
-    this.speed = opts.speed;
+    this.speed = opts.speed || [0,0];
     this.angle = opts.angle || 0;
     this.damage = opts.damage || 0;
     this.life = opts.life || 0;
@@ -36,8 +36,12 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     this.rotateSprite = opts.rotateSprite ? opts.rotateSprite : null;
     this.bulletName = opts.bulletName || null;
     this.bulletShotFireName = opts.bulletShotFireName || null;
+    
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
+    }
+    if(opts.resizePercentage){
+      this.sprite.resize(Math.floor(this.sprite.getSize()[0]*opts.resizePercentage),Math.floor(this.sprite.getSize()[1]*opts.resizePercentage) );
     }
 
     if(opts.animations){
@@ -47,32 +51,28 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
         if(opts.resize){
           self.animations[anim.name].resize(opts.resize[0], opts.resize[1]);
         }
+        if(opts.resizePercentage){
+          self.animations[anim.name].resize(Math.floor(self.animations[anim.name].getSize()[0]*opts.resizePercentage),Math.floor(self.animations[anim.name].getSize()[1]*opts.resizePercentage) );
+        }
       });
     }
 
     this.enabledAnimation = 'default';
     this.hitbox = opts.hitbox || null;
+    this.lifeBox = opts.lifeBox || null;
   }
 
-  RenderableEntity.prototype.getHitBox = function() {
-    if(!this.hitbox){
-      return { 
-        pos: this.pos,
-        size: this.sprite.getSize()
-      };
-    }else{
-      return {
-        pos: petra.sumArrays(this.pos, this.hitbox.pos),
-        size: this.hitbox.size
-      };
-    }
-  };
   RenderableEntity.prototype.render = function(ctx){
-
-    ctx.beginPath();
-       var hitbox = this.getHitBox();
-       var pos = [0,0];
-     if(this.hitbox){
+    if(this.enabledAnimation == 'default'){
+      this.sprite.render(ctx, this.rotateSprite, this.renderTranslated);
+    }else{
+      this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
+    }
+    
+    if(this.hitbox){
+      ctx.beginPath();
+      var hitbox = this.getHitBox();
+      var pos = [0,0];
       pos = this.hitbox.pos
      
       ctx.rect(pos[0], pos[1], hitbox.size[0], hitbox.size[1]);
@@ -82,12 +82,6 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
       ctx.strokeStyle = 'black'; 
       ctx.stroke();
     }
-    if(this.enabledAnimation == 'default'){
-      this.sprite.render(ctx, this.rotateSprite, this.renderTranslated);
-    }else{
-      this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
-    }
-   
   }
 
   RenderableEntity.prototype.getSprite = function(){
@@ -109,12 +103,42 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     return this.getSize()[1];
   }
 
+  RenderableEntity.prototype.getHitBox = function() {
+    if(!this.hitbox){
+      return { 
+        pos: this.pos,
+        size: this.getSize()
+      };
+    }else{
+      //console.log('wat');
+      //console.log(this.hitbox.pos, this.pos);
+      return {
+        pos: petra.sumArrays(this.pos, this.hitbox.pos),
+        size: this.hitbox.size
+      };
+    }
+  };
+
+  RenderableEntity.prototype.getHitBoxWidth = function(){
+    return this.getHitBox().size[0];
+  }
+  RenderableEntity.prototype.getHitBoxLeftPadding = function(){
+    return this.getHitBox().pos[0];
+  }
+
+  RenderableEntity.prototype.getX = function(){
+    return this.pos[0];
+  }
+
+  RenderableEntity.prototype.getY = function(){
+    return this.pos[1];
+  }
+
   RenderableEntity.prototype.drawLife = function(ctx){
-    var lifeTotal = (this.getWidth() - 10 ) * (this.life/ this.totalLife);
-    var x = Math.round(this.pos[0]);
-    var y = Math.round(this.pos[1]);
+    var lifeTotal = (this.getHitBoxWidth() - 5 ) * (this.life/ this.totalLife);
+
     ctx.beginPath();
-    ctx.rect(5, 0, this.getWidth() - 10, 7);
+    ctx.rect(5, 0, this.getHitBoxWidth() - 5, 7);
     ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
     ctx.fill();
     ctx.lineWidth = 1;
@@ -122,7 +146,7 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.rect( (this.getWidth() - lifeTotal -5), 0, lifeTotal, 7);
+    ctx.rect( (this.getHitBoxWidth() - lifeTotal -5), 0, lifeTotal, 7);
     ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
     ctx.fill();
     ctx.stroke();

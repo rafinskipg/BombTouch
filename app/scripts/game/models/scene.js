@@ -85,13 +85,13 @@ define( ['game/loader','game/raf'], function(Loader){
 
   Scene.prototype.renderEntity = function(entity) {
     this.ctx.save();
-
-    this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
+    this.ctx.translate(Math.round(entity.getX()), Math.round(entity.getY()));
     entity.render(this.ctx);
     this.ctx.restore();
-    this.ctx.save();
+
     if(entity.life){
-      this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1] + entity.getHeight()));
+      this.ctx.save();
+      this.ctx.translate(Math.round(entity.getHitBoxLeftPadding()), Math.round(entity.getY() + entity.getHeight()));
       entity.drawLife(this.ctx);
       this.ctx.restore();
     }

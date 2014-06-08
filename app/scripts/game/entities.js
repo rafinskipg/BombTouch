@@ -348,6 +348,10 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       ],
       damage: 400,
       //resize:[40,75]
+      hitbox: {
+        pos: [0,0],
+        size: [40,107]
+      },
       resize:[60,107]
     },
     'shootfire': {
@@ -459,41 +463,20 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   }
 
   function GameEntity(entityDefinition, opts){
-    entityDefinition.pos = opts.pos;
-
-    var entity =  new Models.Entity(entityDefinition);
     
-    if(opts.damage){
-      entity.damage = opts.damage;  
+    for(var opt in opts){
+      entityDefinition[opt] = opts[opt];
     }
-    if(opts.speed){
-      entity.speed = opts.speed;  
-    }
-    if(opts.life){
-      entity.life  = opts.life;
-    }
-    if(opts.totalLife){
-      entity.totalLife = opts.totalLife;
-    }
-
-    if(opts.angle){
-      entity.angle = opts.angle;
-    }
-
-    if(opts.resize){
-      entity.sprite.resize(opts.resize[0], opts.resize[1]);
-    }
-
-    if(opts.resizePercentage){
-      entity.sprite.resize(Math.floor(entity.sprite.size[0]*opts.resizePercentage),Math.floor(entity.sprite.size[1]*opts.resizePercentage) );
-    }
-
+    
     if(opts.rotateSprite){
-      entity.angle =  opts.rotateSprite * 1 +1 ;
-      entity.rotateSprite = opts.rotateSprite;
+      entityDefinition.angle =  opts.rotateSprite * 1 +1 ;
+      entityDefinition.rotateSprite = opts.rotateSprite;
     }
+    
+    var entity =  new Models.Entity(entityDefinition);
+
     if(entityDefinition.totalLife){
-      entity.lifeBox = getEntity('life', {resize: [entity.getWidth(), 15]});
+      entity.lifeBox = getEntity('life', {resize: [entity.getHitBoxWidth(), 15]});
     }
     return entity;
   }
