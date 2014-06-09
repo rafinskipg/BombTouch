@@ -100,7 +100,7 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     return this.getSize()[1];
   }
    RenderableEntity.prototype.getWidth = function(){
-    return this.getSize()[1];
+    return this.getSize()[0];
   }
 
   RenderableEntity.prototype.getHitBox = function() {

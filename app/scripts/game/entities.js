@@ -109,7 +109,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0]]
   var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
 
-  var bonusSpriteSchema = ['images/weapons/bonus.png', [0,50], [25,25], 1, [0]];
+  var bonusSpriteSchema = ['images/weapons/bonus.png', [50,50], [100,50], 1, [0]];
   var bonus2SpriteSchema = ['images/weapons/bonus.png', [0,0], [150,85], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
@@ -232,7 +232,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     },
     'bonus': {
       speed: [200,200],
-      resize: [60,60],
+      resize: [120,60],
       sprite: bonusSpriteSchema,
       angle : 1
     }, 'bonus2': {

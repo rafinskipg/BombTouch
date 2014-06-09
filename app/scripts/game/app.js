@@ -1049,7 +1049,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses
-      .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 10)))
+      .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 30)))
       .map(wrapperNotReadyForActionOnly(readyForActionIfInsideScreen(10))));
 
     bonuses = hu.compact(hu.compact(bonuses
