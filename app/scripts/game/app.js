@@ -355,6 +355,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     canvas.height = window.innerHeight - 50;
     setDefaultStateForEntities();
     player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
+    player.bonuses = {};
     TIMERS = getDefaultTimers();
   };
 
@@ -484,8 +485,13 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       
       var y = player.pos[1] + player.getHeight() / 2;
       var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
-
-      bullets.push(EL.getEntity('blueray', {pos: bulletpos, damage: player.damage }));
+      if(player.bonuses.doubleShoot){
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8 }));  
+      }else{
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage }));  
+      }
+      
       addShootFire(bulletpos);
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
@@ -639,8 +645,30 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
 
     if(LEVELS_DIRECTOR.shouldAddBonus()){
-      bonuses.push(LEVELS_DIRECTOR.createBonus([canvas.width, Math.random() * (canvas.height - 39)]));
+      var bonus = LEVELS_DIRECTOR.createBonus([canvas.width, Math.random() * (canvas.height - 39)]);
+      if(bonus.name == 'dogeBonus'){
+        bonus.obtain = dogeBonusObtain;  
+      }else if(bonus.name == 'doubleShootBonus'){
+        bonus.obtain = doubleWeaponBonusObtain;
+      }
+      
+      bonuses.push(bonus);
     }
+  }
+
+  function dogeBonusObtain(entity){
+    LEVELS_DIRECTOR.pickedDogeBonus();
+    entity.hasBonus = true;
+    addPoints(200);
+    entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
+    entity.damage = entity.baseDamage + 50;
+    bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
+    playSound(SOUNDS.yeah);
+    var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
+    showMessages([message]);
+  }
+  function doubleWeaponBonusObtain(entity){
+    entity.bonuses.doubleShoot = 10;
   }
 
   function updateEntities(dt) {
@@ -777,7 +805,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     return function(entity){
       var returned = removeIfTimeCounterGreaterThan(time)(entity);
       if(!returned){
-        player.bullet = 'bullet';
         player.damage = player.baseDamage;
       }else{
         return returned;
@@ -949,8 +976,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   
   function updatePlayer(dt){
     
-
-    
     if(TIMERS.shootSpriteTime > 0){
       TIMERS.shootSpriteTime -= dt;
       if(TIMERS.shootSpriteTime <= 0){
@@ -961,6 +986,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
     var previouslyMovingDown =  player.moving == 'down';
     player.moving = null;
+
     if(touchInputs){
       var newPosX = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
       var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
@@ -996,16 +1022,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       }
     }
 
-
-    /*if(player.shooting && player.moving == 'down' && !previouslyMovingDown){
-      player.setAnimation('shootMoveDown');
-    }else if(player.shooting && player.moving != 'down'){
-      player.setAnimation('shoot');
-    }else if(player.moving == 'down' && !previouslyMovingDown && !player.shooting){
-      player.setAnimation('moveDown');
-    }else if(player.moving == null && previouslyMovingDown && !player.shooting){
-      player.setDefaultAnimation();
-    }*/
+    if(player.bonuses.doubleShoot){
+      player.bonuses.douableShoot -= dt;
+    }
     
 
     player.update(dt);
@@ -1108,18 +1127,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
-        LEVELS_DIRECTOR.pickedBonus();
-        entity.hasBonus = true;
-        entity.bullet = 'nyanbullet';
-        addPoints(200);
-        entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
-        entity.damage = entity.baseDamage + 50;
-        bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
-        playSound(SOUNDS.yeah);
-
-        var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
-        showMessages([message]);
-
+        bonus.obtain(entity);
       }
       return bonus;
     }
