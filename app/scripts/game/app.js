@@ -217,7 +217,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,1);
+    LEVELS_DIRECTOR.init(5,6,1);
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
@@ -485,7 +485,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       
       var y = player.pos[1] + player.getHeight() / 2;
       var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
-      if(player.bonuses.doubleShoot){
+      if(player.bonuses.doubleShoot > 0){
         bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2 }));  
         bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8 }));  
       }else{
@@ -1023,7 +1023,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
 
     if(player.bonuses.doubleShoot){
-      player.bonuses.douableShoot -= dt;
+      player.bonuses.doubleShoot -= dt;
     }
     
 

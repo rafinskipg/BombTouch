@@ -1,17 +1,27 @@
 <div class="container-full game">
   <div class="" >
       <div id="top_menu" class="top_menu row">
-        <div class="col-xs-12">
-          <div id="pause" class="btn btn-nyan" ng-click="pause()" ng-show="paused == false"> Pause </div>
-          <div id="resume" ng-click="resume()"  class="btn btn-nyan"  ng-show="paused"> Resume </div>
+        <div class="col-xs-9 col-md-5">
+          <div id="pause" class="topControl" ng-click="pause()" ng-show="paused == false"> Pause </div>
+          <div id="resume" ng-click="resume()"  class="topControl"  ng-show="paused"> Resume </div>
         
-          <div id="score"  class="btn btn-nyan" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
+          <div id="score"  class="topControl" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
 
-          <div class="btn btn-info" ng-click="setSoundInGame()">
+          <div class="topControl" ng-click="setSoundInGame()">
             <span ng-show="getSound() == true" class="glyphicon glyphicon-volume-off"></span>
             <span ng-show="getSound() == false" class="glyphicon glyphicon-volume-up"></span>
           </div>
         </div>
+        <div class="nowplaying hidden-sm hidden-xs col-md-4">
+          Now playing.... 
+        </div>
+        <div class="musicControls" ng-show="getSound() == true">
+          <div class="col-xs-1"><span class="topControl glyphicon glyphicon-backward"></span></div>
+          <div class="col-xs-1" ng-show="musicPlaying"><span class="topControl glyphicon glyphicon-pause"></span></div>
+          <div class="col-xs-1" ng-show="!musicPlaying"><span class="topControl glyphicon glyphicon-play"></span></div>
+          <div class="col-xs-1"><span class="topControl glyphicon glyphicon-forward"></span></div>
+        </div>
+        
         <!--<div class="col-xs-4">
           <div class="progress progress-striped active">
             <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">

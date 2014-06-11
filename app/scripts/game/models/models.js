@@ -69,7 +69,7 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
       this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
     }
     
-    if(this.hitbox){
+    if(this.hitbox && false){
       ctx.beginPath();
       var hitbox = this.getHitBox();
       var pos = [0,0];

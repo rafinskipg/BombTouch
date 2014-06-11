@@ -52,7 +52,6 @@ a {
         margin-left: 0px;
     }
 }
-
 img {
     max-width:  100%;
 }
@@ -290,141 +289,10 @@ img {
   width: 100%;
 }
 
-.game{
-    overflow: hidden;
-     canvas{
-        max-width: 100%;
-        max-height: 100%;
-        padding: 0;
-        margin: 0;
-     }
-    #canvas {
-        margin: auto;
-        position: absolute;
-        top: 43px;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-    #canvas2{
-        position: absolute;
-        top:0;
-        left: 0;
-        margin: auto;
-        z-index: 3000;
-        display: none;
-        &.visible{
-            display: block;
-        }
-    }
 
-    .top_menu{
-        width: 100%;
-        top: 0;
-        left: 15px;
-        color: white;
-        padding-top: 5px;
-        background: url("../images/hud/images.jpg");
-        height: 44px;
-        background-repeat: repeat-x;
-        z-index: 2222;
-        overflow: visible;
-        position: absolute;
-        .progress{
-            height: 30px;
-        }
-        .progress.max{
-            .progress-bar{
-                background-color: #E62929;
-            }
-        }
-        .btn {
-            font-weight: bold;
-            font-size: 15px;
-            border: 1px solid rgba(252, 252, 252, 0.58);
-        }
-    }
-    
-    #pause, #resume{
-        float: left;
-    }
-    #megashoot, #shoot{
-        background: url("../images/hud/images.jpg");
-        position: absolute;
-        bottom: 20px;
-        box-shadow:2px 2px 8px rgba(22, 22, 22, 0.58);
-        z-index: 2000;
-        border-radius: 100%;
-        color:white;
-        font-size: 19px;
-        &[disabled]{
-            background: rgba(131, 131, 138, 0.56)
-        }
-    }
-    #megashoot{
-        right: 80px;
-    }
-    #shoot{
-        right: 20px;
-    }
-
-    #message{
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3000;
-        height: 50px;
-        background-color:white;
-        width: 100%;
-        border: 1px solid white;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: black;
-        .picture{
-            width: 85px;
-            float: left;
-            height: 50px;
-            background-repeat:no-repeat;
-            background-size: 50px 50px;
-            &.cooldog{
-                background-image:url('../images/messages/cooldog.png');
-            }
-            &.cooldogdamaged{
-                background-image:url('../images/messages/cooldogdamaged.png');
-            }
-            &.boss_1{
-                background-image:url('../images/messages/boss_1.png');
-            }
-            &.dog{
-                background-image:url('../images/messages/dog.png');
-            }
-            &.unknown{
-                background-image:url('../images/messages/unknown.png');
-            }
-            margin-left: 20px;
-
-        }
-        
-        .messageBody{
-            padding-left: 75px;
-            padding-top: 5px;
-            font-size: 12px;
-            margin-left: 80px;
-            font-weight: bold;
-            /* letter-spacing: 1px; */
-            text-transform: uppercase;
-        }
-    }
-}
 
 @media (max-width: 500px) {
-    .game{
-        .top_menu{
-            .btn{
-                font-size: 10px;
-            }
-        }
-    }
+    
     .intro-text{
         h1{
             font-size: 20px;
@@ -446,29 +314,7 @@ img {
         }
     }
 
-    .game{
-        #message{
-            min-height: 25px;
-            height: auto;
-            .picture{
-                width: 50px;
-                img{
-                    margin-left: 5px;
-                    height: 30px;
-                    width: 30px;
-                }
-            }
-            
-            .messageBody{
-                padding-left: 5px;
-                font-size: 10px;
-                padding-top: 5px;
-                width: 100%;
-                min-height: 25px;
-            }
-        }
-    }
-    
+   
 }
 
 
@@ -560,4 +406,5 @@ img {
 }
 @import "home";
 @import "mobile";
+@import "game";
 
