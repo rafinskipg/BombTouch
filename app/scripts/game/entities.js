@@ -111,7 +111,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
 
  // var bonusSpriteSchema = ['images/weapons/bonus.png', [50,50], [100,50], 1, [0]];
   var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 8, [0,1,2,3,4,5]];
-  var bonus2SpriteSchema = ['images/weapons/bonus.png', [0,0], [150,85], 1, [0]];
+  var doubleShootBonusSpriteSchema = ['images/weapons/bonus.png', [0,0], [50,50], 1, [0]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Var Space invaders version
@@ -194,6 +194,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       sprite: coolDogSpriteSchema,
       damage: 80,
       baseDamage: 80,
+      bulletName : 'blueray',
       hitbox: {
         pos: [25,30],
         size: [30,40]
@@ -204,10 +205,6 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       totalLife: 1000,
       hitArea: [80,56],
       resize: [80,80],
-
-      bullet: 'bullet',
-      topBullet: 'topBullet',
-      bottomBullet: 'bottomBullet',
       isSuperSaiyan: false, 
       animations: [
        {
@@ -231,15 +228,16 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
         }
       ]
     },
-    'bonus': {
+    'dogeBonus': {
       speed: [200,200],
      // resize: [120,60],
       resize: [50,50],
       sprite: bonusSpriteSchema,
       angle : 1
-    }, 'bonus2': {
+    }, 
+    'doubleShootBonus': {
       speed: [200,200],
-      sprite: bonus2SpriteSchema,
+      sprite: doubleShootBonusSpriteSchema,
       angle : 1
     },
     'bonusWeapon':{
@@ -497,7 +495,9 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
       opts = {};
     } 
     var entity =  new GameEntity(entityList[name], opts);
-    if(name == 'bonus' || name == 'bonus2'){
+    entity.name = name;
+
+    if(name == 'doubleShootBonus' || name == 'dogeBonus'){
       entity.angle = petra.randomFloat(7/12,17/12);
       entity.bounces = 5;
     }

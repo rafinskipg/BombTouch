@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities'], function(hu, EL){
+define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   var MAX_LEVEL;
   var CURRENT_LEVEL;
   var CURRENT_GROUP;
@@ -116,7 +116,6 @@ define( [ 'hu','game/entities'], function(hu, EL){
   }
 
   function changeLevel(){
-    console.log('Changing level');
     INFORMATION.levels[ CURRENT_LEVEL -1 ].completed = true;
     CURRENT_LEVEL++;
     CURRENT_GROUP = 0;
@@ -127,7 +126,6 @@ define( [ 'hu','game/entities'], function(hu, EL){
 
 
   function changeGroup(){
-    console.log('Changing group');
     CURRENT_GROUP++;
     CURRENT_ENEMY = 0;
     TIME_SINCE_LAST_GROUP_OUT = 0;
@@ -193,14 +191,25 @@ define( [ 'hu','game/entities'], function(hu, EL){
   }
   //BONUS
   function createBonus(pos){
+    var bonus;
+    if(petra.flipCoin()){
+      bonus = EL.getEntity('dogeBonus',{pos:pos})
+      dogeBonusAdded();
+    }else{
+      bonus = EL.getEntity('doubleShootBonus', {pos:pos});
+    }
+
     bonusAdded();
-    return EL.getEntity('bonus',{pos:pos});
+
+    return bonus;
   }
   function bonusAdded(){
     BONUS_TIME = 0;
+  }
+  function dogeBonusAdded(){
     INFORMATION.bonuses.total += 1;
   }
-  function pickedBonus(){
+  function pickedDogeBonus(){
     INFORMATION.bonuses.picked += 1;
   }
   function suscribeLevelUp(fn){
@@ -232,7 +241,7 @@ define( [ 'hu','game/entities'], function(hu, EL){
       killedEnemy: killedEnemy,
       createBoss: createBoss,
       createBonus: createBonus,
-      pickedBonus: pickedBonus,
+      pickedDogeBonus: pickedDogeBonus,
       suscribeLevelUp: suscribeLevelUp,
       isFinalStage: isFinalStage,
       getLevelsInfo: getLevelsInfo
