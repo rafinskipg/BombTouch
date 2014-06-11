@@ -1055,6 +1055,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
       .map(wrapperReadyForActionOnly(petra.moveByAngle(dt)))
+      .map(SCENARIO.updateSprite(dt))
       .map(ifCollidesApplyBonusTo(player))
       .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
