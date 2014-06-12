@@ -1,8 +1,8 @@
 define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'], function(angular, BombTouchApp  , GAME, sceneIntro,LOADER){
     'use strict';
     return BombTouchApp.controller('MainCtrl',
-      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location','badgesSrv',
-      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv, $location,badgesSrv) {
+      ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','audioSrv','$location','badgesSrv',
+      function ($scope, $timeout,socialSrv, localStorageSrv,settingsSrv,audioSrv, $location,badgesSrv) {
         $scope.puntos = 0;
         $scope.paused = false;
         $scope.megaShootActive = false;
@@ -67,6 +67,7 @@ define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'
           gameState.times = times;
           gameState.newBadges = badgesSrv.checkIfWonBadges(gameState);
           localStorageSrv.saveGameState(gameState);
+          audioSrv.stopSounds();
           $location.path('/gameover');
         });
 
@@ -77,7 +78,6 @@ define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'
 
         theGame.suscribeMessages(function(messages,timeoutMessage,type){
           $scope.messsagesType = type;
-          console.log(type)
           showMessages(messages,timeoutMessage);
         });
 
