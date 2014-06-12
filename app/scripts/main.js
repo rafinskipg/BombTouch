@@ -52,6 +52,7 @@ require( [
 	'app',
     'controllers/home',
     'controllers/main',
+    'controllers/musicController',
     'controllers/gameover',
     'controllers/scores',
     'controllers/badges',

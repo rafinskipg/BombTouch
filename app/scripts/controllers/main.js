@@ -25,7 +25,6 @@ define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'
           theGame.setSound(settingsSrv.getSound());
           theGame.setDifficulty(settingsSrv.getDifficulty());
           sceneIntro.init( 'canvas', theGame.start);
-          
         } 
 
         $scope.pause = function(){

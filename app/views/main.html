@@ -1,7 +1,7 @@
 <div class="container-full game">
   <div class="" >
       <div id="top_menu" class="top_menu row">
-        <div class="col-xs-9 col-md-5">
+        <div class="col-xs-9 col-md-3">
           <div id="pause" class="topControl" ng-click="pause()" ng-show="paused == false"> Pause </div>
           <div id="resume" ng-click="resume()"  class="topControl"  ng-show="paused"> Resume </div>
         
@@ -12,15 +12,18 @@
             <span ng-show="getSound() == false" class="glyphicon glyphicon-volume-up"></span>
           </div>
         </div>
-        <div class="nowplaying hidden-sm hidden-xs col-md-4">
-          Now playing.... 
+        <div ng-controller="MusicController">
+          <div  class="nowplaying hidden-sm hidden-xs col-md-6 text-center">
+            Now playing.... {{ songName }}
+          </div>
+          <div class="musicControls" ng-show="getSound() == true">
+            <div class="col-xs-1"><span ng-click="prevSong()" class="topControl glyphicon glyphicon-backward"></span></div>
+            <div class="col-xs-1" ng-show="musicPlaying"><span ng-click="pauseSong()" class="topControl glyphicon glyphicon-pause"></span></div>
+            <div class="col-xs-1" ng-show="!musicPlaying"><span ng-click="playSong()" class="topControl glyphicon glyphicon-play"></span></div>
+            <div class="col-xs-1"><span ng-click="nextSong()" class="topControl glyphicon glyphicon-forward"></span></div>
+          </div>
         </div>
-        <div class="musicControls" ng-show="getSound() == true">
-          <div class="col-xs-1"><span class="topControl glyphicon glyphicon-backward"></span></div>
-          <div class="col-xs-1" ng-show="musicPlaying"><span class="topControl glyphicon glyphicon-pause"></span></div>
-          <div class="col-xs-1" ng-show="!musicPlaying"><span class="topControl glyphicon glyphicon-play"></span></div>
-          <div class="col-xs-1"><span class="topControl glyphicon glyphicon-forward"></span></div>
-        </div>
+        
         
         <!--<div class="col-xs-4">
           <div class="progress progress-striped active">

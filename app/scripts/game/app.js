@@ -103,12 +103,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         urls: ['sounds/laser5.wav'],
         volume: 0.1
       }),
-      ambient: new Howl({
-       //urls: ['sounds/April_Kisses.mp3'],
-        urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
-        volume: 0.5,
-        loop: true
-      }),
       yeah: new Howl({
         urls: ['sounds/oh_yeah_wav_cut.wav']
       }),
@@ -223,7 +217,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     reset();
     toMouseListeners();
     suscribeToEvents();
-    playSound(SOUNDS.ambient);
+    //playSound(SOUNDS.ambient);
 
     //showInitialDialogs();
     main();
@@ -231,7 +225,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function restart(){
     reset();
-    playSound(SOUNDS.ambient);
+    //playSound(SOUNDS.ambient);
     main();
   }
 
@@ -412,7 +406,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   
   function endGame() {
     STATE.game_over = true;
-    stopAmbientSound();
+    //stopAmbientSound();
     graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
@@ -437,7 +431,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function pause(){
     STATE.paused = true;
     SCENARIO.pause();
-    pauseAmbientSound();
+    //pauseAmbientSound();
   }
 
   function isPaused(){
@@ -447,7 +441,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function resume(){
     STATE.paused = false;
     SCENARIO.pause();
-    playSound(SOUNDS.ambient);
+    //playSound(SOUNDS.ambient);
     main();
   }
 
@@ -1120,7 +1114,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function entitiesCollide(a,b){
-
     return boxCollides(a.getHitBox(), b.getHitBox());
   }
 
@@ -1309,9 +1302,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function setSoundInGame(bool){
     if(!STATE.sound_enabled){
       STATE.sound_enabled = bool;
-      playSound(SOUNDS.ambient);
+      //playSound(SOUNDS.ambient);
     }else{
-      pauseAmbientSound();
+      //pauseAmbientSound();
       STATE.sound_enabled = bool;
     }
   }
