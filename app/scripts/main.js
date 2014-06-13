@@ -59,6 +59,7 @@ require( [
     'services/social',
     'services/localStorage',
     'services/settings',
+    'services/audioSrv',
     'services/badges',
     'services/quotes',
     'routes',
