@@ -30,7 +30,6 @@ span.shadow {
         -webkit-animation-duration: 25s;
         -webkit-animation-iteration-count: infinite;
         -webkit-animation-timing-function: linear;
-
     }
 }
 
@@ -76,7 +75,7 @@ span.shadow {
                 margin-top: 10px;
                 background-size: 15px;
                 background-size: 34px;
-                background: rgba(40, 49, 150, 1);
+                background:  $blueMenus;
             }
            
             li a{
@@ -111,7 +110,7 @@ span.shadow {
         }
     }
     .donation .content{
-        background: #283196;
+        background:  $blueMenus;
         padding: 20px;
         font-size: 15px;
     }

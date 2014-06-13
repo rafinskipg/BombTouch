@@ -2,6 +2,7 @@ $iconSpritePath: "../images/glyphicons-halflings.png";
 $iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
 
 @import "sass-bootstrap/lib/bootstrap";
+@import "variables";
 @import "animation";
 
 
@@ -33,6 +34,9 @@ a {
 .glyphicon-star{
     color: #E9F64E;
     margin-left: 5px;
+}
+.fa-html5{
+    color: rgb(255, 163, 0);
 }
 .glyphicon-heart-empty{
     color: #CC0F17;
@@ -71,11 +75,11 @@ img {
     font-size: 20px;
     padding: 20px 20px 10px 20px;
     cursor: pointer;
-    border-bottom-left-radius: 10px;
     background: rgba(100, 100, 213, 0.5);
     position: absolute;
     top: -15px;
     z-index: 2000;
+    border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     &.closeMenu{
         top: 10px;
@@ -242,7 +246,7 @@ img {
         text-align: center;
         font-size: 20px;
          cursor: pointer;
-        background: #283196;
+        background: $blueMenus;
         border:none;
     }
 }
