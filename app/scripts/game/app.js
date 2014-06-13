@@ -483,7 +483,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2 }));  
         bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8 }));  
       }else{
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: player.angle}));  
       }
       
       addShootFire(bulletpos);

@@ -17,9 +17,9 @@ define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'
           var toSet = settingsSrv.getSound() ? false : true;
           settingsSrv.setSound(toSet);
           if(toSet == false){
-            audioSrv.pauseSong();
+            audioSrv.pauseSong(audioSrv.getSongIndex());
           }else{
-            audioSrv.playSong();
+            audioSrv.playSong(audioSrv.getSongIndex());
           }
           theGame.setSoundInGame(toSet);
         }
@@ -33,10 +33,12 @@ define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'
 
         $scope.pause = function(){
           $scope.paused = true;
+          audioSrv.pauseSong(audioSrv.getSongIndex());
           theGame.pause();
         }
         $scope.resume = function(){
           $scope.paused = false;
+          audioSrv.playSong(audioSrv.getSongIndex());
           theGame.resume();
         }
 

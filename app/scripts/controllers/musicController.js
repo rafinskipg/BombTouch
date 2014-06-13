@@ -6,31 +6,24 @@ define(['angular', 'app',], function(angular, BombTouchApp){
 
         $scope.songName = 'Nothing';
         $scope.musicPlaying = false;
-        var songIndex = 0;
-        var songs = audioSrv.getSongs();
        
         $scope.playSong = function(){
-          var name = audioSrv.playSong(songIndex);
-          $scope.songName = name;
+          audioSrv.playSong();
           $scope.musicPlaying = true;
         }
  
         $scope.pauseSong = function(){
-          audioSrv.stopSong(songIndex);
+          audioSrv.pauseSong();
           $scope.musicPlaying = false;
         }
 
         $scope.nextSong = function(){
-          audioSrv.stopSong(songIndex);
-          songIndex++;
-          songIndex = songIndex > songs.length - 1 ?  0 : songIndex;
-          $scope.playSong();
+          audioSrv.stopSong();
+          audioSrv.nextSong();
         }
 
         $scope.prevSong = function(){
-          audioSrv.stopSong(songIndex);
-          songIndex--;
-          songIndex = songIndex < 0 ? songs.length - 1  : songIndex;
+          audioSrv.stopSong();
           $scope.playSong();
         }
 
@@ -38,6 +31,10 @@ define(['angular', 'app',], function(angular, BombTouchApp){
         $scope.getSound = function(){
           return settingsSrv.getSound();
         }
+
+        audioSrv.suscribeChangeSong(function(songName){
+          $scope.songName = songName;
+        });
 
         if($scope.getSound()){
           $scope.playSong();
