@@ -16,7 +16,11 @@ define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'
         $scope.setSoundInGame = function(){ 
           var toSet = settingsSrv.getSound() ? false : true;
           settingsSrv.setSound(toSet);
-
+          if(toSet == false){
+            audioSrv.pauseSong();
+          }else{
+            audioSrv.playSong();
+          }
           theGame.setSoundInGame(toSet);
         }
 
