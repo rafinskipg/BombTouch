@@ -7,16 +7,16 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     var songs = [
 
         {
-          name :'Montego - Reggae',
+          name :'Broken Reality',
           song: new Howl({
-            urls: ['sounds/songs/montego.mp3'],
+            urls: ['sounds/songs/broken_reality.mp3'],
             volume: 0.5
           })
         },
         {
-          name :'Broken Reality',
+          name :'Montego - Reggae',
           song: new Howl({
-            urls: ['sounds/songs/broken_reality.mp3'],
+            urls: ['sounds/songs/montego.mp3'],
             volume: 0.5
           })
         },
@@ -66,6 +66,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     }
 
     function playSong(){
+      console.log('playing ' +currentSong)
       songs[currentSong].song.play().on('end', function(){
         songs[currentSong].song.off('end');
         currentSong++;
@@ -77,9 +78,11 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       songs[currentSong].song.stop().off('end');
     }
     function pauseSong(){
+      console.log('pause')
       songs[currentSong].song.pause();
     }
     function nextSong(){
+      console.log('next')
       currentSong++;
       currentSong = currentSong > songs.length - 1 ?  0 : currentSong;
       playSong(currentSong);

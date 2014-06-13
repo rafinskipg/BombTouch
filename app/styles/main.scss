@@ -42,16 +42,7 @@ a {
     color: #1CEB00;
     margin-left: 5px;
 }
-.btn-nyan{
-    margin-left:5px; 
-    margin-right:5px;
-    background: rgba(36, 161, 172, 0.74);
-    font-size: 15px;
-    .glyphicon{
-        margin-right: 10px;
-        margin-left: 0px;
-    }
-}
+ 
 img {
     max-width:  100%;
 }
@@ -71,100 +62,26 @@ img {
         font-family: 'Comfortaa', 'cursive';
         font-size: 30px;
     }
-    background: rgba(128, 50, 50, 0.86);
+    background: rgba(0, 51, 255, 0.11);
+    padding-top: 40px;
 }
 
-.home{
-
-    #logo{
-        img{
-            max-height:200px;
-            height: 200px;
-        }
-        margin-bottom: 10px;
+.top_tab_trigger{
+    color: white;
+    font-size: 20px;
+    padding: 20px 20px 10px 20px;
+    cursor: pointer;
+    border-bottom-left-radius: 10px;
+    background: rgba(100, 100, 213, 0.5);
+    position: absolute;
+    top: -15px;
+    z-index: 2000;
+    border-bottom-right-radius: 15px;
+    &.closeMenu{
+        top: 10px;
     }
-
-    .score{
-        float: right;
-        .badge{
-            background: rgb(24, 135, 197);
-        }
-    }
-
-    .controls{
-        margin-top: 10px;
-        ul.menu{
-            min-height: 200px;
-            font-family: 'Julius Sans One', 'sans-serif';
-            color:black;
-           
-            padding: 0;
-            list-style: none;
-            li {
-                font-size: 18px;
-                text-align: center;
-                width: 100%;
-                text-transform: uppercase;
-                position: relative;
-                padding: 10px;
-                font-size: 18px;
-                text-align: center;
-            
-                width: 100%;
-                text-transform: uppercase;
-                position: relative;
-                margin: 10px;
-                background-size: 15px;
-                background-size: 34px;
-                background: rgba(40, 49, 150, 1);
-                border: 3px solid rgb(70, 121, 24);
-                
-            }
-           
-            li a{
-                text-decoration: none;
-                color: white;
-                font-weight: bold;
-                transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                 -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                -moz-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                .sound{
-                    color:rgb(246, 139, 78);
-                }
-            }
-            li a:after{
-                position: absolute;
-                top: 0%;
-                right: 0px;
-                left: auto;
-                display: block;
-                content: "";
-                width: 0%;
-                height: 100%;
-                background: rgba(255, 255, 255, 0.59);
-                -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            li:hover {
-                a:after{
-                    width: 100%;
-                }
-            }
-        }
-    }
-    .donation{
-        background: rgba(128, 50, 50, 0.86);
-        padding: 20px;
-        margin-top: 70px;
-    }
-    .donationBag{
-        width: 5em;
-        background-image: url('../images/money.png');
-        height: 5em;
-        background-repeat: no-repeat;
-        background-size:contain;
-        display: block;
-        float: left;
+    .glyphicon, .fa{
+        margin-right:10px;
     }
 }
 
@@ -326,7 +243,7 @@ img {
         font-size: 20px;
          cursor: pointer;
         background: #283196;
-        border: 3px solid #467918;
+        border:none;
     }
 }
 
@@ -407,4 +324,4 @@ img {
 @import "home";
 @import "mobile";
 @import "game";
-
+@import "font_awesome/font-awesome";

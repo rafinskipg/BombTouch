@@ -18,8 +18,6 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     'comet'
   ];
 
-
-
   var Scenario = function(canvasId, endCallback, scenespeed, bgspeed){
     TIME_SINCE_LAST_OUT = 0; TIME = 0; DELAY = 0;
     this.scene = new models.Scene(ASSETSList ,canvasId, endCallback , {

@@ -33,3 +33,86 @@ span.shadow {
 
     }
 }
+
+.home{
+
+    #logo{
+        img{
+            max-height:200px;
+            height: 200px;
+        }
+        margin-bottom: 10px;
+    }
+
+    .score{
+        float: right;
+        .badge{
+            background: rgb(24, 135, 197);
+        }
+    }
+
+    .controls{
+        margin-top: 10px;
+        ul.menu{
+            min-height: 200px;
+            font-family: 'Julius Sans One', 'sans-serif';
+            color:black;
+           
+            padding: 0;
+            list-style: none;
+            li {
+                font-size: 18px;
+                text-align: center;
+                width: 100%;
+                text-transform: uppercase;
+                position: relative;
+                padding: 10px;
+                font-size: 18px;
+                text-align: center;
+            
+                width: 100%;
+                text-transform: uppercase;
+                position: relative;
+                margin-top: 10px;
+                background-size: 15px;
+                background-size: 34px;
+                background: rgba(40, 49, 150, 1);
+            }
+           
+            li a{
+                text-decoration: none;
+                color: white;
+                font-weight: bold;
+                transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                 -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                -moz-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                .sound{
+                    color:rgb(246, 139, 78);
+                }
+            }
+            li a:after{
+                position: absolute;
+                top: 0%;
+                right: 0px;
+                left: auto;
+                display: block;
+                content: "";
+                width: 0%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.59);
+                -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            li:hover {
+                a:after{
+                    width: 100%;
+                }
+            }
+        }
+    }
+    .donation .content{
+        background: #283196;
+        padding: 20px;
+        font-size: 15px;
+    }
+}

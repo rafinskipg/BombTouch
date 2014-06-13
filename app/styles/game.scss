@@ -9,8 +9,7 @@
     #canvas {
         margin: auto;
         position: absolute;
-        top: 43px;
-        bottom: 0;
+        top: 0;
         left: 0;
         right: 0;
     }
@@ -26,18 +25,18 @@
         }
     }
 
+
     .top_menu{
         width: 100%;
         top: 0;
-        left: 15px;
         color: white;
-        padding-top: 5px;
-        background-color: rgba(89, 112, 231, 0.39);
-        font-weight: bold;
-        height: 44px;
+        background-color: #33337a;
         z-index: 2222;
         overflow: visible;
+        padding: 10px;
         position: absolute;
+        left: 15px;
+
         .progress{
             height: 30px;
         }
@@ -52,34 +51,32 @@
             border: 1px solid rgba(252, 252, 252, 0.58);
         }
     }
-    
-    #pause, #resume{
-        float: left;
-    }
+
     .nowplaying{
-        padding-top: 10px;
-        padding-bottom: 5px;
-        background: rgba(15, 15, 19, 0.56);
-        height: 100%;
-        margin-top: 0px;
+        min-width: 20px;
+        min-height: 20px;
+        line-height: 20px;
+        text-align: center;
     }
     .topControl{
-        padding:10px;
-        border: 1px solid white;
-        background: blue;
-        padding: 10px;
-        border: 1px solid white;
-        background: rgb(51, 51, 122);
+        border: 1px solid rgba(174, 174, 190, 0.58);
+        background: #33337a;
         width: auto;
-        border-radius: 10px;
         float: left;
-        margin-right:10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        font-size: 15px;
-        min-height: 32px;
+        cursor: pointer;
+        margin-right: 10px;
+        font-size: 1em;
+        color: #aeaebe;
+        padding: 10px;
+        margin-top: 5px;
+        text-align: center;
     }
-
+    .glyphicon, .fa{
+        min-width: 20px;
+        min-height: 20px;
+        line-height: 20px;
+        text-align: center;
+    }
     #megashoot, #shoot{
         background: url("../images/hud/images.jpg");
         position: absolute;
@@ -148,7 +145,6 @@
         }
     }
 }
-
 
 @media (max-width: 500px) {
     .game{

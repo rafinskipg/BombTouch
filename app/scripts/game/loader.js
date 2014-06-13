@@ -134,7 +134,6 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
   var LOADER = {
       init: init,
       load: load
-
   }
 
   return  LOADER;

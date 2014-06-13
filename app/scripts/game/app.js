@@ -345,8 +345,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     SCENARIO = new Scenario("canvas", endGame, STATE.game_speed, STATE.background_speed);
     SCENARIO.setRenderEntities(getEntitiesToRender);
     SCENARIO.init();
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 50;
     setDefaultStateForEntities();
     player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
     player.bonuses = {};

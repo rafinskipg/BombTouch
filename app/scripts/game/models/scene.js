@@ -98,14 +98,11 @@ define( ['game/loader','game/raf'], function(Loader){
 
   }
 
-
   Scene.prototype.drawFrames = function(frames){
     this.ctx.fillStyle = "blue";
     this.ctx.font = "bold 16px Arial";
     this.ctx.fillText(frames, 100, 100);
   }
-
-
 
 
   //ABSTRACT
