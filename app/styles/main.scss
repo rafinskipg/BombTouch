@@ -108,9 +108,9 @@ h1,h2,h3,h4,h5{
         box-shadow: 2px 3px 11px black;
     }
     .badge.completed{
-        border: 3px solid rgb(72, 197, 24);
+        border: 10px solid rgba(150, 40, 84, 1);
         background-color: rgba(182, 0, 0, 0.5);
-        box-shadow: 2px 10px 11px black;
+        box-shadow: 0px 0px 80px 1px rgb(202, 88, 116);
     }
 
     .cover{
@@ -130,7 +130,7 @@ h1,h2,h3,h4,h5{
 
     .description{
         font-family: 'Poiret One', cursive;
-        background: rgba(36, 161, 172, 1);
+        background: $blueMenus;
         font-size: 18px;
         padding: 15px;
         box-shadow: 5px 4px 5px rgba(0, 0, 0, 0.55);
