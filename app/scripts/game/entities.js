@@ -110,8 +110,8 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
 
  // var bonusSpriteSchema = ['images/weapons/bonus.png', [50,50], [100,50], 1, [0]];
-  var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 8, [0,1,2,3,4,5]];
-  var doubleShootBonusSpriteSchema = ['images/weapons/bonus.png', [0,0], [50,50], 1, [0]];
+  var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 12, [0,1,2,3,4,5,6,7,8]];
+  var doubleShootBonusSpriteSchema = ['images/weapons/bonus.png', [100,150], [50,50], 8, [0,1,2,3,4,5]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
 
   //Var Space invaders version
