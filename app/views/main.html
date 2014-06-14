@@ -1,4 +1,4 @@
-<div class="container-full game">
+<div class="container-full game page">
   <div class="" >
       <i class="top_tab_trigger fa fa-ellipsis-v" ng-click="showMenu()"></i>
       
@@ -8,7 +8,7 @@
           <div id="pause" class="topControl" ng-click="pause()" ng-show="paused == false"> <i class="fa fa-spoon"></i> Pause</div>
           <div id="resume" ng-click="resume()"  class="topControl"  ng-show="paused"><i class="fa fa-space-shuttle"></i>Resume </div>
         
-          <div id="score"  class="topControl" ><span class="glyphicon glyphicon-star"></span>{{puntos}} points</div>
+          <div id="score"  class="topControl" ><span class="glyphicon glyphicon-star"></span>{{puntos}} <span class="points">points</span></div>
 
           <div class="topControl" ng-click="setSoundInGame()">
             <span ng-show="getSound() == true" class="glyphicon glyphicon-volume-off"></span>

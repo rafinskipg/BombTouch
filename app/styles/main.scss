@@ -57,13 +57,16 @@ img {
 
 .page{
     color: white;
-    font-family: 'Comfortaa', 'cursive';
+  font-family: 'Press Start 2P', cursive;
+}
+
+h1,h2,h3,h4,h5{
+   font-family: 'Press Start 2P', cursive;
 }
 
 .intro-text{
     font-size: 15px;
     h1{
-        font-family: 'Comfortaa', 'cursive';
         font-size: 30px;
     }
     background: rgba(0, 51, 255, 0.11);
@@ -126,6 +129,7 @@ img {
     }
 
     .description{
+        font-family: 'Poiret One', cursive;
         background: rgba(36, 161, 172, 1);
         font-size: 18px;
         padding: 15px;
@@ -194,17 +198,6 @@ img {
     }
 }
 
-.stats{
-    background: rgba(0, 0, 0, 0.49);
-    padding: 10px;
-    li{
-        list-style: none;
-    }
-    &.win{
-        border: 10px solid goldenrod;
-    }
-}
-
 .container-full {
   margin: 0 auto;
   width: 100%;
@@ -234,8 +227,6 @@ img {
             height: 65px;
         }
     }
-
-   
 }
 
 
@@ -248,16 +239,6 @@ img {
          cursor: pointer;
         background: $blueMenus;
         border:none;
-    }
-}
-
-.scores{
-    .list-group{
-        margin-top: 30px;
-    }
-    .list-group-item{
-        background-color: rgba(89, 112, 231, 0.39);
-        font-weight: bold;
     }
 }
 
@@ -326,6 +307,8 @@ img {
     }
 }
 @import "home";
+@import "scores";
+@import "stats";
 @import "mobile";
 @import "game";
 @import "font_awesome/font-awesome";

@@ -102,13 +102,13 @@
         top: 0;
         right: 0;
         z-index: 3000;
-        height: 50px;
-        background-color:white;
+        background-color: rgba(0, 0, 0, 0.76);
         width: 100%;
-        border: 1px solid white;
+        border: 1px solid rgb(0, 51, 255);
         overflow: hidden;
         text-overflow: ellipsis;
-        color: black;
+        color: rgb(111, 201, 28);
+        padding-top: 20px;
         .picture{
             width: 85px;
             float: left;
@@ -135,13 +135,7 @@
         }
         
         .messageBody{
-            padding-left: 75px;
-            padding-top: 5px;
-            font-size: 12px;
-            margin-left: 80px;
-            font-weight: bold;
-            /* letter-spacing: 1px; */
-            text-transform: uppercase;
+            
         }
     }
 }
@@ -156,6 +150,12 @@
     }
 
     .game{
+        #resume, #pause{
+            font-size: 10px;
+            .points, .fa, .glyphicon{
+                display: none;
+            }
+        }
         #message{
             min-height: 25px;
             height: auto;
