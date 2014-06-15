@@ -50,7 +50,7 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
       width:canvas.width,
       height:canvas.height
     }
-    quad = new QuadTree(bounds);
+    //quad = new QuadTree(bounds);
 
     for(var i = 0; i < 6; i ++ ){
       particles.push(new Particle( Math.round(Math.random()*canvas.width) , Math.round(Math.random()*canvas.height)))
@@ -59,6 +59,10 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     }
   }
 
+  function getRandomColor(){
+    return '#'+Math.floor(Math.random()*16777215).toString(16);
+  }
+  
   function Particle(x,y){
     this.x = x;
     this.y = y;
@@ -71,7 +75,7 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     }
 
     this.radius = 5;
-    this.color = 'white';
+    this.color = getRandomColor();
     this.weight = 10;
 
     var self = this;
@@ -99,10 +103,10 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     then = now;
     
     // Fill the path
-    ctx.fillStyle = "black";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+   // ctx.fillStyle = "black";
+    //ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = 'white';
-    ctx.font = "30px Arial";
+    ctx.font = "30px 'Press Start 2P'";
     ctx.fillText("LOADING ...", 10, 50);
 
 

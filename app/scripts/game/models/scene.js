@@ -59,8 +59,12 @@ define( ['game/loader','game/raf'], function(Loader){
     
     if(!this.completed){
       this.update(realtimeDt * this.scenespeed, realtimeDt);
+      //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      //this.ctx.save();
       this.updateBackground(realtimeDt * this.bgspeed);
+      //this.ctx.scale(0.8,0.8);
       this.render();
+      //this.ctx.restore();
       this.rafID = requestAnimationFrame(this.mainLoop.bind(this));  
     }else{
       cancelAnimationFrame(this.rafID);
@@ -69,12 +73,7 @@ define( ['game/loader','game/raf'], function(Loader){
   }
 
   Scene.prototype.updateBackground = function(){
-    // Fill the path
-    this.ctx.fillStyle = "black";
-    this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-    this.ctx.fillStyle = 'white';
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Scene 1 ...", 10, 50);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   Scene.prototype.renderEntities = function(list) {

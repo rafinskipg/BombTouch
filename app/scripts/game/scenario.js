@@ -53,6 +53,7 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
   Scenario.prototype.pause = function(){
     this.scene.pause();
   }
+  Scenario.prototype.update = function(){ }
 
   Scenario.prototype.setRenderEntities = function(fn){
     var self = this;

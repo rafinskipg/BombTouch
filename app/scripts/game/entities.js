@@ -1,4 +1,4 @@
-define( [ 'game/models/models','game/petra'], function(Models,petra){
+define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
   // Sprite(url, pos, size, speed, frames, dir, once)
   var bombareaSpriteSchema = ['images/newsprites.png',
     [15, 340],
@@ -479,9 +479,14 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     }
     
     var entity =  new Models.Entity(entityDefinition);
-
+    //Scale
+    var size = entity.getSize();
+    entity.resizeByFactor(1.2);
+    
     if(entityDefinition.totalLife){
-      entity.lifeBox = getEntity('life', {resize: [entity.getHitBoxWidth(), 15]});
+      var lifeBoxOpts = JSON.parse(JSON.stringify(entities['life']));
+      lifeBoxOpts.resize =  [entity.getHitBoxWidth(), 15];
+      entity.lifeBox =  new Models.Entity(lifeBoxOpts);
     }
     return entity;
   }
@@ -494,7 +499,7 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
     if(!opts){
       opts = {};
     } 
-    var entity =  new GameEntity(entityList[name], opts);
+    var entity =  new GameEntity(JSON.parse(JSON.stringify(entityList[name])), opts);
     entity.name = name;
 
     if(name == 'doubleShootBonus' || name == 'dogeBonus'){
@@ -505,11 +510,10 @@ define( [ 'game/models/models','game/petra'], function(Models,petra){
   }
  
   function getBackgroundEntity(name, opts){
-    var entity= getEntity(name, opts, backgroundEntities);
+    var entity = getEntity(name, opts, backgroundEntities);
     return entity;
   }
   function getEnemy(pos, level){
-    console.log('get enemy ', pos ,level)
     return getEntity('enemy'+level, {pos: pos});
   }
  

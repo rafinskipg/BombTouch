@@ -211,7 +211,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,6,1);
+    LEVELS_DIRECTOR.init(5,1,1);
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
@@ -225,6 +225,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function restart(){
     reset();
+    console.log('restart ?')
     //playSound(SOUNDS.ambient);
     main();
   }
@@ -539,7 +540,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function addBulletCasing(pos,speed, angle){
-    miscelanea_front.push(EL.getEntity('bulletcasing', {pos: pos, speed: speed, angle: angle}));
+    miscelanea_front.push(EL.getEntity('bulletcasing', {pos: pos, speed: speed, angle: angle, rotateSprite: angle}));
   }
   function addSpark(pos,speed, angle){
     miscelanea_front.push(EL.getEntity('spark', {pos: pos, speed: speed, angle: angle}));
