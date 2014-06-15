@@ -212,6 +212,25 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function start() {
     preloadSounds();
     LEVELS_DIRECTOR.init(5,1,1);
+    LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
+      enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
+    });
+
+    LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
+      bosses.push(createFunction([canvas.width, canvas.height/2]));
+      STATE.background_speed = 1.6;
+    });
+
+    LEVELS_DIRECTOR.suscribeAddBonus(function(createFunction){
+      var bonus = createFunction([canvas.width,  Math.random() * (canvas.height - 39)]);
+      if(bonus.name == 'dogeBonus'){
+        bonus.obtain = dogeBonusObtain;  
+      }else if(bonus.name == 'doubleShootBonus'){
+        bonus.obtain = doubleWeaponBonusObtain;
+      }
+      bonuses.push(bonus);
+    });
+
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
@@ -618,36 +637,12 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function update(dt,realtimeDt) {
     TIMERS.gameTime += dt;
-    updateLevelsDirector(dt,realtimeDt);
+    LEVELS_DIRECTOR.update(dt,realtimeDt);
     handleInput(dt);
     updateEntities(dt);
     checkCollisions();
     checkGameEndConditions();
   };
-
-  function updateLevelsDirector(dt,realtimeDt){
-    LEVELS_DIRECTOR.update(dt,realtimeDt);
-
-    if(LEVELS_DIRECTOR.shouldAddEnemy() == true ){
-      enemies.push(LEVELS_DIRECTOR.createEnemy([canvas.width, Math.random() * (canvas.height - 39)]));
-    }
-    
-    if(LEVELS_DIRECTOR.shouldAddBoss() == true ){
-      bosses.push(LEVELS_DIRECTOR.createBoss([canvas.width, canvas.height/2]));
-      STATE.background_speed = 1.6;
-    }
-
-    if(LEVELS_DIRECTOR.shouldAddBonus()){
-      var bonus = LEVELS_DIRECTOR.createBonus([canvas.width, Math.random() * (canvas.height - 39)]);
-      if(bonus.name == 'dogeBonus'){
-        bonus.obtain = dogeBonusObtain;  
-      }else if(bonus.name == 'doubleShootBonus'){
-        bonus.obtain = doubleWeaponBonusObtain;
-      }
-      
-      bonuses.push(bonus);
-    }
-  }
 
   function dogeBonusObtain(entity){
     LEVELS_DIRECTOR.pickedDogeBonus();

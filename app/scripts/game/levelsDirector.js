@@ -7,7 +7,7 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
   var BONUS_TIME;
   var BOSS_OUT;
   var INFORMATION;
-  var SUSCRIPTIONS;
+  var suscriptorsLevelUp;
   var STARTING_DELAY;
   var TIME_SINCE_LAST_ENEMY_OUT;
   var TIME_SINCE_LAST_LEVEL_OUT;
@@ -48,7 +48,10 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
     BOSS_OUT = false;
-    SUSCRIPTIONS = [];
+    suscriptorsLevelUp = [];
+    suscriptorsAddEnemy = [];
+    suscriptorsAddBoss = [];
+    suscriptorsAddBonus = [];
     INFORMATION = {
       bonuses:{
         picked:0,
@@ -113,6 +116,17 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
         }
       }
     }
+
+    if(shouldAddEnemy()){
+      notify(suscriptorsAddEnemy,createEnemy.bind(this));
+    }
+    if(shouldAddBoss()){
+      notify(suscriptorsAddBoss ,createBoss.bind(this));
+    }
+
+    if(shouldAddBonus()){
+      notify(suscriptorsAddBonus ,createBonus.bind(this));
+    }
   }
 
   function changeLevel(){
@@ -121,7 +135,7 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
     TIME_SINCE_LAST_LEVEL_OUT = 0;
-    notifyLevelUp();
+    notify(suscriptorsLevelUp, CURRENT_LEVEL);
   }
 
 
@@ -213,12 +227,23 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
     INFORMATION.bonuses.picked += 1;
   }
   function suscribeLevelUp(fn){
-    SUSCRIPTIONS.push(fn);
+    suscriptorsLevelUp.push(fn);
+  }
+  function suscribeAddEnemy(fn){
+    suscriptorsAddEnemy.push(fn);
+  }
+  function suscribeAddBonus(fn){
+    suscriptorsAddBonus.push(fn);
+  }
+  function suscribeAddBoss(fn){
+    suscriptorsAddBoss.push(fn);
   }
 
-  function notifyLevelUp(){
-    for(var i = 0; i<SUSCRIPTIONS.length; i++){
-      SUSCRIPTIONS[i](CURRENT_LEVEL);
+  function notify(arr,data){
+    if(arr && arr.length > 0){
+      for(var i = 0; i<arr.length; i++){
+       arr[i](data);
+      }  
     }
   }
 
@@ -234,9 +259,9 @@ define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
       getMaxLevel: getMaxLevel,
       getCurrentLevel: getCurrentLevel,
       update: update,
-      shouldAddEnemy: shouldAddEnemy,
-      shouldAddBoss: shouldAddBoss,
-      shouldAddBonus: shouldAddBonus,
+      suscribeAddEnemy: suscribeAddEnemy,
+      suscribeAddBoss: suscribeAddBoss,
+      suscribeAddBonus: suscribeAddBonus,
       createEnemy:createEnemy,
       killedEnemy: killedEnemy,
       createBoss: createBoss,
