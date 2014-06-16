@@ -474,7 +474,7 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     }
     
     if(opts.rotateSprite){
-      entityDefinition.angle =  opts.rotateSprite * 1 +1 ;
+      //entityDefinition.angle =  opts.rotateSprite * 1 +1 ;
       entityDefinition.rotateSprite = opts.rotateSprite;
     }
     

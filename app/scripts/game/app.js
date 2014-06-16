@@ -498,8 +498,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       var y = player.pos[1] + player.getHeight() / 2;
       var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
       if(player.bonuses.doubleShoot > 0){
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2 }));  
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2,  rotateSprite: 0.2 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8, rotateSprite: 1.8 }));  
       }else{
         bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: player.angle}));  
       }

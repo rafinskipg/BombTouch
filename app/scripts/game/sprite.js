@@ -59,9 +59,7 @@
             else {
                 x += frame * this.size[0];
             }
-            if(angle){
-                ctx.rotate(angle * Math.PI);                 
-            }
+
 
             var origX = 0;
             var origY = 0;
@@ -69,6 +67,11 @@
                 origX -= translation[0];
                 origY -= translation[1];
             }
+            
+            if(angle){
+                ctx.rotate(angle * Math.PI);                 
+            }
+
 
             ctx.drawImage(resources.get(this.url),
                         Math.round(x),  Math.round(y),
