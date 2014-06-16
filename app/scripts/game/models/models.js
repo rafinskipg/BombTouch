@@ -69,7 +69,7 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
       this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
     }
     
-    if(this.hitbox ){
+    if(this.hitbox  && false){
       ctx.beginPath();
       var hitbox = this.getHitBox();
       var pos = [0,0];
@@ -104,12 +104,10 @@ define( ['game/models/scene', 'game/petra'], function(Scene, petra){
     this.sprite.resize(size[0],size[1]);
 
     if(this.hitbox){
-      console.log('resizing?', factor, this.hitbox)
       this.hitbox.pos[0] = this.hitbox.pos[0] * factor ;
       this.hitbox.pos[1] = this.hitbox.pos[1] * factor ;
       this.hitbox.size[0] = this.hitbox.size[0] * factor ;
       this.hitbox.size[1] = this.hitbox.size[1] * factor ;
-      console.log(this.hitbox)
     }
   }
   RenderableEntity.prototype.getHeight = function(){

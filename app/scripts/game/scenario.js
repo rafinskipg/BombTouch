@@ -15,7 +15,7 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     'blackhole',
     'galaxy',
     'galaxy2',
-    'comet'
+    'dust'
   ];
 
   var Scenario = function(canvasId, endCallback, scenespeed, bgspeed){
@@ -25,6 +25,11 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
       bgspeed : bgspeed,
       BGx : 0
     });
+    this.scene.backgrounds = [];
+    this.scene.backgrounds.push('images/backgrounds/galaxy.png');
+    this.scene.backgrounds.push('images/backgrounds/dust.png');
+    this.scene.backgrounds.push('images/backgrounds/thing.png');
+
   };
   
   Scenario.prototype.init = function() {
@@ -39,13 +44,17 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     
     this.scene.updateBackground = (function(dt){ 
       this.BGx -= dt;
-      this.ctx.drawImage(resources.get('images/background.png'), this.BGx, 0,this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(resources.get('images/background.png'), this.BGx + this.canvas.width, 0,this.canvas.width, this.canvas.height);
-     
+      this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.BGx, 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get(this.backgrounds[0]), this.BGx, 0,640, 400);
+      this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.BGx + this.canvas.width, 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get(this.backgrounds[1]), this.BGx + this.canvas.width, 0,640, 400);
+      
       // If the image scrolled off the screen, reset
       if (this.BGx < -this.canvas.width){
         this.BGx =0;
+        this.backgrounds.push(this.backgrounds.shift());
       }
+
     }).bind(this.scene);
     this.scene.load();
   }

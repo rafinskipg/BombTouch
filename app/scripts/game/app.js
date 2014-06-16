@@ -211,7 +211,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,1);
+    LEVELS_DIRECTOR.init(5,5,1);
     LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
       enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
     });

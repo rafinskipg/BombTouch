@@ -107,7 +107,7 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
   var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0]]
   var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0]]
   var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0]]
-  var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
+  var dustSpriteSheet = ['images/backgrounds/dust.png', [0,0], [600,400], 1 , [0]]
 
  // var bonusSpriteSchema = ['images/weapons/bonus.png', [50,50], [100,50], 1, [0]];
   var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 12, [0,1,2,3,4,5,6,7,8]];
@@ -458,10 +458,9 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
       angle: 0.8,
       rotateSprite: -0.8
     },
-    'comet':{
+    'dust':{
       speed: 10,
-      resize: [150,50],
-      sprite: cometSpriteSheet,
+      sprite: dustSpriteSheet,
       angle: 1.2,
       rotateSprite: 0.2
     }
@@ -481,7 +480,7 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     var entity =  new Models.Entity(entityDefinition);
     //Scale
     var size = entity.getSize();
-    entity.resizeByFactor(1.2);
+    entity.resizeByFactor(0.8);
     
     if(entityDefinition.totalLife){
       var lifeBoxOpts = JSON.parse(JSON.stringify(entities['life']));
