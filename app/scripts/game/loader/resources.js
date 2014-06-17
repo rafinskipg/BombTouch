@@ -3,7 +3,7 @@ define( ['px_loader','px_loader_image','px_loader_audio'], function(){
     var resourceCache = {};
     var loader;
     // Load an image url or an array of image urls
-    function load(urlOrArr, cb) {
+    function load(urlOrArr, cb, progressCb) {
       loader = new PxLoader();
 
       if(urlOrArr instanceof Array) {
@@ -15,6 +15,9 @@ define( ['px_loader','px_loader_image','px_loader_audio'], function(){
           _load(urlOrArr);
       }
       loader.addCompletionListener(cb);
+      loader.addProgressListener(function(e) { 
+          progressCb(e.completedCount, e.totalCount);
+      }); 
       loader.start();
     }
 

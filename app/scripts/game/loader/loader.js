@@ -3,6 +3,8 @@ define( ['resources','raf', 'quad_tree'], function(){
   var canvas,ctx, then = 0;
   var particles = [];
   var quad;
+  var currentFiles = 0;
+  var totalFiles = 0;
   var gravity = 0.5; 
   var id ;
 
@@ -14,6 +16,9 @@ define( ['resources','raf', 'quad_tree'], function(){
           cancelAnimationFrame(id);
           cb();
           previouslyLoaded = false;
+      }.bind(this), function(current, total){
+        currentFiles = current;
+        totalFiles = total;
       }.bind(this));
       load(elements,cb);
     }else{
@@ -104,11 +109,12 @@ define( ['resources','raf', 'quad_tree'], function(){
     then = now;
     
     // Fill the path
-   // ctx.fillStyle = "black";
-    //ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#33337a";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = 'white';
     ctx.font = "30px 'Press Start 2P'";
-    ctx.fillText("LOADING ...", 10, 50);
+    ctx.fillText("LOADING ... ", 10, 80);
+    ctx.fillText(currentFiles + '/'+ totalFiles, 10, 160);
 
 
     update(dt/1000.0);
