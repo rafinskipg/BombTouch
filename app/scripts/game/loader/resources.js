@@ -5,7 +5,7 @@ define( ['px_loader','px_loader_image','px_loader_audio'], function(){
     // Load an image url or an array of image urls
     function load(urlOrArr, cb, progressCb) {
       loader = new PxLoader();
-
+      loader.addImage('/images/pixel.png')
       if(urlOrArr instanceof Array) {
           urlOrArr.forEach(function(url) {
             _load(url);
@@ -23,7 +23,7 @@ define( ['px_loader','px_loader_image','px_loader_audio'], function(){
 
     function _load(url) {
       if(resourceCache[url]) {
-          return resourceCache[url];
+        return;
       }else if( (/(\.mp4|\.mp3|\.ogg|\.wav)/).test(url) ){
           resourceCache[url] = loader.addAudio(url);
       }else{

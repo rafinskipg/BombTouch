@@ -14,8 +14,8 @@ define( ['resources','raf', 'quad_tree'], function(){
       resources.load(elements, function(){
           canvas.className = '';
           cancelAnimationFrame(id);
-          cb();
           previouslyLoaded = false;
+          cb();
       }.bind(this), function(current, total){
         currentFiles = current;
         totalFiles = total;
