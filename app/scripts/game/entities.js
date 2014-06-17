@@ -1,4 +1,4 @@
-define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
+define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   // Sprite(url, pos, size, speed, frames, dir, once)
   var bombareaSpriteSchema = ['images/newsprites.png',
     [15, 340],

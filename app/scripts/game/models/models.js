@@ -1,4 +1,4 @@
-define( ['game/models/scene', 'game/petra'], function(Scene, petra){
+define( ['game/models/scene', 'petra'], function(Scene, petra){
   
   //Thanks dr.axel. 
   //Allows Sprite to accept array as args

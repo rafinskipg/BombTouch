@@ -1,4 +1,4 @@
-define( ['game/loader','game/raf'], function(Loader){
+define( ['game/loader/loader','raf'], function(Loader){
 
   function Scene(assets, canvasId,endCallback, opts){
     this.canvasId = canvasId;

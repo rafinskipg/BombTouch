@@ -1,4 +1,4 @@
-define( ['game/models/models', 'game/petra','game/entities', 'resources','game/raf', 'game/QuadTree'], function(models, petra, entities){
+define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad_tree'], function(models, petra, entities){
   var scene;
 
   function init(canvasId, endCallback){

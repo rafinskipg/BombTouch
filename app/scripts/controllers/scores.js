@@ -1,4 +1,4 @@
-define(['angular', 'app', 'maingame','game/petra'], function(angular, BombTouchApp , GAME, petra){
+define(['angular', 'app', 'maingame','petra'], function(angular, BombTouchApp , GAME, petra){
     'use strict';
     BombTouchApp.filter('reverse', function() {
       return function(items) {

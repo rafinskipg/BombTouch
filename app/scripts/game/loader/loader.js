@@ -1,4 +1,4 @@
-define( ['resources','game/raf', 'game/QuadTree'], function(){
+define( ['resources','raf', 'quad_tree'], function(){
   var previouslyLoaded = false;
   var canvas,ctx, then = 0;
   var particles = [];
@@ -9,19 +9,20 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
   function load(elements, cb){
     if(!previouslyLoaded){
       previouslyLoaded = true;
-      resources.load(elements);
-    }
-    if(!resources.isReady()){
+      resources.load(elements, function(){
+          canvas.className = '';
+          cancelAnimationFrame(id);
+          cb();
+          previouslyLoaded = false;
+      }.bind(this));
+      load(elements,cb);
+    }else{
       mainLoop();
-      
       id =requestAnimationFrame(function(){
         load(elements,cb);
       });
-      return;
     }
-    canvas.className = '';
-    cancelAnimationFrame(id);
-    cb();
+   
   }
 
   function init(canvasId){

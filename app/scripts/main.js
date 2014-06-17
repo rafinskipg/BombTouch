@@ -4,9 +4,12 @@ requirejs.config({
     angular : '../bower_components/angular/angular',
     maingame : 'game/app',
     levelsDirector : 'game/levelsDirector',
-    input : 'game/input',
-    resources : 'game/resources',
+    input : 'game/userInput/input',
+    resources : 'game/loader/resources',
     sprite : 'game/sprite',
+    petra : 'game/utils/petra',
+    raf : 'game/utils/raf',
+    quad_tree : 'game/utils/QuadTree',
     ngresource : '../bower_components/angular-resource/angular-resource',
     ngcookies : '../bower_components/angular-cookies/angular-cookies',
     ngsanitize : '../bower_components/angular-sanitize/angular-sanitize',
@@ -14,6 +17,10 @@ requirejs.config({
     howler : '../bower_components/howler/howler.min',
     fastclick: '../bower_components/fastclick-amd/fastclick',
     scroll_reveal: '../bower_components/scrollReveal.js/dist/scrollReveal.min',
+    px_loader: '../bower_components/PxLoaderNoDependencies/PxLoader',
+    px_loader_audio: '../bower_components/PxLoaderNoDependencies/PxLoaderAudio',
+    px_loader_image: '../bower_components/PxLoaderNoDependencies/PxLoaderImage',
+    px_loader_sound: '../bower_components/PxLoaderNoDependencies/PxLoaderSound',
    // 'lib/hammer': '../bower_components/hammerjs/hammer.min',
     hu: '../bower_components/hu/hu'
   },
@@ -26,6 +33,12 @@ requirejs.config({
     },
     ngroute:{
       deps:['angular']
+    },
+    px_loader_audio:{
+      deps:['px_loader']
+    },
+    px_loader_image:{
+      deps:['px_loader']
     },
     fox_ng_scroll_reveal:{
       depts:['scroll_reveal']

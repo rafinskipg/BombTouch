@@ -1,4 +1,4 @@
-define(['angular', 'app','game/assets', 'game/loader'], function(angular, BombTouchApp, ASSETSList, LOADER){
+define(['angular', 'app','game/assets'], function(angular, BombTouchApp, ASSETSList){
     'use strict';
     return BombTouchApp.controller('PrototypePlayCtrl',
       ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','$location','badgesSrv',

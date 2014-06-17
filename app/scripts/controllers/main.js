@@ -1,4 +1,4 @@
-define(['angular', 'app', 'maingame','game/artscenes/scene_intro', 'game/loader'], function(angular, BombTouchApp  , GAME, sceneIntro,LOADER){
+define(['angular', 'app', 'maingame','game/artscenes/scene_intro'], function(angular, BombTouchApp  , GAME, sceneIntro){
     'use strict';
     return BombTouchApp.controller('MainCtrl',
       ['$scope', '$timeout', 'socialSrv', 'localStorageSrv','settingsSrv','audioSrv','$location','badgesSrv',

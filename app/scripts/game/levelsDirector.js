@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities', 'game/petra'], function(hu, EL, petra){
+define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   var MAX_LEVEL;
   var CURRENT_LEVEL;
   var CURRENT_GROUP;

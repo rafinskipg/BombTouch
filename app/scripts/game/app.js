@@ -1,4 +1,4 @@
-define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDirector','game/petra','resources','sprite','input','game/raf'], function(models, hu, EL, Scenario, LEVELS_DIRECTOR, petra){
+define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDirector','petra','resources','sprite','input','raf'], function(models, hu, EL, Scenario, LEVELS_DIRECTOR, petra){
 
   var throttle = function(lambda, ms){
     var allow = true;
@@ -211,7 +211,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,5,1);
+    LEVELS_DIRECTOR.init(5,2,1);
     LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
       enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
     });

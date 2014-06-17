@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'], function(hu, EL, petra, ASSETSList, models){
+define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], function(hu, EL, petra, ASSETSList, models){
   var TIME,
     TIME_SINCE_LAST_OUT,
     BG_X,
