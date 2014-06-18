@@ -758,8 +758,8 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
       var angleInRadians = Math.atan(entity.getX()+1000, entity.getY()) + phi;
-      var xC = radius * Math.cos(angleInRadians)+phi;
-      var yC = radius * Math.sin(angleInRadians)+phi;
+      var xC = radius * Math.cos(angleInRadians);
+      var yC = radius * Math.sin(angleInRadians);
 
       xC = xC + player.pos[0];
       yC = yC + player.pos[1];
