@@ -6,6 +6,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     var soundEnabled = true;
     var difficulty;
     var prototype;
+    var level;
 
     function getSound(){
       return soundEnabled;
@@ -29,13 +30,25 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     function getPrototype(){
       return prototype;
     }
+
+    function setLevel(val){
+      level = val;
+    }
+
+    function getLevel(){
+      return level;
+    }
+
     return {
         getSound: getSound,
         setSound: setSound,
         setDifficulty: setDifficulty,
         getDifficulty: getDifficulty,
         setPrototype: setPrototype,
-        getPrototype: getPrototype
+        getPrototype: getPrototype,
+        setLevel: setLevel,
+        getLevel: getLevel
+
       };
   }]);
 });

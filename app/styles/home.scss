@@ -31,6 +31,7 @@ span.shadow {
         -webkit-animation-duration: 25s;
         -webkit-animation-iteration-count: infinite;
         -webkit-animation-timing-function: linear;
+        max-width:125px;
     }
 }
 
@@ -110,12 +111,22 @@ span.shadow {
             }
         }
     }
-    .donation .content{
+    .about .content{
         background:  $blueMenus;
         padding: 20px;
         font-size: 15px;
         .fa,.glyphicon{
             font-size:20px;
+        }
+        img.team{
+            width: 100%;
+        }
+        .roles{
+            margin-top:30px;
+            margin-bottom: 30px;
+            .role{
+                margin-top:10px;
+            }
         }
     }
 }

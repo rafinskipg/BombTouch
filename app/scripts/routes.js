@@ -27,6 +27,11 @@ define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers
     $routeProvider.when('/difficulty', {
       templateUrl: 'views/difficulty.html',
       controller: 'DifficultyCtrl'
+    }); 
+
+    $routeProvider.when('/levels', {
+      templateUrl: 'views/levels.html',
+      controller: 'LevelsCtrl'
     });
 
     $routeProvider.when('/prototypes', {
