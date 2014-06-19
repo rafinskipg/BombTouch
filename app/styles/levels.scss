@@ -4,12 +4,19 @@
     float: left;
     width: 50%;
     position:relative;
-    height: 100px;
+    margin-bottom: 10px;
+
     .content{
       padding: 20px;
       position: relative;
       margin-left: 10px;
       margin-right: 10px;
+      background: rgba(54, 114, 148, 0.56);
+      cursor: pointer;
+      &.unlocked {
+        background:none;
+        cursor: pointer;
+      }
     }
     .cover{
       position: absolute;
@@ -17,9 +24,23 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(54, 114, 148, 0.56);
-      &.unlocked {
-        background:none;
+    }
+    .image{
+      padding: 15px;
+      img{
+
+      }
+    }
+    .cristal{
+      width: 30px;
+      height: 30px;
+      float: left;
+      margin: 10px;
+      background: url("/images/hud/cristal_unactive.png");
+      background-size: contain;
+      &.active{
+        background: url('/images/hud/cristal_active.png');
+        background-size: contain;
       }
     }
   }
