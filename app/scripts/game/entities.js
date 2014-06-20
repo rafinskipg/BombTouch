@@ -530,7 +530,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     };
     var doubleShoot = {
       name : 'doubleShoot', 
-      delay: 0.3
+      delay: 0.8
     }
     var move = {
       name: 'move', 

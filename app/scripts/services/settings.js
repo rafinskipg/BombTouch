@@ -32,6 +32,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     }
 
     function setLevel(val){
+      console.log('setting', val)
       level = val;
     }
 

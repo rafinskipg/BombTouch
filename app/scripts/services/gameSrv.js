@@ -35,7 +35,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
     function getCurrentLevel(){
       var level = settingsSrv.getLevel();
       console.log(level)
-      if(level == 1.0){
+      if(level == 1){
         return jokeLevel;
       }else{
         debugger;

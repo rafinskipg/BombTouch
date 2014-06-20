@@ -208,7 +208,7 @@ return BombTouchApp.
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
-    LEVELS_DIRECTOR.init(names, 5,2,true, LEVEL_STRUCTURE);
+    LEVELS_DIRECTOR.init(names, 5,6,true, LEVEL_STRUCTURE);
     suscribeToEvents();
     main();
   };
@@ -853,14 +853,14 @@ return BombTouchApp.
 
   function playActionThrottled( dt, keep){
     return function(entity){
-      var action = entity.actions.pop();
-      if(keep){
-        entity.actions.unshift(action);
-      }
-      entityStepsInTime(action.delay,dt)(function(entity){
+      return entityStepsInTime(entity.actions[entity.actions.length - 1 ].delay,dt)(function(entity){
+        var action = entity.actions.pop()
+        if(keep){
+          entity.actions.unshift(action);
+        }
         playAction(action.name, entity);
-      })(entity);
-      return entity;
+        return entity;
+      }.bind(this))(entity);
     }
   }
   function playAction(action, entity){
@@ -1070,7 +1070,7 @@ return BombTouchApp.
       .map(updateEntity(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionThrottled(dt)))
+      .map(wrapperReadyForActionOnly(playActionThrottled(dt, false)))
       .map(resetBossActionsIfEmpty)
       .map(moveToPlayerVertically(dt)));
   }

@@ -7,6 +7,11 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
       'images/weapons/bullets.png'
       ],canvasId, endCallback);
 
+    window.addEventListener('click', function(ev){
+      scene.skipped = true;
+      window.removeEventListener('click');
+    });
+
     scene.init = (function(){
       this.dog = entities.getEntity('cooldog',{pos: [50, this.canvas.height / 2]});
       this.texts = [
