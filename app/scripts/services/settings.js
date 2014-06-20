@@ -4,9 +4,9 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     factory('settingsSrv', ['$http', '$q', function($http, $q) {
 
     var soundEnabled = true;
-    var difficulty;
+    var difficulty = 1.0;
     var prototype;
-    var level;
+    var level = 1.0;
 
     function getSound(){
       return soundEnabled;

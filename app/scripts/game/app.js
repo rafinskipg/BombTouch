@@ -1,18 +1,10 @@
-define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDirector','petra','resources','sprite','input','raf'], function(models, hu, EL, Scenario, LEVELS_DIRECTOR, petra){
+define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector','resources','sprite','input','raf'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR){
 
-  var throttle = function(lambda, ms){
-    var allow = true;
-    return function(){
-      if(allow){
-        allow = false,
-        lambda();
+return BombTouchApp.
+    factory('brainSrv', ['audioSrv','settingsSrv', function(audioSrv, settingsSrv) {
+  
+  var LEVEL_STRUCTURE, CURRENT_STAGE;
 
-        setTimeout(function(){
-          allow = true;
-        },ms);
-      }
-    }
-  }
   /****************************
   ****************************
     GAME Variables
@@ -20,7 +12,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   ****************************/
   function getDefaultState(){
     var options =  {
-      sound_enabled: true,
       iteration: 1,
       win: false,
       died: false,
@@ -30,8 +21,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       game_over: false,
       paused: false,
       post_game_completed : false,
-      background_speed: 50,
-      game_speed: 1.0
+      background_speed: 50
     };
     return options;
   }
@@ -82,7 +72,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   //Suscribe to events of the game
   var notifyGameEnd = [];
-  var notifyLevelUp = [];
   var notifyPoints = [];
   var notifyMessages = [];
   var notifyPower = [];
@@ -175,13 +164,15 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         'let your story end']
     }
   };
-
-  var main_character_name = 'cooldog';
-  var main_enemy_name = 'boss_1';
-  var main_character_super_damaged = 'cooldogdamaged';
-  var main_character_damaged = 'cooldogdamaged';
-  var main_character_super_name = 'cooldog';
-  var bonus_image_name = 'dog';
+  
+  var names = {
+    main_character_name :'cooldog',
+    main_enemy_name :'boss_1',
+    main_character_super_damaged :'cooldogdamaged',
+    main_character_damaged :'cooldogdamaged',
+    main_character_super_name :'cooldog',
+    bonus_image_name :'dog'
+  }
   //var main_character_super_name = 'supercooldog';
 
   var time_between_bullets = 0.300;
@@ -211,41 +202,19 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function start() {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,2,1);
-    LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
-      enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
-    });
-
-    LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
-      bosses.push(createFunction([canvas.width, canvas.height/2]));
-      STATE.background_speed = 1.6;
-    });
-
-    LEVELS_DIRECTOR.suscribeAddBonus(function(createFunction){
-      var bonus = createFunction([canvas.width,  Math.random() * (canvas.height - 39)]);
-      if(bonus.name == 'dogeBonus'){
-        bonus.obtain = dogeBonusObtain;  
-      }else if(bonus.name == 'doubleShootBonus'){
-        bonus.obtain = doubleWeaponBonusObtain;
-      }
-      bonuses.push(bonus);
-    });
+    //TODO , here send levels director the stage 0, at "continue game" send the current Stag, increment the current stag
 
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
+    LEVELS_DIRECTOR.init(names, 5,2,true, LEVEL_STRUCTURE);
     suscribeToEvents();
-    //playSound(SOUNDS.ambient);
-
-    //showInitialDialogs();
     main();
   };
 
   function restart(){
     reset();
-    console.log('restart ?')
-    //playSound(SOUNDS.ambient);
     main();
   }
 
@@ -358,15 +327,13 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function reset() {
-    var newState = getDefaultState();
-    newState.sound_enabled = STATE.sound_enabled === false ? false: true;
-    newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
-    STATE = newState;
+    STATE = getDefaultState();
+    STATE.game_speed = settingsSrv.getDifficulty();
     SCENARIO = new Scenario("canvas", endGame, STATE.game_speed, STATE.background_speed);
     SCENARIO.setRenderEntities(getEntitiesToRender);
     SCENARIO.init();
     setDefaultStateForEntities();
-    player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
+    player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
     player.bonuses = {};
     TIMERS = getDefaultTimers();
   };
@@ -390,30 +357,37 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         player.damage = normalPlayerOptions.damage;
       }
     });*/
+      
+    LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
+      enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
+    }, 'brainSrv');
 
-    LEVELS_DIRECTOR.suscribeLevelUp(function(){
+    LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
+      bosses.push(createFunction([canvas.width, canvas.height/2]));
+      STATE.background_speed = 1.6;
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeAddBonus(function(createFunction){
+      var bonus = createFunction([canvas.width,  Math.random() * (canvas.height - 39)]);
+      if(bonus.name == 'dogeBonus'){
+        bonus.obtain = dogeBonusObtain;  
+      }else if(bonus.name == 'doubleShootBonus'){
+        bonus.obtain = doubleWeaponBonusObtain;
+      }
+      bonuses.push(bonus);
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeMessages(function(opts){
+      showMessages(opts.messages, opts.timeout, opts.type);
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeStageUp(function(stage){
+      CURRENT_STAGE = stage;
       SOUNDS['levelup'].play();
-      var message = new models.Message(MESSAGES.levelup, bonus_image_name);
+      var message = new models.Message(MESSAGES.levelup, names.bonus_image_name);
       showMessages([message]);
-    })
-    notifyLevelUp.map(function(fn){
-      LEVELS_DIRECTOR.suscribeLevelUp(fn);
-    });
-  }
+    }, 'brainSrv')
 
-  function showInitialDialogs(){
-    var messages = [];
-    messages.push( new models.Message('ENEMY! The end of this quest is near', main_character_name,3000))
-    messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', main_enemy_name,3000))
-    messages.push( new models.Message('...', main_character_name,700))
-    messages.push( new models.Message('I\'m not afraid of what you have got for me', main_character_name,2000))
-    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', main_enemy_name,3000))
-    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , main_character_name,3000))
-    messages.push( new models.Message('You are a piece of nothing', main_enemy_name,2000))
-    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', main_character_name,3000))
-
-    showMessages(messages,0,'full');
-    
   }
 
   /****************************
@@ -459,13 +433,12 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function resume(){
     STATE.paused = false;
     SCENARIO.pause();
-    //playSound(SOUNDS.ambient);
     main();
   }
 
   function playSound(sound){
-    if(!isPaused() && STATE.sound_enabled){
-      sound.play();
+    if(!isPaused() && settingsSrv.getSound() == true){
+      audioSrv.playSound(sound);
     }
   }
 
@@ -519,7 +492,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var randomPos = parseInt(Math.random() * array.length)
     return array[randomPos];
   }
-  var createRick = throttle(function(){
+  var createRick = petra.throttle(function(){
     var possibleRickSizes = [
       [70,110],
       [140,220],
@@ -550,7 +523,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  var megaShoot = throttle(megaShootUntrottled, 1000);
+  var megaShoot = petra.throttle(megaShootUntrottled, 1000);
 
   function addExplosion(pos, size){
     explosions.push(EL.getEntity('explosion',{pos: pos, resize: size}));
@@ -652,7 +625,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     entity.damage = entity.baseDamage + 50;
     bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
     playSound(SOUNDS.yeah);
-    var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
+    var message = new models.Message(MESSAGES.wow, names.bonus_image_name, 1500);
     showMessages([message]);
   }
   function doubleWeaponBonusObtain(entity){
@@ -915,7 +888,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       entity.setAnimation('talk'+life);
       playSound(SOUNDS[chosenPhrase]);
       
-      var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
+      var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
       var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], Math.ceil(Math.random() *5 ));
@@ -1162,7 +1135,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     playSound(SOUNDS.ouch);
     player.life -= damage;
 
-    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged))
+    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? names.main_character_super_damaged : names.main_character_damaged))
     showMessages([messageOuch]);
   }
 
@@ -1275,9 +1248,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function suscribeGameOver( fn){
     notifyGameEnd.push(fn);
   }
-  function suscribeLevelUp( fn){
-    notifyLevelUp.push(fn);
-  }
+
   function suscribePoints(fn){
     notifyPoints.push(fn);
   }
@@ -1290,38 +1261,21 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function suscribeMaxPower(fn){
     notifyMaxPower.push(fn);
   }
-  function setSound(bool){
-    STATE.sound_enabled = bool;
-  }
-  function setSoundInGame(bool){
-    if(!STATE.sound_enabled){
-      STATE.sound_enabled = bool;
-      //playSound(SOUNDS.ambient);
-    }else{
-      //pauseAmbientSound();
-      STATE.sound_enabled = bool;
-    }
-  }
-  function setDifficulty(speed){
-    STATE.game_speed = speed;
-  }
+
 
   /****************************
   ****************************
     GAME API
   ****************************
   ****************************/
-  var GAME = function() {
+  var GAME = function(levelStructure) {
+    LEVEL_STRUCTURE = levelStructure;
     return {
       suscribeGameOver : suscribeGameOver,
-      suscribeLevelUp : suscribeLevelUp,
       suscribePoints : suscribePoints,
       suscribePower : suscribePower,
       suscribeMessages: suscribeMessages,
       megaShoot : megaShoot,
-      setSound : setSound,
-      setSoundInGame: setSoundInGame,
-      setDifficulty: setDifficulty,
       endGame : endGame,
       start : start,
       restart : restart,
@@ -1332,5 +1286,5 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   return  GAME;
-
+  }]);
 });

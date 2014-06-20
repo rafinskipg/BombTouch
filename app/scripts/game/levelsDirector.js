@@ -1,78 +1,71 @@
 define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
-  var MAX_LEVEL;
-  var CURRENT_LEVEL;
+  var opts;
+  var MAX_STAGE;
+  var CURRENT_STAGE;
   var CURRENT_GROUP;
   var CURRENT_ENEMY;
   var TIME;
   var BONUS_TIME;
   var BOSS_OUT;
+  var levelStructure;
   var INFORMATION;
-  var suscriptorsLevelUp;
+  var suscriptorsStageUp;
+  var suscriptorsAddEnemy;
+  var suscriptorsAddBoss;
+  var suscriptorsAddBonus;
+  var suscritorsMessages;
   var STARTING_DELAY;
   var TIME_SINCE_LAST_ENEMY_OUT;
-  var TIME_SINCE_LAST_LEVEL_OUT;
+  var TIME_SINCE_LAST_STAGE_OUT;
   var TIME_SINCE_LAST_GROUP_OUT;
   var ALLOW_ENEMY_OUT = false;
-  var levelsStructure = {
-    time_between_groups: 5,
-    time_between_enemies:1,
-    time_between_levels: 5,
-    levels : [
-      [
-      [1],[1,1],[1,1,1],[1,1,1,1,1,1],[2]
-      ],
-      [
-      [2],[2,1,2],[2,1,2,2],[2,2,2,2,3,3],[3,3,3]
-      ],
-      [
-      [3,2],[3,3,2],[3,2,3,3],[4,4,5,4]
-      ],
-      [
-      [4],[4,4],[4,3,4],[4,3,4,3,4,4,5,5], [4,5,5,5]
-      ],
-      [
-      [5],[5,5],[5,5,4],[5,4,3,5,4,5,4,5]
-      ]
-    ]
-  }
+  
 
-  function init(max, current, delay, delayBetweenEnemies){
-    MAX_LEVEL = max; 
-    CURRENT_LEVEL = current;
-    STARTING_DELAY = delay;
+
+  function init(opts, max, current, skipMessages, lvlStruct, levelName, delayBetweenEnemies){
+    MAX_STAGE = max; 
+    opts = opts;
+    CURRENT_STAGE = current;
+    levelStructure = lvlStruct;
+    STARTING_DELAY = skipMessages ? 0 : 20;
     if( delayBetweenEnemies){
       console.log(delayBetweenEnemies)
-      levelsStructure.time_between_enemies = delayBetweenEnemies;  
+      levelStructure.time_between_enemies = delayBetweenEnemies;  
     }
     
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
     BOSS_OUT = false;
-    suscriptorsLevelUp = [];
-    suscriptorsAddEnemy = [];
-    suscriptorsAddBoss = [];
-    suscriptorsAddBonus = [];
+    suscriptorsStageUp = {};
+    suscriptorsAddEnemy = {};
+    suscriptorsAddBoss = {};
+    suscriptorsAddBonus = {};
+    suscritorsMessages = {};
     INFORMATION = {
       bonuses:{
         picked:0,
         total:0
       },
       boss_out: false,
-      levels : []
+      stages : [],
+      level: levelName
     };
     TIME = 0;
     BONUS_TIME = 0;
     ALLOW_ENEMY_OUT = false;
     TIME_SINCE_LAST_ENEMY_OUT = 0;
     TIME_SINCE_LAST_GROUP_OUT = 0;
-    TIME_SINCE_LAST_LEVEL_OUT = 0;
+    TIME_SINCE_LAST_STAGE_OUT = 0;
 
     for(var i = 0; i< max; i++){
-      INFORMATION.levels.push({
+      INFORMATION.stages.push({
         total: 0,
         killed: 0,
         completed: false
       });
+    }
+    if(!skipMessages){
+      showInitialDialogs();
     }
   }
 
@@ -81,12 +74,12 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   }
 
 
-  function getMaxLevel(){
-    return MAX_LEVEL;
+  function getMaxStage(){
+    return MAX_STAGE;
   }
 
-  function getCurrentLevel(){
-    return CURRENT_LEVEL;
+  function getCurrentStage(){
+    return CURRENT_STAGE;
   }
 
 
@@ -97,20 +90,20 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     if(TIME >= STARTING_DELAY){
       BONUS_TIME += dt;
       TIME_SINCE_LAST_ENEMY_OUT+=dt;
-      if(CURRENT_LEVEL <= MAX_LEVEL){
-        if(allEnemiesFromLevelAreOut(CURRENT_LEVEL -1 )){
-          TIME_SINCE_LAST_LEVEL_OUT+=dt;
-          if(TIME_SINCE_LAST_LEVEL_OUT >= levelsStructure.time_between_levels){
-            changeLevel();
+      if(CURRENT_STAGE <= MAX_STAGE){
+        if(allEnemiesFromStageAreOut(CURRENT_STAGE -1 )){
+          TIME_SINCE_LAST_STAGE_OUT+=dt;
+          if(TIME_SINCE_LAST_STAGE_OUT >= levelStructure.time_between_stages){
+            changeStage();
           }
-        }else if(allEnemiesFromGroupAreOut(CURRENT_LEVEL-1, CURRENT_GROUP)){
+        }else if(allEnemiesFromGroupAreOut(CURRENT_STAGE-1, CURRENT_GROUP)){
           TIME_SINCE_LAST_GROUP_OUT+=dt;
-          if(TIME_SINCE_LAST_GROUP_OUT >= levelsStructure.time_between_groups){
+          if(TIME_SINCE_LAST_GROUP_OUT >= levelStructure.time_between_groups){
             changeGroup();
           }
         }else{
           TIME_SINCE_LAST_ENEMY_OUT+=dt;
-          if(TIME_SINCE_LAST_ENEMY_OUT >= levelsStructure.time_between_enemies){
+          if(TIME_SINCE_LAST_ENEMY_OUT >= levelStructure.time_between_enemies){
             ALLOW_ENEMY_OUT = true;
           }
         }
@@ -129,13 +122,13 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     }
   }
 
-  function changeLevel(){
-    INFORMATION.levels[ CURRENT_LEVEL -1 ].completed = true;
-    CURRENT_LEVEL++;
+  function changeStage(){
+    INFORMATION.stages[ CURRENT_STAGE -1 ].completed = true;
+    CURRENT_STAGE++;
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
-    TIME_SINCE_LAST_LEVEL_OUT = 0;
-    notify(suscriptorsLevelUp, CURRENT_LEVEL);
+    TIME_SINCE_LAST_STAGE_OUT = 0;
+    notify(suscriptorsStageUp, CURRENT_STAGE);
   }
 
 
@@ -145,22 +138,22 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     TIME_SINCE_LAST_GROUP_OUT = 0;
   }
 
-  function getTotalsOfCurrentLevel(lvl){
-    var totalsOfLevel = 0;
-    levelsStructure.levels[lvl].map(function(group){
-      totalsOfLevel +=group.length || 0;
+  function getTotalsOfCurrentStage(stage){
+    var totalsOfStage = 0;
+    levelStructure.stages[stage].map(function(group){
+      totalsOfStage +=group.length || 0;
     });
-    return totalsOfLevel;
+    return totalsOfStage;
   }
-  function allEnemiesFromLevelAreOut(lvl){
-    return(INFORMATION.levels[lvl].total >= getTotalsOfCurrentLevel(lvl));
+  function allEnemiesFromStageAreOut(stage){
+    return(INFORMATION.stages[stage].total >= getTotalsOfCurrentStage(stage));
   }
-  function allEnemiesFromGroupAreOut(lvl, group){
-    var currGroup = levelsStructure.levels[lvl][group];
+  function allEnemiesFromGroupAreOut(stage, group){
+    var currGroup = levelStructure.stages[stage][group];
     return(CURRENT_ENEMY >= currGroup.length);
   }
   function shouldAddEnemy(){
-    if(CURRENT_LEVEL <= MAX_LEVEL && !BOSS_OUT){
+    if(CURRENT_STAGE <= MAX_STAGE && !BOSS_OUT){
       return ALLOW_ENEMY_OUT;
     }else{
       return false;
@@ -168,7 +161,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   }
 
   function shouldAddBoss(){
-    if(!shouldAddEnemy() && !BOSS_OUT && CURRENT_LEVEL > MAX_LEVEL){
+    if(!shouldAddEnemy() && !BOSS_OUT && CURRENT_STAGE > MAX_STAGE){
       return true;
     }else{
       return false;
@@ -178,21 +171,21 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   function createEnemy(pos){
     enemyAdded();
     TIME_SINCE_LAST_ENEMY_OUT = 0;
-    var enemyID = levelsStructure.levels[CURRENT_LEVEL-1][CURRENT_GROUP][CURRENT_ENEMY];
+    var enemyID = levelStructure.stages[CURRENT_STAGE-1][CURRENT_GROUP][CURRENT_ENEMY];
     CURRENT_ENEMY++;
     var enemy =  EL.getEnemy(pos,enemyID);
     //var enemy =  EL.getSpaceInvader(pos,enemyID);
-    enemy.level = CURRENT_LEVEL;
+    enemy.stage = CURRENT_STAGE;
     return enemy;
   }
 
   function enemyAdded(){
-    INFORMATION.levels[CURRENT_LEVEL - 1].total += 1;
+    INFORMATION.stages[CURRENT_STAGE - 1].total += 1;
   }
 
   function killedEnemy(enemy){
-    if(enemy.level <= MAX_LEVEL){
-      INFORMATION.levels[enemy.level - 1].killed += 1;  
+    if(enemy.stage <= MAX_STAGE){
+      INFORMATION.stages[enemy.stage - 1].killed += 1;  
     }
   }
   //BOSS
@@ -226,24 +219,28 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   function pickedDogeBonus(){
     INFORMATION.bonuses.picked += 1;
   }
-  function suscribeLevelUp(fn){
-    suscriptorsLevelUp.push(fn);
+  function suscribeStageUp(fn, name){
+    suscribe(fn, name,suscriptorsStageUp);
   }
-  function suscribeAddEnemy(fn){
-    suscriptorsAddEnemy.push(fn);
+  function suscribeAddEnemy(fn, name){
+    suscribe(fn, name,suscriptorsAddEnemy);
   }
-  function suscribeAddBonus(fn){
-    suscriptorsAddBonus.push(fn);
+  function suscribeAddBonus(fn, name){
+    suscribe(fn, name,suscriptorsAddBonus);
   }
-  function suscribeAddBoss(fn){
-    suscriptorsAddBoss.push(fn);
+  function suscribeAddBoss(fn, name){
+    suscribe(fn, name,suscriptorsAddBoss);
+  }
+  function suscribeMessages(fn, name){
+    suscribe(fn, name,suscritorsMessages);
   }
 
-  function notify(arr,data){
-    if(arr && arr.length > 0){
-      for(var i = 0; i<arr.length; i++){
-       arr[i](data);
-      }  
+  function suscribe(fn, name, map){
+    map[name] = fn;
+  }
+  function notify(map, params){
+    for(var obj in map){
+      map[obj](params);
     }
   }
 
@@ -254,20 +251,39 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   function getLevelsInfo(){
     return INFORMATION;
   }
+
+  function showInitialDialogs(){
+    var messages = [];
+    messages.push( new models.Message('ENEMY! The end of this quest is near', opts.main_character_name,3000))
+    messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', opts.main_enemy_name,3000))
+    messages.push( new models.Message('...', opts.main_character_name,700))
+    messages.push( new models.Message('I\'m not afraid of what you have got for me', opts.main_character_name,2000))
+    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', opts.main_enemy_name,3000))
+    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , opts.main_character_name,3000))
+    messages.push( new models.Message('You are a piece of nothing', opts.main_enemy_name,2000))
+    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', opts.main_character_name,3000))
+    notify(suscritorsMessages, {
+       messages: messages,
+       timeout: 0,
+       type: 'full'
+    });
+  }
+
   var LEVELS_DIRECTOR = {
       init: init,
-      getMaxLevel: getMaxLevel,
-      getCurrentLevel: getCurrentLevel,
+      getMaxStage: getMaxStage,
+      getCurrentStage: getCurrentStage,
       update: update,
       suscribeAddEnemy: suscribeAddEnemy,
       suscribeAddBoss: suscribeAddBoss,
       suscribeAddBonus: suscribeAddBonus,
+      suscribeMessages: suscribeMessages,
       createEnemy:createEnemy,
       killedEnemy: killedEnemy,
       createBoss: createBoss,
       createBonus: createBonus,
       pickedDogeBonus: pickedDogeBonus,
-      suscribeLevelUp: suscribeLevelUp,
+      suscribeStageUp: suscribeStageUp,
       isFinalStage: isFinalStage,
       getLevelsInfo: getLevelsInfo
   }

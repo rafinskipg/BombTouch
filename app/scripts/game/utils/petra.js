@@ -124,6 +124,21 @@ define( ['hu'], function(hu){
       return arrret;
     }
 
+    /** More utils **/
+    Petra.throttle = function(lambda, ms){
+    var allow = true;
+    return function(){
+      if(allow){
+        allow = false,
+        lambda();
+
+        setTimeout(function(){
+          allow = true;
+        },ms);
+      }
+    }
+  }
+
 
   return Petra;
 });

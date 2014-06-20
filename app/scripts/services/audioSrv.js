@@ -78,11 +78,9 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       songs[currentSong].song.stop().off('end');
     }
     function pauseSong(){
-      console.log('pause')
       songs[currentSong].song.pause();
     }
     function nextSong(){
-      console.log('next')
       currentSong++;
       currentSong = currentSong > songs.length - 1 ?  0 : currentSong;
       playSong(currentSong);
@@ -107,8 +105,13 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     function suscribeChangeSong(suscriber){
       suscribers.push(suscriber);
     }
+
+    function playSound(sound){
+      sound.play();
+    }
     return {
         playSong: playSong,
+        playSound: playSound,
         stopSong: stopSong,
         pauseSong: pauseSong,
         stopSounds: stopSounds,

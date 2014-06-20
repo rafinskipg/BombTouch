@@ -1,8 +1,8 @@
 define(['angular', 'app',], function(angular, BombTouchApp){
     'use strict';
     return BombTouchApp.controller('MusicController',
-      ['$scope', '$timeout','settingsSrv','$location','audioSrv',
-      function ($scope, $timeout,settingsSrv, $location, audioSrv) {
+      ['$scope', '$timeout','settingsSrv','$location','audioSrv', 'gameSrv',
+      function ($scope, $timeout,settingsSrv, $location, audioSrv, gameSrv) {
 
         $scope.songName = 'Nothing';
         $scope.musicPlaying = false;
@@ -27,7 +27,6 @@ define(['angular', 'app',], function(angular, BombTouchApp){
           $scope.playSong();
         }
 
-
         $scope.getSound = function(){
           return settingsSrv.getSound();
         }
@@ -36,9 +35,11 @@ define(['angular', 'app',], function(angular, BombTouchApp){
           $scope.songName = songName;
         });
 
-        if($scope.getSound()){
-          $scope.playSong();
-        }
+        gameSrv.suscribeGameStart(function(){
+          if($scope.getSound()){
+            $scope.playSong();
+          }
+        }, 'MusicController_start')
 
       }]);
 });
