@@ -35,6 +35,16 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
             text: 'Complete the level 5'
           },
           {
+            name: 'level1_stage1',
+            alias: '',
+            text: 'Junk Warrior'
+          },
+          {
+            name: 'level1_stage2',
+            alias: '',
+            text: 'Rat killer'
+          },
+          {
             name: 'social',
             alias: '',
             text: 'Share your best score'

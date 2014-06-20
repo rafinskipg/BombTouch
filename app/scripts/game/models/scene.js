@@ -97,6 +97,20 @@ define( ['game/loader/loader','raf'], function(Loader){
 
   }
 
+  Scene.prototype.renderTexts = function(list) {
+    for(var i=0; i<list.length; i++) {
+      this.renderText(list[i]);
+    }
+  }
+  Scene.prototype.renderText = function (entity){
+    this.ctx.save();
+    this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
+    this.ctx.fillStyle = entity.color;
+    this.ctx.font = "bold 16px Arial";
+    this.ctx.fillText(entity.text, 0, 0);
+    this.ctx.restore();
+  }
+
   Scene.prototype.drawFrames = function(frames){
     this.ctx.fillStyle = "blue";
     this.ctx.font = "bold 16px Arial";

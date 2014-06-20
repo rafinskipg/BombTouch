@@ -1,4 +1,4 @@
-define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 'maingame','services/settings'], function(angular, BombTouchApp, sceneIntro, jokeLevel){
+define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 'game/levels/level_1', 'maingame','services/settings'], function(angular, BombTouchApp, sceneIntro, jokeLevel, level_1){
     'use strict';
   return BombTouchApp.
     factory('gameSrv', ['settingsSrv', 'brainSrv', function( settingsSrv, brainSrv) {
@@ -36,9 +36,9 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
       var level = settingsSrv.getLevel();
       console.log(level)
       if(level == 1){
-        return jokeLevel;
+        return level_1;
       }else{
-        debugger;
+        return jokeLevel1;
       }
     }
 

@@ -49,6 +49,7 @@ return BombTouchApp.
     bosses,
     enemyBullets,
     graves,
+    pointsToRender,
     player;
 
   function setDefaultStateForEntities(){
@@ -61,6 +62,7 @@ return BombTouchApp.
     bonuses = [];
     bonusWeapons = [];
     bosses = [];
+    pointsToRender = [];
     enemyBullets = [];
     graves = [];
     player = {};
@@ -208,7 +210,7 @@ return BombTouchApp.
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
-    LEVELS_DIRECTOR.init(names, 5,6,true, LEVEL_STRUCTURE);
+    LEVELS_DIRECTOR.init(names, 1,true, LEVEL_STRUCTURE);
     suscribeToEvents();
     main();
   };
@@ -330,7 +332,7 @@ return BombTouchApp.
     STATE = getDefaultState();
     STATE.game_speed = settingsSrv.getDifficulty();
     SCENARIO = new Scenario("canvas", endGame, STATE.game_speed, STATE.background_speed);
-    SCENARIO.setRenderEntities(getEntitiesToRender);
+    SCENARIO.setRenderEntities(getEntitiesToRender, getTextEntitiesToRender);
     SCENARIO.init();
     setDefaultStateForEntities();
     player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
@@ -541,11 +543,18 @@ return BombTouchApp.
     miscelanea_front.push(EL.getEntity('shootfire', {pos: pos, speed: speed, angle: angle}));
   }
 
-  function addPoints(pts){
+  function addPoints(pts, pos){
     STATE.points += pts;
     for(var i = 0; i<notifyPoints.length; i++){
       notifyPoints[i](STATE.points);
     }
+    pointsToRender.push({
+      text: pts,
+      color: 'yellow',
+      timeAlive: 0, 
+      speed: [50,50],
+      pos: petra.sumIntegerToArray(pos, 30)
+    });
   }
     
   function addPower(pow){
@@ -620,7 +629,7 @@ return BombTouchApp.
   function dogeBonusObtain(entity){
     LEVELS_DIRECTOR.pickedDogeBonus();
     entity.hasBonus = true;
-    addPoints(200);
+    addPoints(200, entity.pos);
     entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
     entity.damage = entity.baseDamage + 50;
     bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
@@ -639,6 +648,7 @@ return BombTouchApp.
     updateEnemies(dt);
     updateSpecials(dt);
     updateExplosions(dt);
+    updatePointsToRender(dt);
     updateMiscelanea_front(dt);
     updateMiscelanea_back(dt);
     updateBonuses(dt);
@@ -853,6 +863,9 @@ return BombTouchApp.
 
   function playActionThrottled( dt, keep){
     return function(entity){
+      if(!entity.actions || !entity.actions.length > 0){
+        return entity;
+      }
       return entityStepsInTime(entity.actions[entity.actions.length - 1 ].delay,dt)(function(entity){
         var action = entity.actions.pop()
         if(keep){
@@ -903,7 +916,7 @@ return BombTouchApp.
       var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
-      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], Math.ceil(Math.random() *5 ));
+      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], 'enemy'+Math.ceil(Math.random() *5 ), 'joke');
       enemies.push(enemy);
       miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
       miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
@@ -1044,6 +1057,23 @@ return BombTouchApp.
   function updateMiscelanea_back(dt){
     miscelanea_back = updateEntitiesAndRemoveIfDone(miscelanea_back, dt);        
   }
+
+  function updatePointsToRender(dt){
+    pointsToRender = hu.compact(
+      pointsToRender
+      .map(updateTimeCounter(dt))
+      .map(moveUp(dt))
+      .map(removeIfTimeCounterGreaterThan(2))
+      );
+  }
+
+  function moveUp(dt){
+    return function(entity){
+      entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
+      return entity;
+    }
+  }
+
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 30)))
@@ -1113,6 +1143,13 @@ return BombTouchApp.
   function ifCollidesApplyDamageTo(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
+        pointsToRender.push({
+          text: item.damage,
+          color: 'red',
+          timeAlive: 0, 
+          speed: [50,50],
+          pos: entity.pos
+        });
         entity.life -= item.damage;
       }
       return item;
@@ -1158,7 +1195,7 @@ return BombTouchApp.
 
   function killEnemy(enemy){
     LEVELS_DIRECTOR.killedEnemy(enemy);
-    addPoints(enemy.points);
+    addPoints(enemy.points, enemy.pos);
     addPower(enemy.points);
     playSound(SOUNDS.death);
     addExplosion(enemy.pos, enemy.getSize());    
@@ -1254,6 +1291,10 @@ return BombTouchApp.
 
     return entitiesToRender;
   };
+
+  function getTextEntitiesToRender(){
+    return [pointsToRender];
+  }
 
   
 

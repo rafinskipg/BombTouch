@@ -64,17 +64,24 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
   }
   Scenario.prototype.update = function(){ }
 
-  Scenario.prototype.setRenderEntities = function(fn){
+  Scenario.prototype.setRenderEntities = function(fnEntities, fnTextEntities){
     var self = this;
     this.scene.render = (function(){
-      var listOfEntitiesArrays = fn();
+      var listOfEntitiesArrays = fnEntities();
       this.renderEntities(self.bgElements);
       for(var i = 0; i < listOfEntitiesArrays.length; i++){
         this.renderEntities(listOfEntitiesArrays[i]);
       }
+
+      var listOfTextEntitiesArrays = fnTextEntities();
+      for(var i = 0; i < listOfTextEntitiesArrays.length; i++){
+        this.renderTexts(listOfTextEntitiesArrays[i]);
+      }
+
       this.renderEntities(self.frontElements);
     }).bind(this.scene);
   }
+  
 
   Scenario.prototype.updateBackgrounds = function(dt){
     TIME +=dt;

@@ -53,6 +53,17 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var flappySpriteSchema = ['images/newsprites.png', [4,450], [125,117], 7, [0,1,2,3,4]];
   var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,0,0,0,0,1,2,3,4,5,6,7,8,9,9,9]];
   var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7]];
+  //Level1
+  var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 1, [0]];
+  var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0]];
+  var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0]];
+  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50, 50], 1, [0]];
+  var level1_droneSprite  = ['images/enemies/level_1.png', [0,100], [50, 50], 1, [0]];
+  var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0]];
+  var level1_worm_bodySprite  = ['images/enemies/level_1.png', [50,150], [50, 50], 1, [0]];
+  var level1_worm_tailSprite  = ['images/enemies/level_1.png', [100,150], [50, 50], 1, [0]];
+  var level1_battleStationSprite  = ['images/enemies/level_1.png', [0,200], [100, 100], 1, [0]];
+  var level1_junkMutantSprite  = ['images/enemies/level_1.png', [0,300], [100, 100], 1, [0]];
   //Bosses
   var bossSpriteDefinition ={
     normal: {
@@ -244,55 +255,6 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       sprite: bonusWeaponSpriteSchema,
       speed: [20,20]
     },
-    'enemy1' : {
-      sprite: tacnyanSpriteSchema,
-      speed: [45,45],
-      points: 100,
-      angle: 1,
-      life: 100,
-      totalLife: 100,
-      resize: [90,60],
-      damage: 100
-    },
-    'enemy2' : {
-      sprite: dolanSpriteSchema,
-      speed: [55,55],
-      points: 200,
-      angle: 1,
-      life: 200,
-      totalLife: 200,
-      resize: [50,50],
-      damage: 120
-    },
-    'enemy3' : {
-      sprite: flappySpriteSchema,
-      speed: [65,65],
-      points: 300,
-      angle: 1,
-      life: 300,
-      totalLife: 300,
-      resize: [50,50],
-      damage: 140
-    },
-    'enemy4' : {
-      sprite: dramaticSpriteSchema,
-      speed: [75,75],
-      points: 400,
-      angle: 1,
-      life: 400,
-      totalLife: 400,
-      resize: [50,45],
-      damage: 160
-    },
-    'enemy5' : {
-      sprite: level5SpriteSchema,
-      speed: [85,85],
-      points: 500,
-      angle: 1,
-      life: 500,
-      totalLife: 500,
-      damage: 180
-    },
     'boss':{
       speed: [25,25],
       points: 10000,
@@ -401,6 +363,100 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     }
   };
 
+  var joke_entities = {
+        'enemy1' : {
+      sprite: tacnyanSpriteSchema,
+      speed: [45,45],
+      points: 100,
+      angle: 1,
+      life: 100,
+      totalLife: 100,
+      resize: [90,60],
+      damage: 100
+    },
+    'enemy2' : {
+      sprite: dolanSpriteSchema,
+      speed: [55,55],
+      points: 200,
+      angle: 1,
+      life: 200,
+      totalLife: 200,
+      resize: [50,50],
+      damage: 120
+    },
+    'enemy3' : {
+      sprite: flappySpriteSchema,
+      speed: [65,65],
+      points: 300,
+      angle: 1,
+      life: 300,
+      totalLife: 300,
+      resize: [50,50],
+      damage: 140
+    },
+    'enemy4' : {
+      sprite: dramaticSpriteSchema,
+      speed: [75,75],
+      points: 400,
+      angle: 1,
+      life: 400,
+      totalLife: 400,
+      resize: [50,45],
+      damage: 160
+    },
+    'enemy5' : {
+      sprite: level5SpriteSchema,
+      speed: [85,85],
+      points: 500,
+      angle: 1,
+      life: 500,
+      totalLife: 500,
+      damage: 180
+    }
+  };
+
+  var level_1_entities = {
+    'junk1' : {
+      sprite: level1_junk1Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    }, 'junk2' : {
+      sprite: level1_junk2Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    }, 'junk3' : {
+      sprite: level1_junk3Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    },
+    'rat' : {
+      sprite: level1_ratSprite,
+      speed: [65,65],
+      points: 50,
+      angle: 1,
+      life: 100,
+      totalLife: 100,
+      resize: [50,50],
+      damage: 20,
+      actions : [{name: 'enemyShoot', delay: 1.5}]
+
+    },
+  }
 
 
   var backgroundEntities ={
@@ -507,18 +563,26 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     }
     return entity;
   }
- 
+  
   function getBackgroundEntity(name, opts){
     var entity = getEntity(name, opts, backgroundEntities);
     return entity;
   }
-  function getEnemy(pos, level){
-    var entity = getEntity('enemy'+level, {pos: pos});
-    entity.actions = [{name: 'enemyShoot', delay: 1.5}];
+
+  function getEnemy(pos, name, entitiesList){
+    var list; 
+    if(entitiesList == 'joke'){
+      list = joke_entities;
+    }else if(entitiesList == 'level_1'){
+      list = level_1_entities;
+    }
+
+    var entity = getEntity(name, {pos: pos}, list);
+
     entity.behaviourUpdate = function(dt){
       this.pos = petra.moveByAngle(dt)(this).pos;
-      //this = actions.shootThrottled(1.2, dt, 'enemyShoot');
     }.bind(entity);
+
     return entity;
   }
  

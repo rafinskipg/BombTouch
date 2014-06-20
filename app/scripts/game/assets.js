@@ -8,6 +8,7 @@ define( [], function(){
     'images/orbes/coin.png',
     'images/enemies/tacnyan.png',
     'images/enemies/rock.png',
+    'images/enemies/level_1.png',
     'images/bonusWeapon.png',
     'images/enemies/boss_1.png',
     'images/doggy/pixeleddog.png',

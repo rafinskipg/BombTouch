@@ -19,8 +19,16 @@ var stageStructure = {
     [
     [5],[5,5],[5,5,4],[5,4,3,5,4,5,4,5]
     ]
-  ]
+  ],
+  boss: 'bossBlue',
+  setOfEntities: 'joke'
 }
+stageStructure.stages = stageStructure.stages.map(function(stage){
+  stage = stage.map(function(enemy){
+    return 'enemy'+enemy;
+  })
+  return stage;
+})
 
 return stageStructure;
 });

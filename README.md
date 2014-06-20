@@ -51,14 +51,84 @@ they may appear in groups of 3 in line across the vertical, firing out of sync s
 
 made with pens, washing machines, tvs, pig carcasses, and other junk floating in space, a monster is born, somehow
 
-throws balls of scrap metal and cliché souvenirs, very large health, slow movement, slow fire rate, big size
+throws balls of scrap metal and clich? souvenirs, very large health, slow movement, slow fire rate, big size
 
 
-level 4: slime nebula
+cooldog
 
-enemy 1: Lamprey guards (invader)
-lamprey king
-Shoots clouds of poisonous slime that will damage the player as long as he is in contact with it.
+
+--level 2: Antsteroid field
+
+-enemy 1: asteroid ant workers (invader)
+
+fast movement, small size, low health, no fire, attacks the player directly, kamikaze style. Appears in line formation approaching from one corner of the screen moving towards the player.
+
+-enemy 2: asteroid ant soldiers (invader)
+
+slow moving, large health, spits acid in the player's direction, harmful if touched, they move in vertical line formation but cover behind each other when shoot  
+
+-enemy 3: symbiotic carnivorous funghi
+
+static trap-like enemies, get to close and they will eat you, instant death, doesn't affect the ants
+
+-final monster: asteroid ant queen
+
+spawns ant workers, squirts acid in all directions
+
+
+
+--level 3: slime nebula
+
+-enemy 1: Lamprey guards (invader)
+
+Medium health, medium speed.Shoots clouds of poisonous slime that will damage the player as long as he is in contact with it and greatly slow its speed. Moves in spear formation ( V ).
+
+-enemy 2: electromagnetic eel (invader)
+
+medium health, medium speed, moves in reverse spear formation, delivers electric shocks every few seconds that may damage the player if a certain distance, they will also shoot low damage sparks at the player.
+
+-enemy 3: giant slime bubble
+
+a big ball of sticky looking mucus floats through the screen, if the player touches it it will make him slower for X seconds
+
+-enemy 4: galactic paramecium
+
+low health, small size, medium slow movement, no fire, seeks the player, poisons and causes damage when hit.
+
+-final monster: morbous dick, space sperm whale
+
+mean looking rabid sperm whale pukes paramecium and shoots cannonballs from a rusty pirate cannon stuck in his head.
+
+
+--weapons:
+
+-freeze grenade-
+
+a grenade that delivers a freeze shock that paralizes every monster in the screen
+
+-plasma gun
+
+basic gun shoots plasma balls at medium speed, medium damage, infinite ammo
+
+-minigun
+
+shoots bullets at very fast fire rate, low damage, 1000 bullets per clip
+
+-seeker missile:
+
+very high damage, never misses target enemy
+
+-poison grenade
+
+creates a cloud of poison that slowly drains enemies health
+
+-flamethrower
+
+damages greatly all enemies in a large area, ammo runs away fast
+
+-the catacroker bomb
+
+a bomb very difficult to find, delivers a massive amount of damage to every enemy on screen
 
 
 ### Installation

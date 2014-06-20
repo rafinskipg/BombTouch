@@ -22,14 +22,13 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   
 
 
-  function init(opts, max, current, skipMessages, lvlStruct, levelName, delayBetweenEnemies){
-    MAX_STAGE = max; 
+  function init(opts, current, skipMessages, lvlStruct, levelName, delayBetweenEnemies){
+    MAX_STAGE = lvlStruct.stages.length; 
     opts = opts;
     CURRENT_STAGE = current;
     levelStructure = lvlStruct;
     STARTING_DELAY = skipMessages ? 0 : 20;
     if( delayBetweenEnemies){
-      console.log(delayBetweenEnemies)
       levelStructure.time_between_enemies = delayBetweenEnemies;  
     }
     
@@ -57,7 +56,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     TIME_SINCE_LAST_GROUP_OUT = 0;
     TIME_SINCE_LAST_STAGE_OUT = 0;
 
-    for(var i = 0; i< max; i++){
+    for(var i = 0; i< MAX_STAGE; i++){
       INFORMATION.stages.push({
         total: 0,
         killed: 0,
@@ -173,7 +172,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     TIME_SINCE_LAST_ENEMY_OUT = 0;
     var enemyID = levelStructure.stages[CURRENT_STAGE-1][CURRENT_GROUP][CURRENT_ENEMY];
     CURRENT_ENEMY++;
-    var enemy =  EL.getEnemy(pos,enemyID);
+    var enemy =  EL.getEnemy(pos,enemyID, levelStructure.setOfEntities);
     enemy.stage = CURRENT_STAGE;
     return enemy;
   }
