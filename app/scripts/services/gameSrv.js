@@ -34,6 +34,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
 
     function getCurrentLevel(){
       var level = settingsSrv.getLevel();
+      console.log(level)
       if(level == 1.0){
         return jokeLevel;
       }else{
@@ -42,7 +43,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
     }
 
     function reset(){
-      game = new brainSrv(getCurrentLevel());
+      game = new brainSrv();
       game.suscribeMessages(function(messages,timeoutMessage,type){
         notify(suscribersMessages, {
           messages: messages,
@@ -64,7 +65,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
     function play(canvasId){
       reset();
       sceneIntro.init(canvasId, function(){
-        game.start();
+        game.start(getCurrentLevel());
         notify(suscribersGameStart, 'started');
       } );
     }

@@ -177,12 +177,14 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.setAnimation = function(name, cb,reset){
-    this.enabledAnimation = name;
-    if(cb){
-      this.animations[this.enabledAnimation].setFrameChangeCallback(cb);
-    }
-    if(reset){
-      this.resetAnimation(this.enabledAnimation);
+    if(this.animations[name]){
+      this.enabledAnimation = name;
+      if(cb){
+        this.animations[this.enabledAnimation].setFrameChangeCallback(cb);
+      }
+      if(reset){
+        this.resetAnimation(this.enabledAnimation);
+      }
     }
   }
   RenderableEntity.prototype.setDefaultAnimation = function(){
@@ -194,6 +196,9 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
       this.sprite.update(dt);
     }else{
       this.animations[this.enabledAnimation].update(dt);
+    }
+    if(this.behaviourUpdate){
+      this.behaviourUpdate(dt);
     }
   }
 

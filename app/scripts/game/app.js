@@ -3,7 +3,7 @@ define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scen
 return BombTouchApp.
     factory('brainSrv', ['audioSrv','settingsSrv', function(audioSrv, settingsSrv) {
   
-  var LEVEL_STRUCTURE, CURRENT_STAGE;
+  var CURRENT_STAGE;
 
   /****************************
   ****************************
@@ -200,7 +200,7 @@ return BombTouchApp.
     }
   };
 
-  function start() {
+  function start(LEVEL_STRUCTURE) {
     preloadSounds();
     //TODO , here send levels director the stage 0, at "continue game" send the current Stag, increment the current stag
 
@@ -700,7 +700,7 @@ return BombTouchApp.
 
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
-      entities.map(SCENARIO.updateSprite(dt))
+      entities.map(updateEntity(dt))
         .map(petra.moveByAngle(dt))
         .map(removeIfDone)
     ); 
@@ -841,15 +841,27 @@ return BombTouchApp.
 
   function shootThrottled(time, dt, shootType){
     return entityStepsInTime(time,dt)(function(entity){
-      shootType(entity, entity.angle);
+      if(shootType == 'blueShoot'){
+        blueShoot(entity, entity.angle);
+      }else{
+        enemyShoot(entity, entity.angle);
+      }
+      
       return entity;
     });
   }
-  function playActionThrottled(time, dt){
-    return entityStepsInTime(time,dt)(function(entity){
-      playAction(entity.actions.pop(), entity);
+
+  function playActionThrottled( dt, keep){
+    return function(entity){
+      var action = entity.actions.pop();
+      if(keep){
+        entity.actions.unshift(action);
+      }
+      entityStepsInTime(action.delay,dt)(function(entity){
+        playAction(action.name, entity);
+      })(entity);
       return entity;
-    });
+    }
   }
   function playAction(action, entity){
     var lifePercent = entity.life / entity.totalLife;
@@ -993,7 +1005,7 @@ return BombTouchApp.
 
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
-      entities.map(SCENARIO.updateSprite(dt))
+      entities.map(updateEntity(dt))
       .map(petra.moveByAngle(dt))
       .map(removeIfOutsideScreen));
   }
@@ -1007,13 +1019,18 @@ return BombTouchApp.
 
   function updateEnemies(dt){
     enemies = hu.compact(
-      enemies.map(SCENARIO.updateSprite(dt))
-      .map(petra.moveByAngle(dt))
-      .map(shootThrottled(1.2, dt, enemyShoot))
+      enemies.map(updateEntity(dt))
+      .map(updateEntity(dt))
+      .map(playActionThrottled(dt, true))
       .map(petra.removeIfOutsideScreenleft));
   }
-
   
+  function updateEntity(dt){
+    return function(entity){
+      entity.update(dt);
+      return entity;
+    }
+  }
   function updateSpecials(dt){
     specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
   }
@@ -1035,7 +1052,7 @@ return BombTouchApp.
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
       .map(wrapperReadyForActionOnly(petra.moveByAngle(dt)))
-      .map(SCENARIO.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(ifCollidesApplyBonusTo(player))
       .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
@@ -1044,23 +1061,23 @@ return BombTouchApp.
   function updateBonusWeapons(dt){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
-      .map(shootThrottled(0.5, dt, blueShoot))
+      .map(shootThrottled(0.5, dt, 'blueShoot'))
       .map(removeBonusIfTImeGreaterThan(15)));
   }
 
   function updateBosses(dt){
     bosses = hu.compact(bosses
-      .map(SCENARIO.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
+      .map(wrapperReadyForActionOnly(playActionThrottled(dt)))
       .map(resetBossActionsIfEmpty)
       .map(moveToPlayerVertically(dt)));
   }
 
   function updateGraves(dt){
     graves = hu.compact(
-      graves.map(SCENARIO.updateSprite(dt))
+      graves.map(updateEntity(dt))
       .map(endPostGameIfDone));
   }
 
@@ -1268,8 +1285,7 @@ return BombTouchApp.
     GAME API
   ****************************
   ****************************/
-  var GAME = function(levelStructure) {
-    LEVEL_STRUCTURE = levelStructure;
+  var GAME = function() {
     return {
       suscribeGameOver : suscribeGameOver,
       suscribePoints : suscribePoints,

@@ -174,7 +174,6 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     var enemyID = levelStructure.stages[CURRENT_STAGE-1][CURRENT_GROUP][CURRENT_ENEMY];
     CURRENT_ENEMY++;
     var enemy =  EL.getEnemy(pos,enemyID);
-    //var enemy =  EL.getSpaceInvader(pos,enemyID);
     enemy.stage = CURRENT_STAGE;
     return enemy;
   }
@@ -253,6 +252,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   }
 
   function showInitialDialogs(){
+    //TODO: Move this inside every level Declaration, and calculate the initial delay of the level by the amount of messages,
     var messages = [];
     messages.push( new models.Message('ENEMY! The end of this quest is near', opts.main_character_name,3000))
     messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', opts.main_enemy_name,3000))

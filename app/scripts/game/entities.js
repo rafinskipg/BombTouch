@@ -513,26 +513,55 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     return entity;
   }
   function getEnemy(pos, level){
-    return getEntity('enemy'+level, {pos: pos});
+    var entity = getEntity('enemy'+level, {pos: pos});
+    entity.actions = [{name: 'enemyShoot', delay: 1.5}];
+    entity.behaviourUpdate = function(dt){
+      this.pos = petra.moveByAngle(dt)(this).pos;
+      //this = actions.shootThrottled(1.2, dt, 'enemyShoot');
+    }.bind(entity);
+    return entity;
   }
  
   function getBoss(pos){
     var entity = getEntity('boss', {pos:pos});
+    var shoot = {
+      name : 'enemyShoot',
+      delay: 0.7
+    };
+    var doubleShoot = {
+      name : 'doubleShoot', 
+      delay: 0.3
+    }
+    var move = {
+      name: 'move', 
+      delay: 1.2
+    };
+    var launchEnemy = {
+      name: 'launchEnemy',
+      delay: 0.5
+    };
 
-    entity.actions = [
-      'enemyShoot',
-      'doubleShoot',
-      'move',
-      'enemyShoot',
-      'launchEnemy',
-      'doubleShoot',
-      'teleport',
-      'enemyShoot',
-      'doubleShoot',
-      'enemyShoot',
-      'talk'
-    ];
+    var teleport = {
+      name : 'teleport',
+      delay: 0.8
+    };
 
+    var talk = {
+      name : 'talk',
+      delay: 1.5
+    }
+    entity.actions = [];
+
+    entity.actions.push(shoot)
+    entity.actions.push(shoot)
+    entity.actions.push(doubleShoot)
+    entity.actions.push(launchEnemy)
+    entity.actions.push(teleport)
+    entity.actions.push(doubleShoot)
+    entity.actions.push(shoot)
+    entity.actions.push(move)
+    entity.actions.push(doubleShoot)
+    entity.actions.push(talk)
     return entity;
   }
 

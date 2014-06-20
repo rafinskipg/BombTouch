@@ -83,13 +83,13 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
 
     this.frontElements = hu.compact(
       this.frontElements
-      .map(self.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft)); 
 
     this.bgElements = hu.compact(
       this.bgElements
-      .map(self.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
 
@@ -100,7 +100,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     }
   }
 
-  Scenario.prototype.updateSprite = function updateSprite(dt){
+  function updateEntity(dt){
     return function(entity){
       entity.update(dt);
       return entity;
