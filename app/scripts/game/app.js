@@ -381,6 +381,10 @@ return BombTouchApp.
       bonuses.push(bonus);
     }, 'brainSrv');
 
+    LEVELS_DIRECTOR.suscribeAmbientEntities(function(entity){
+      miscelanea_back.push(entity);
+    }, 'brainSrv');
+
     LEVELS_DIRECTOR.suscribeMessages(function(opts){
       showMessages(opts.messages, opts.timeout, opts.type);
     }, 'brainSrv');
@@ -469,14 +473,27 @@ return BombTouchApp.
         player.shooting = true;
       }
       TIMERS.shootSpriteTime = 0.5;
-      
+
+      var isCriticalStrike = petra.passProbabilities(player.critChance);
+      if(isCriticalStrike){
+        pointsToRender.push(new models.RenderableText({
+          text: 'CRITICAL STRIKE!!',
+          color: 'rgba(69, 187, 111, 0.49)',
+          timeAlive: 0, 
+          speed: [50,50],
+          pos: player.pos
+        }));
+      }
+      var damage = isCriticalStrike ? player.damage * 2 : player.damage;
+
       var y = player.pos[1] + player.getHeight() / 2;
       var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
+
       if(player.bonuses.doubleShoot > 0){
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2,  rotateSprite: 0.2 }));  
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8, rotateSprite: 1.8 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 0.2,  rotateSprite: 0.2 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 1.8, rotateSprite: 1.8 }));  
       }else{
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: player.angle}));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: player.angle}));  
       }
       
       addShootFire(bulletpos);
@@ -550,7 +567,7 @@ return BombTouchApp.
     }
     pointsToRender.push(new models.RenderableText({
       text: pts,
-      color: 'yellow',
+      color: 'rgba(39, 214, 46, 0.61)',
       timeAlive: 0, 
       speed: [50,50],
       pos: petra.sumIntegerToArray(pos, 30)
@@ -748,8 +765,8 @@ return BombTouchApp.
       var xC = radius * Math.cos(angleInRadians);
       var yC = radius * Math.sin(angleInRadians);
 
-      xC = xC + player.pos[0];
-      yC = yC + player.pos[1];
+      xC = xC + player.getX();
+      yC = yC + player.getY();
       entity.pos =[xC,yC]
       return entity;
     }
@@ -950,11 +967,11 @@ return BombTouchApp.
 
   function moveToPlayerVertically(dt){
     return function(entity){
-      if(player.pos[1] < entity.getY() - 40){
+      if(player.getY() < entity.getY() - 40){
         entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
-      if(player.pos[1] > entity.getY() - 40){
+      if(player.getY() > entity.getY() - 40){
         entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 
@@ -1067,7 +1084,7 @@ return BombTouchApp.
       pointsToRender
       .map(updateTimeCounter(dt))
       .map(moveUp(dt))
-      .map(removeIfTimeCounterGreaterThan(2))
+      .map(removeIfTimeCounterGreaterThan(1))
       );
   }
 
@@ -1149,7 +1166,7 @@ return BombTouchApp.
       if(entitiesCollide(entity,item)){
         pointsToRender.push(new models.RenderableText({
           text: item.damage,
-          color: 'red',
+          color: 'rgba(169, 81, 185, 0.61)',
           timeAlive: 0, 
           speed: [50,50],
           pos: entity.pos
@@ -1192,6 +1209,14 @@ return BombTouchApp.
   function playerDamaged(damage){
     playSound(SOUNDS.ouch);
     player.life -= damage;
+
+    pointsToRender.push(new models.RenderableText({
+      text: damage,
+      color: 'rgba(255, 0, 0, 0.61)',
+      timeAlive: 0, 
+      speed: [50,50],
+      pos: [player.getX(), player.getY()]
+    }));
 
     var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? names.main_character_super_damaged : names.main_character_damaged))
     showMessages([messageOuch]);

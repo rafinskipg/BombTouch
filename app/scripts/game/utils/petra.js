@@ -16,6 +16,10 @@ define( ['hu'], function(hu){
       return Math.floor( Math.random() * 2 ) == 1
     }
 
+    Petra.passProbabilities = function(probabilitieNumber){
+      return ((probabilitieNumber * 100) >= Petra.random(0,100))
+    }
+
     Petra.moveToDirection = function(dt, dir){
       return function(entity){
         var newPos = calculateNextPosition(dir, entity, dt);

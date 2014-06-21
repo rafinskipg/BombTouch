@@ -209,6 +209,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       damage: 80,
       baseDamage: 80,
       bulletName : 'blueray',
+      critChance: 0.05,
       hitbox: {
         pos: [25,30],
         size: [30,40]
@@ -474,62 +475,78 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
 
 
   var backgroundEntities ={
+    'junk1' : {
+      sprite: level1_junk1Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    }, 'junk2' : {
+      sprite: level1_junk2Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    }, 'junk3' : {
+      sprite: level1_junk3Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    },
     'nebula': {
-      speed: 10,
+      speed: [10,10],
       resize: [400,350],
       sprite: nebulaSpriteSheet,
       angle: 1
     },
     'nebula2': {
-      speed:10 ,
+      speed:[10,10],
       resize: [400,400],
       sprite: nebula2SpriteSheet,
       angle: 1
     },'nebula3': {
-      speed:10 ,
+      speed: [10,10],
       resize: [400,400],
       sprite: nebula3SpriteSheet,
       angle: 1
     },
     'asteroids': {
-      speed: 50,
+      speed: [50,50],
       resize: [400,400],
       sprite: asteroidsSpriteSheet ,
       angle: 1
     },
     'asteroids2': {
-      speed: 50,
+      speed: [50,50],
       resize: [400,400],
       sprite: asteroids2SpriteSheet,
       angle: 1
     },
     'asteroids3': {
-      speed: 50,
+      speed: [50,50],
       resize: [400,400],
       sprite: asteroids3SpriteSheet,
       angle: 1
     },
     'blackhole': {
-      speed: 5,
+      speed: [5,5],
       resize: [400,400],
       sprite: blackholeSpriteSheet,
       angle: 1
     },
     'galaxy': {
-      speed: 10,
+      speed: [10,10],
       resize: [400,400],
       sprite: galaxySpriteSheet,
       angle: 1
     },
     'galaxy2':{
-      speed: 10,
+      speed: [10,10],
       resize: [400,400],
       sprite: galaxy2SpriteSheet,
       angle: 0.8,
       rotateSprite: -0.8
     },
     'dust':{
-      speed: 10,
+      speed: [10,10],
       sprite: dustSpriteSheet,
       angle: 1.2,
       rotateSprite: 0.2
@@ -543,7 +560,6 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     }
     
     if(opts.rotateSprite){
-      //entityDefinition.angle =  opts.rotateSprite * 1 +1 ;
       entityDefinition.rotateSprite = opts.rotateSprite;
     }
     
@@ -602,7 +618,6 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     var entity = getEntity(name, opts, list);
     entity.angle = petra.randomFloat(7/12,17/12);
     entity.bounces = 5;
-    console.log(entity)
     return entity;
   }
 
@@ -614,7 +629,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     };
     var doubleShoot = {
       name : 'doubleShoot', 
-      delay: 0.8
+      delay: 0.2
     }
     var move = {
       name: 'move', 

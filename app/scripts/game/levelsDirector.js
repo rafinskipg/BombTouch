@@ -13,11 +13,13 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   var suscriptorsAddEnemy;
   var suscriptorsAddBoss;
   var suscriptorsAddBonus;
+  var suscriptorsAmbient;
   var suscritorsMessages;
   var STARTING_DELAY;
   var TIME_SINCE_LAST_ENEMY_OUT;
   var TIME_SINCE_LAST_STAGE_OUT;
   var TIME_SINCE_LAST_GROUP_OUT;
+  var TIME_SINCE_LAST_AMBIENCE_OUT;
   var ALLOW_ENEMY_OUT = false;
   var MAX_HEIGHT;
   var MAX_WIDTH;
@@ -43,6 +45,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     suscriptorsAddBoss = {};
     suscriptorsAddBonus = {};
     suscritorsMessages = {};
+    suscriptorsAmbient = {};
     INFORMATION = {
       bonuses:{
         picked:0,
@@ -58,6 +61,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     TIME_SINCE_LAST_ENEMY_OUT = 0;
     TIME_SINCE_LAST_GROUP_OUT = 0;
     TIME_SINCE_LAST_STAGE_OUT = 0;
+    TIME_SINCE_LAST_AMBIENCE_OUT = 0;
 
     for(var i = 0; i< MAX_STAGE; i++){
       INFORMATION.stages.push({
@@ -92,6 +96,8 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     if(TIME >= STARTING_DELAY){
       BONUS_TIME += dt;
       TIME_SINCE_LAST_ENEMY_OUT+=dt;
+      TIME_SINCE_LAST_AMBIENCE_OUT +=dt;
+
       if(CURRENT_STAGE <= MAX_STAGE){
         if(allEnemiesFromStageAreOut(CURRENT_STAGE -1 )){
           TIME_SINCE_LAST_STAGE_OUT+=dt;
@@ -117,6 +123,10 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     }
     if(shouldAddBoss()){
       notify(suscriptorsAddBoss ,createBoss.bind(this));
+    }
+
+    if(shouldAddAmbientEntity()){
+      notify(suscriptorsAmbient, createAmbientEntity());
     }
 
     if(shouldAddBonus()){
@@ -175,6 +185,14 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       return false;
     }
   }
+
+  function shouldAddAmbientEntity(){
+    if(TIME_SINCE_LAST_AMBIENCE_OUT >= 1){
+      TIME_SINCE_LAST_AMBIENCE_OUT = 0;
+      var number = petra.random(1,3);
+      return (number == 3);
+    }
+  }
   //ENEMY
   function createEnemy(pos){
     enemyAdded();
@@ -194,7 +212,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     if(enemy.stage <= MAX_STAGE){
       INFORMATION.stages[enemy.stage - 1].killed += 1;  
     }
-    if((enemy.dropProbabilities * 100) >= petra.random(0,100)){
+    if(petra.passProbabilities(enemy.dropProbabilities)){
       notify(suscriptorsAddBonus ,createBonus(enemy.pos, enemy.dropItem, true));
     }
   }
@@ -209,7 +227,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   //BONUS
   function createBonus(pos, name, dropped){
     var bonus;
-    pos = pos || [MAX_WIDTH,  Math.random() * (MAX_HEIGHT - 39)];;
+    pos = pos || [MAX_WIDTH,  Math.random() * (MAX_HEIGHT - 39)];
     bonus = EL.getBonus(name, {pos:pos});
     if(!dropped){
       bonusAdded(bonus);  
@@ -228,6 +246,19 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   function pickedDogeBonus(){
     INFORMATION.bonuses.picked += 1;
   }
+
+  //Ambient
+  function createAmbientEntity(){
+    var max = levelStructure.ambient_entities.length - 1;
+    var entity_name = levelStructure.ambient_entities[petra.random(0, max)];
+    if(entity_name){
+      var entity = EL.getBackgroundEntity(entity_name, {pos: [MAX_WIDTH,  Math.random() * (MAX_HEIGHT - 39)]});  
+    }
+    return entity;
+  }
+
+  //Suscriptions
+
   function suscribeStageUp(fn, name){
     suscribe(fn, name,suscriptorsStageUp);
   }
@@ -242,6 +273,9 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   }
   function suscribeMessages(fn, name){
     suscribe(fn, name,suscritorsMessages);
+  }
+  function suscribeAmbientEntities(fn,name){
+    suscribe(fn, name , suscriptorsAmbient);
   }
 
   function suscribe(fn, name, map){
@@ -288,6 +322,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       suscribeAddBoss: suscribeAddBoss,
       suscribeAddBonus: suscribeAddBonus,
       suscribeMessages: suscribeMessages,
+      suscribeAmbientEntities : suscribeAmbientEntities,
       createEnemy:createEnemy,
       killedEnemy: killedEnemy,
       createBoss: createBoss,

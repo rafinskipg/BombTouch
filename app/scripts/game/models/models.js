@@ -48,6 +48,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.actions = opts.actions || null;
     this.dropProbabilities = opts.dropProbabilities || 0.05;
     this.dropItem = opts.dropItem || 'greenGem';
+    this.critChance = opts.critChance || 0;
 
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
