@@ -19,10 +19,11 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   var TIME_SINCE_LAST_STAGE_OUT;
   var TIME_SINCE_LAST_GROUP_OUT;
   var ALLOW_ENEMY_OUT = false;
-  
+  var MAX_HEIGHT;
+  var MAX_WIDTH;
 
 
-  function init(opts, current, skipMessages, lvlStruct, levelName, delayBetweenEnemies){
+  function init(opts, current, skipMessages,canvas, lvlStruct, levelName, delayBetweenEnemies){
     MAX_STAGE = lvlStruct.stages.length; 
     opts = opts;
     CURRENT_STAGE = current;
@@ -31,7 +32,9 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     if( delayBetweenEnemies){
       levelStructure.time_between_enemies = delayBetweenEnemies;  
     }
-    
+    MAX_HEIGHT = canvas.height;
+    MAX_WIDTH = canvas.width;
+
     CURRENT_GROUP = 0;
     CURRENT_ENEMY = 0;
     BOSS_OUT = false;
@@ -117,7 +120,13 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     }
 
     if(shouldAddBonus()){
-      notify(suscriptorsAddBonus ,createBonus.bind(this));
+      var name;
+      if(petra.flipCoin()){
+        name = 'dogeBonus';
+      }else{
+        name = 'doubleShootBonus';
+      }
+      notify(suscriptorsAddBonus ,createBonus(null, name));
     }
   }
 
@@ -185,6 +194,9 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     if(enemy.stage <= MAX_STAGE){
       INFORMATION.stages[enemy.stage - 1].killed += 1;  
     }
+    if((enemy.dropProbabilities * 100) >= petra.random(0,100)){
+      notify(suscriptorsAddBonus ,createBonus(enemy.pos, enemy.dropItem, true));
+    }
   }
   //BOSS
   function createBoss(pos){
@@ -195,20 +207,19 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     BOSS_OUT = true;
   }
   //BONUS
-  function createBonus(pos){
+  function createBonus(pos, name, dropped){
     var bonus;
-    if(petra.flipCoin()){
-      bonus = EL.getEntity('dogeBonus',{pos:pos})
-      dogeBonusAdded();
-    }else{
-      bonus = EL.getEntity('doubleShootBonus', {pos:pos});
+    pos = pos || [MAX_WIDTH,  Math.random() * (MAX_HEIGHT - 39)];;
+    bonus = EL.getBonus(name, {pos:pos});
+    if(!dropped){
+      bonusAdded(bonus);  
     }
-
-    bonusAdded();
-
     return bonus;
   }
-  function bonusAdded(){
+  function bonusAdded(bonus){
+    if(bonus.name  == 'dogeBonus'){
+      dogeBonusAdded();
+    }
     BONUS_TIME = 0;
   }
   function dogeBonusAdded(){

@@ -20,6 +20,15 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.duration = duration || 2000;
   }
 
+  function RenderableText(opts){
+    this.text = opts.text;
+    this.color = opts.color || white;
+    this.pos = opts.pos;
+    this.speed = opts.speed || [30,30];
+    this.timeAlive = 0;
+    this.font = opts.font || '16px';
+  }
+
   /*RenderableEntity*/
   function RenderableEntity(opts){
     this.pos = opts.pos;
@@ -37,7 +46,9 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.bulletShotFireName = opts.bulletShotFireName || 'bossShootFire';
     this.bulletName =  opts.bulletName || 'bullet';
     this.actions = opts.actions || null;
-    
+    this.dropProbabilities = opts.dropProbabilities || 0.05;
+    this.dropItem = opts.dropItem || 'greenGem';
+
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
     }
@@ -207,7 +218,8 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   return  {
     Message: Message,
     Entity: RenderableEntity,
-    Scene: Scene
+    Scene: Scene,
+    RenderableText: RenderableText
   };
 
 });

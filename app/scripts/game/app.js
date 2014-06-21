@@ -21,7 +21,8 @@ return BombTouchApp.
       game_over: false,
       paused: false,
       post_game_completed : false,
-      background_speed: 50
+      background_speed: 50,
+      gemsPicked: 0
     };
     return options;
   }
@@ -210,7 +211,7 @@ return BombTouchApp.
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
-    LEVELS_DIRECTOR.init(names, 1,true, LEVEL_STRUCTURE);
+    LEVELS_DIRECTOR.init(names, 1,true,canvas,LEVEL_STRUCTURE);
     suscribeToEvents();
     main();
   };
@@ -369,12 +370,13 @@ return BombTouchApp.
       STATE.background_speed = 1.6;
     }, 'brainSrv');
 
-    LEVELS_DIRECTOR.suscribeAddBonus(function(createFunction){
-      var bonus = createFunction([canvas.width,  Math.random() * (canvas.height - 39)]);
+    LEVELS_DIRECTOR.suscribeAddBonus(function(bonus){
       if(bonus.name == 'dogeBonus'){
         bonus.obtain = dogeBonusObtain;  
       }else if(bonus.name == 'doubleShootBonus'){
         bonus.obtain = doubleWeaponBonusObtain;
+      } else if(bonus.name == 'greenGem'){
+        bonus.obtain = greenGemBonusObtain;
       }
       bonuses.push(bonus);
     }, 'brainSrv');
@@ -400,7 +402,6 @@ return BombTouchApp.
   
   function endGame() {
     STATE.game_over = true;
-    //stopAmbientSound();
     graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
@@ -425,7 +426,6 @@ return BombTouchApp.
   function pause(){
     STATE.paused = true;
     SCENARIO.pause();
-    //pauseAmbientSound();
   }
 
   function isPaused(){
@@ -548,13 +548,13 @@ return BombTouchApp.
     for(var i = 0; i<notifyPoints.length; i++){
       notifyPoints[i](STATE.points);
     }
-    pointsToRender.push({
+    pointsToRender.push(new models.RenderableText({
       text: pts,
       color: 'yellow',
       timeAlive: 0, 
       speed: [50,50],
       pos: petra.sumIntegerToArray(pos, 30)
-    });
+    }));
   }
     
   function addPower(pow){
@@ -639,6 +639,10 @@ return BombTouchApp.
   }
   function doubleWeaponBonusObtain(entity){
     entity.bonuses.doubleShoot = 10;
+  }
+  function greenGemBonusObtain(entity, bonus){
+    addPoints(bonus.points, bonus.pos);
+    STATE.gemsPicked++;
   }
 
   function updateEntities(dt) {
@@ -1135,7 +1139,7 @@ return BombTouchApp.
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
-        bonus.obtain(entity);
+        bonus.obtain(entity, bonus);
       }
       return bonus;
     }
@@ -1143,13 +1147,13 @@ return BombTouchApp.
   function ifCollidesApplyDamageTo(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
-        pointsToRender.push({
+        pointsToRender.push(new models.RenderableText({
           text: item.damage,
           color: 'red',
           timeAlive: 0, 
           speed: [50,50],
           pos: entity.pos
-        });
+        }));
         entity.life -= item.damage;
       }
       return item;
@@ -1196,6 +1200,7 @@ return BombTouchApp.
   function killEnemy(enemy){
     LEVELS_DIRECTOR.killedEnemy(enemy);
     addPoints(enemy.points, enemy.pos);
+
     addPower(enemy.points);
     playSound(SOUNDS.death);
     addExplosion(enemy.pos, enemy.getSize());    

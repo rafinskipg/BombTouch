@@ -102,6 +102,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true];
+  
+  //BUllets
   var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null, true];
   var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13], null, true];
   var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
@@ -109,6 +111,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var portalBackSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
   var portalFrontSpriteSheet = ['images/sparks/sparks.png', [0,400], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
   
+  //Background entities
   var nebulaSpriteSheet = ['images/nebula/nebula1.png', [0,0], [1030,780], 1 , [0]]
   var nebula2SpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0]]
   var nebula3SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0]]
@@ -124,7 +127,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 12, [0,1,2,3,4,5,6,7,8]];
   var doubleShootBonusSpriteSchema = ['images/weapons/bonus.png', [100,150], [50,50], 8, [0,1,2,3,4,5]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
-
+  var greenGemSpriteSheet =['images/weapons/bonus.png', [0,200], [50,50], 1, [0]];
   //Var Space invaders version
   var spaceInvaderSpriteSchema = ['images/enemies/rock.png', [0,0], [55,55],8,[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]]
 
@@ -239,18 +242,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
         }
       ]
     },
-    'dogeBonus': {
-      speed: [200,200],
-     // resize: [120,60],
-      resize: [50,50],
-      sprite: bonusSpriteSchema,
-      angle : 1
-    }, 
-    'doubleShootBonus': {
-      speed: [200,200],
-      sprite: doubleShootBonusSpriteSchema,
-      angle : 1
-    },
+
     'bonusWeapon':{
       sprite: bonusWeaponSpriteSchema,
       speed: [20,20]
@@ -459,6 +451,28 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   }
 
 
+  var bonusItems  = {
+    'greenGem': {
+      speed: [10,10],
+      resize: [50,50],
+      sprite: greenGemSpriteSheet,
+      points: 100,
+      angle: 1
+    },
+    'dogeBonus': {
+      speed: [200,200],
+      resize: [50,50],
+      sprite: bonusSpriteSchema,
+      angle : 1
+    }, 
+    'doubleShootBonus': {
+      speed: [200,200],
+      sprite: doubleShootBonusSpriteSchema,
+      angle : 1
+    }
+  }
+
+
   var backgroundEntities ={
     'nebula': {
       speed: 10,
@@ -557,10 +571,6 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     var entity =  new GameEntity(JSON.parse(JSON.stringify(entityList[name])), opts);
     entity.name = name;
 
-    if(name == 'doubleShootBonus' || name == 'dogeBonus'){
-      entity.angle = petra.randomFloat(7/12,17/12);
-      entity.bounces = 5;
-    }
     return entity;
   }
   
@@ -585,7 +595,17 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
 
     return entity;
   }
- 
+  
+  function getBonus(name, opts){
+    var list = bonusItems;
+
+    var entity = getEntity(name, opts, list);
+    entity.angle = petra.randomFloat(7/12,17/12);
+    entity.bounces = 5;
+    console.log(entity)
+    return entity;
+  }
+
   function getBoss(pos){
     var entity = getEntity('boss', {pos:pos});
     var shoot = {
@@ -649,7 +669,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     getBackgroundEntity: getBackgroundEntity,
     getEnemy: getEnemy,
     getSpaceInvader: getSpaceInvader,
-    getBoss: getBoss
+    getBoss: getBoss,
+    getBonus: getBonus
   }
 });
 

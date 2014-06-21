@@ -5,7 +5,6 @@ define( [], function(){
     'images/backgrounds/galaxy.png',
     'images/backgrounds/thing.png',
     'images/backgrounds/dust.png',
-    'images/orbes/coin.png',
     'images/enemies/tacnyan.png',
     'images/enemies/rock.png',
     'images/enemies/level_1.png',
