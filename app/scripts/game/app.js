@@ -49,6 +49,7 @@ return BombTouchApp.
     bonusWeapons,
     bosses,
     enemyBullets,
+    neutralBullets,
     graves,
     pointsToRender,
     player;
@@ -65,6 +66,7 @@ return BombTouchApp.
     bosses = [];
     pointsToRender = [];
     enemyBullets = [];
+    neutralBullets =[];
     graves = [];
     player = {};
   }
@@ -675,6 +677,7 @@ return BombTouchApp.
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
+    updateNeutralBullets(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -900,6 +903,7 @@ return BombTouchApp.
   function playAction(action, entity){
     var lifePercent = entity.life / entity.totalLife;
     var life = 'normal';
+    
     if(lifePercent < 0.7 && lifePercent > 0.4 ){
       life = 'damaged';
     }else if(lifePercent < 0.4){
@@ -908,7 +912,14 @@ return BombTouchApp.
     
     if(action =='enemyShoot'){
       entity.setAnimation('shoot'+life);
-      enemyShoot(entity,  entity.angle );
+      enemyShoot(entity,  entity.getBulletAngle() );
+    }else if(action =='neutralShoot'){
+      entity.setAnimation('shoot'+life);
+      neutralShoot(entity,  entity.getBulletAngle() );
+    }else if(action == 'aim'){
+      //TODO, get near entity
+      entity.setAnimation('aiming');
+      entity.aimingAt = player;
     }else if(action =='doubleShoot'){
       entity.setAnimation('shoot'+life);
       enemyShoot(entity,0.6 );
@@ -917,7 +928,6 @@ return BombTouchApp.
       enemyShoot(entity,1.2 );
       enemyShoot(entity,1.4 );
     }else if(action =='teleport'){
-
       entity.setAnimation('teleport'+life, function(frame,index){
         var times = 0;
         if(frame == 6 && times < 1){
@@ -949,6 +959,13 @@ return BombTouchApp.
     var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: angle });
     bullet.speed = [300,300];
     enemyBullets.push(bullet);      
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
+    playSound(SOUNDS.shoot);
+  } 
+  function neutralShoot(entity, angle){
+    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: angle });
+    bullet.speed = [300,300];
+    neutralBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
     playSound(SOUNDS.shoot);
   }
@@ -1049,6 +1066,9 @@ return BombTouchApp.
 
   function updateEnemyBullets(dt){
     enemyBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(enemyBullets, dt);
+  } 
+  function updateNeutralBullets(dt){
+    neutralBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(neutralBullets, dt);
   }
 
   function updateEnemies(dt){
@@ -1239,6 +1259,10 @@ return BombTouchApp.
         bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
           .map(ifCollidesAddSpark(enemy))
           .map(removeIfCollideWith(enemy)));
+
+        neutralBullets = hu.compact(neutralBullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(ifCollidesAddSpark(enemy))
+          .map(removeIfCollideWith(enemy)));
           
         specials
           .map(ifCollidesApplyDamageTo(enemy));
@@ -1264,6 +1288,9 @@ return BombTouchApp.
     bosses = collisionToEnemyGroup(bosses);
 
     enemyBullets = hu.compact(enemyBullets
+        .map(removeIfCollideWithAndPlaySound(player)));
+
+    neutralBullets = hu.compact(neutralBullets
         .map(removeIfCollideWithAndPlaySound(player)));
   }
 
@@ -1303,6 +1330,7 @@ return BombTouchApp.
     var entitiesToRender = [
       bullets,
       enemyBullets,
+      neutralBullets,
       bosses,
       miscelanea_back,
       enemies,

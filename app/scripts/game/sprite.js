@@ -68,8 +68,11 @@
                 origY -= translation[1];
             }
             
-            if(angle){
-                ctx.rotate(angle * Math.PI);                 
+            if(angle){  
+                ctx.translate(this.expectedSize[0]/2, this.expectedSize[1]/2)  
+                ctx.rotate(angle * Math.PI); 
+                origX  -=this.expectedSize[0]/2;   
+                origY  -=this.expectedSize[1]/2;   
             }
 
 

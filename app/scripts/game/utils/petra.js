@@ -33,6 +33,10 @@ define( ['hu'], function(hu){
       return radians * (180/Math.PI)
     }
 
+    Petra.degreeToRadian = function(degree){
+      return degree/(180/Math.PI);
+    }
+
     Petra.moveByAngle = function(dt){
       return function(entity){
         var newPos = calculateNextPositionByAngle(entity, dt);
@@ -62,6 +66,18 @@ define( ['hu'], function(hu){
     Petra.calculateBounceAngle = function(incidenceAngle,angleDest){
       reflectionAngle = 2*angleDest - incidenceAngle;
       return reflectionAngle;
+    }
+
+    Petra.calculateAngleFromAToB = function(entityFrom, entityTo){
+      //TODO calculate it.
+      //Take entityFrom as origin of coordinates
+      //[100, 100], [50, 50]
+      var differenceX = entityTo[0] - entityFrom[0];
+      var differenceY = entityTo[1] - entityFrom[1];
+      var difference = Petra.substractArrays(entityTo, entityFrom);
+      var hypotenuse = Math.sqrt(Math.pow(difference[0],2) + Math.pow(difference[1],2));
+
+      return -Math.atan(differenceY/ differenceX);
     }
 
     Petra.lerp3 = function(start,end, speed, dt){
@@ -117,6 +133,14 @@ define( ['hu'], function(hu){
       var arrReturn = [];
       arr.map(function(item, i){
         arrReturn.push(item+arr2[i]);
+      })
+      return arrReturn;
+    }
+
+    Petra.substractArrays = function(arr, arr2){
+      var arrReturn = [];
+      arr.map(function(item,i){
+        arrReturn.push(item-arr2[i]);
       })
       return arrReturn;
     }

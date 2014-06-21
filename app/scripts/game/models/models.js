@@ -76,13 +76,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.render = function(ctx){
-    if(this.enabledAnimation == 'default'){
-      this.sprite.render(ctx, this.rotateSprite, this.renderTranslated);
-    }else{
-      this.animations[this.enabledAnimation].render(ctx,this.rotateSprite, this.renderTranslated);
-    }
-    
-    if(this.hitbox  && false){
+    if(this.hitbox ){
       ctx.beginPath();
       var hitbox = this.getHitBox();
       var pos = [0,0];
@@ -94,6 +88,12 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
       ctx.lineWidth = 1;
       ctx.strokeStyle = 'black'; 
       ctx.stroke();
+    }
+
+    if(this.enabledAnimation == 'default'){
+      this.sprite.render(ctx, this.getLookingPosition(), this.renderTranslated);
+    }else{
+      this.animations[this.enabledAnimation].render(ctx,this.getLookingPosition(), this.renderTranslated);
     }
   }
 
@@ -131,6 +131,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.getHitBox = function() {
+    //TODO : ADD ANGLE of the rotation
     if(!this.hitbox){
       return { 
         pos: this.pos,
@@ -212,6 +213,23 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     }
     if(this.behaviourUpdate){
       this.behaviourUpdate(dt);
+    }
+  }
+  RenderableEntity.prototype.getLookingPosition = function(){
+    if(this.aimingAt){
+      return petra.calculateAngleFromAToB(this.pos, this.aimingAt.pos);
+    }else if(this.rotateSprite){
+      return this.rotateSprite;
+    }else{
+      return null;
+    }
+  }
+  RenderableEntity.prototype.getBulletAngle = function(){
+    var lookingPosition = this.getLookingPosition();
+    if(lookingPosition){
+      return lookingPosition;
+    }else{
+      return this.angle;
     }
   }
 

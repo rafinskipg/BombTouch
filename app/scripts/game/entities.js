@@ -58,12 +58,18 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0]];
   var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0]];
   var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50, 50], 1, [0]];
-  var level1_droneSprite  = ['images/enemies/level_1.png', [0,100], [50, 50], 1, [0]];
+  
   var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0]];
   var level1_worm_bodySprite  = ['images/enemies/level_1.png', [50,150], [50, 50], 1, [0]];
   var level1_worm_tailSprite  = ['images/enemies/level_1.png', [100,150], [50, 50], 1, [0]];
   var level1_battleStationSprite  = ['images/enemies/level_1.png', [0,200], [100, 100], 1, [0]];
   var level1_junkMutantSprite  = ['images/enemies/level_1.png', [0,300], [100, 100], 1, [0]];
+  var level1_droneSpriteDefinition = {
+    normal: {
+      standby :['images/enemies/level_1.png', [0,100], [50, 50], 1, [0]],
+      aiming :['images/enemies/level_1.png', [0,100], [50, 50], 1, [0]]
+    }
+  }
   //Bosses
   var bossSpriteDefinition ={
     normal: {
@@ -447,8 +453,29 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       resize: [50,50],
       damage: 20,
       actions : [{name: 'enemyShoot', delay: 1.5}]
-
     },
+    'drone': {
+      sprite: level1_droneSpriteDefinition.normal.standby,
+      speed: [15,15],
+      points: 50,
+      angle: 1,
+      life: 300,
+      totalLife: 300,
+      resize: [50,50],
+      hitbox: {
+        pos: [10,10],
+        size: [40,40]
+      },
+      bulletName: 'blueray',
+      damage: 20,
+      actions : [{name: 'aim', delay: 1.5}, {name : 'neutralShoot', delay: 0.2}],
+      animations: [
+        {
+          name: 'aiming',
+          sprite:  level1_droneSpriteDefinition.normal.aiming
+        }
+      ],
+    }
   }
 
 
