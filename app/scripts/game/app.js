@@ -1209,6 +1209,8 @@ return BombTouchApp.
   function playerDamaged(damage){
     playSound(SOUNDS.ouch);
     player.life -= damage;
+    
+    SCENARIO.screenShake();
 
     pointsToRender.push(new models.RenderableText({
       text: damage,

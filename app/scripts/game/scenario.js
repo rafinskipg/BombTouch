@@ -44,10 +44,10 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     
     this.scene.updateBackground = (function(dt){ 
       this.BGx -= dt;
-      this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.BGx, 0,this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(resources.get(this.backgrounds[0]), this.BGx, 0,640, 400);
-      this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.BGx + this.canvas.width, 0,this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(resources.get(this.backgrounds[1]), this.BGx + this.canvas.width, 0,640, 400);
+      this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.offSetX + this.BGx, this.offSetY + 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get(this.backgrounds[0]), this.offSetX +  this.BGx,  this.offSetY + 0,640, 400);
+      this.ctx.drawImage(resources.get('images/backgrounds/background.png'),this.offSetX +  this.BGx + this.canvas.width, this.offSetY + 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get(this.backgrounds[1]), this.offSetX +  this.BGx + this.canvas.width,this.offSetY +  0,640, 400);
       
       // If the image scrolled off the screen, reset
       if (this.BGx < -this.canvas.width){
@@ -133,6 +133,10 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
       opts.resizePercentage = 1+Math.random().toFixed(2);
       this.frontElements.push(EL.getBackgroundEntity(item, opts));  
     }
+  }
+
+  Scenario.prototype.screenShake = function(){
+    this.scene.screenShake(0.5);
   }
 
   return Scenario;
