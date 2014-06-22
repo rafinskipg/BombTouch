@@ -488,12 +488,13 @@ return BombTouchApp.
       }
       var damage = isCriticalStrike ? player.damage * 2 : player.damage;
 
-      var y = player.pos[1] + player.getHeight() / 2;
-      var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
+      //var y = player.pos[1] + player.getHeight() / 2;
+      //var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
+      var bulletpos = player.getShootOrigin();
 
       if(player.bonuses.doubleShoot > 0){
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 0.2,  rotateSprite: 0.2 }));  
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 1.8, rotateSprite: 1.8 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 0.2*Math.PI,  rotateSprite: 0.2 *Math.PI}));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 1.8*Math.PI, rotateSprite: 1.8*Math.PI }));  
       }else{
         bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: player.angle}));  
       }
@@ -922,11 +923,11 @@ return BombTouchApp.
       entity.aimingAt = player;
     }else if(action =='doubleShoot'){
       entity.setAnimation('shoot'+life);
-      enemyShoot(entity,0.6 );
-      enemyShoot(entity,0.8 );
-      enemyShoot(entity,1.0 );
-      enemyShoot(entity,1.2 );
-      enemyShoot(entity,1.4 );
+      enemyShoot(entity,0.6 *Math.PI );
+      enemyShoot(entity,0.8 *Math.PI);
+      enemyShoot(entity,1.0 *Math.PI);
+      enemyShoot(entity,1.2 *Math.PI);
+      enemyShoot(entity,1.4 *Math.PI);
     }else if(action =='teleport'){
       entity.setAnimation('teleport'+life, function(frame,index){
         var times = 0;
@@ -956,17 +957,19 @@ return BombTouchApp.
   }
 
   function enemyShoot(entity, angle){
-    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: angle });
+    var shootOrigin = entity.getShootOrigin();
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
     bullet.speed = [300,300];
     enemyBullets.push(bullet);      
-    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
     playSound(SOUNDS.shoot);
   } 
   function neutralShoot(entity, angle){
-    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: angle });
+    var shootOrigin = entity.getShootOrigin();
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle, rotateSprite: angle });
     bullet.speed = [300,300];
     neutralBullets.push(bullet);      
-    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
     playSound(SOUNDS.shoot);
   }
 
@@ -1157,19 +1160,83 @@ return BombTouchApp.
     Collision Handling
   ****************************
   ****************************/   
+      /**
+     * Helper function to determine whether there is an intersection between the two polygons described
+     * by the lists of vertices. Uses the Separating Axis Theorem
+     *
+     * @param a an array of connected points [{x:, y:}, {x:, y:},...] that form a closed polygon
+     * @param b an array of connected points [{x:, y:}, {x:, y:},...] that form a closed polygon
+     * @return true if there is any intersection between the 2 polygons, false otherwise
+     */
+    function doPolygonsIntersect (a, b) {
+        var polygons = [a, b];
+        var minA, maxA, projected, i, i1, j, minB, maxB;
+
+        for (i = 0; i < polygons.length; i++) {
+
+            // for each polygon, look at each edge of the polygon, and determine if it separates
+            // the two shapes
+            var polygon = polygons[i];
+            for (i1 = 0; i1 < polygon.points.length; i1++) {
+
+                // grab 2 vertices to create an edge
+                var i2 = (i1 + 1) % polygon.points.length;
+                var p1 = polygon.points[i1];
+                var p2 = polygon.points[i2];
+
+                // find the line perpendicular to this edge
+                var normal = { x: p2.y - p1.y, y: p1.x - p2.x };
+
+                minA = maxA = undefined;
+                // for each vertex in the first shape, project it onto the line perpendicular to the edge
+                // and keep track of the min and max of these values
+                for (j = 0; j < a.length; j++) {
+                    projected = normal.x * a[j].x + normal.y * a[j].y;
+                    if (isUndefined(minA) || projected < minA) {
+                        minA = projected;
+                    }
+                    if (isUndefined(maxA) || projected > maxA) {
+                        maxA = projected;
+                    }
+                }
+
+                // for each vertex in the second shape, project it onto the line perpendicular to the edge
+                // and keep track of the min and max of these values
+                minB = maxB = undefined;
+                for (j = 0; j < b.length; j++) {
+                    projected = normal.x * b[j].x + normal.y * b[j].y;
+                    if (isUndefined(minB) || projected < minB) {
+                        minB = projected;
+                    }
+                    if (isUndefined(maxB) || projected > maxB) {
+                        maxB = projected;
+                    }
+                }
+
+                // if there is no overlap between the projects, the edge we are looking at separates the two
+                // polygons, and we know there is no overlap
+                if (maxA < minB || maxB < minA) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
   function collides(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   }
 
   function boxCollides(hitboxA, hitboxB) {
-    return collides(hitboxA.pos[0], hitboxA.pos[1],
-                    hitboxA.pos[0] + hitboxA.size[0], hitboxA.pos[1] + hitboxA.size[1],
-                    hitboxB.pos[0], hitboxB.pos[1],
-                    hitboxB.pos[0] + hitboxB.size[0], hitboxB.pos[1] + hitboxB.size[1]);
+    return collides(hitboxA.topLeft[0], hitboxA.bottomLeft,
+                    hitboxA.topRight, hitboxA.bottomRight,
+                    hitboxB.topLeft, hitboxB.bottomLeft,
+                    hitboxB.topRight, hitboxB.bottomRight);
   }
 
   function entitiesCollide(a,b){
-    return boxCollides(a.getHitBox(), b.getHitBox());
+    //return doPolygonsIntersect(a.getHitBox(), b.getHitBox());
+    return false;
   }
 
   

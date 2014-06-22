@@ -1,7 +1,8 @@
 
 (function() {
-    function Sprite(url, pos, size, speed, frames, dir, once) {
+    function Sprite(url, pos, size, speed, frames,lookingLeft, dir, once) {
         this.pos = pos;
+        this.lookingLeft = lookingLeft;
         this.size = size;
         this.speed = typeof speed === 'number' ? speed : 0;
         this.frames = frames;
@@ -29,7 +30,7 @@
         reset: function(){
             this._index = 0;
         },
-        render: function(ctx,angle, translation) {
+        render: function(ctx,angle, translation, centerOfRotation) {
             var frame;
 
             if(this.speed > 0) {
@@ -63,18 +64,21 @@
 
             var origX = 0;
             var origY = 0;
-            if(translation){
-                origX -= translation[0];
-                origY -= translation[1];
-            }
             
+             if(translation){
+                //origX -= translation[0];
+                //origY -= translation[1];
+                ctx.translate(-translation[0],  -translation[1])  
+            }
             if(angle){  
-                ctx.translate(this.expectedSize[0]/2, this.expectedSize[1]/2)  
-                ctx.rotate(angle * Math.PI); 
-                origX  -=this.expectedSize[0]/2;   
-                origY  -=this.expectedSize[1]/2;   
+                //ctx.translate(centerOfRotation[0], centerOfRotation[1])  
+                angle = this.lookingLeft ? angle - Math.PI : angle; 
+                ctx.rotate((angle)); 
+                //origX  -= centerOfRotation[0];   
+                //origY  -= centerOfRotation[1];   
             }
 
+         
 
             ctx.drawImage(resources.get(this.url),
                         Math.round(x),  Math.round(y),

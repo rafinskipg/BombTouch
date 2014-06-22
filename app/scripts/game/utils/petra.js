@@ -74,10 +74,10 @@ define( ['hu'], function(hu){
       //[100, 100], [50, 50]
       var differenceX = entityTo[0] - entityFrom[0];
       var differenceY = entityTo[1] - entityFrom[1];
-      var difference = Petra.substractArrays(entityTo, entityFrom);
-      var hypotenuse = Math.sqrt(Math.pow(difference[0],2) + Math.pow(difference[1],2));
+      //var difference = Petra.substractArrays(entityTo, entityFrom);
+      //var hypotenuse = Math.sqrt(Math.pow(difference[0],2) + Math.pow(difference[1],2));
 
-      return -Math.atan(differenceY/ differenceX);
+      return Math.atan2(differenceY, differenceX);
     }
 
     Petra.lerp3 = function(start,end, speed, dt){
@@ -86,11 +86,22 @@ define( ['hu'], function(hu){
     //Direction helpers
     var calculateNextPositionByAngle = Petra.calculateNextPositionByAngle = function(entity, dt){
       var pos = [entity.pos[0], entity.pos[1]];
-      var forX =  dt * entity.speed[0] * Math.cos(entity.angle*Math.PI);
+      var forX =  dt * entity.speed[0] * Math.cos(entity.angle);
       pos[0] += forX;
-      var forY =  dt * entity.speed[0] * Math.sin(entity.angle*Math.PI);
+      var forY =  dt * entity.speed[0] * Math.sin(entity.angle);
       pos[1] += forY;
       return pos;
+    }
+
+    Petra.calculateTranslatedPointByAngle = function(angle, point){
+      var hypotenuse = Math.sqrt(Math.pow(point[0],2) + Math.pow(point[1],2));
+      return [ hypotenuse*Math.cos(angle), hypotenuse*Math.sin(angle)];
+    }
+
+    Petra.rotatePoint =  function(base,point, angle, centerOfRotation){
+      var relativePoint =  [point[0] - centerOfRotation[0], centerOfRotation[1] - point[1]]
+      var point_rotated = Petra.calculateTranslatedPointByAngle(angle, relativePoint);
+      return Petra.sumArrays(base, Petra.sumArrays(point_rotated,centerOfRotation))
     }
 
     var calculateNextPosition = Petra.calculateNextPosition = function(dir, entity, dt){
