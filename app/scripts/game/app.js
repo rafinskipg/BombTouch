@@ -1171,27 +1171,29 @@ return BombTouchApp.
     function doPolygonsIntersect (a, b) {
         var polygons = [a, b];
         var minA, maxA, projected, i, i1, j, minB, maxB;
+        var aPoints = a.getPoints();
+        var bPoints = b.getPoints();
 
         for (i = 0; i < polygons.length; i++) {
 
             // for each polygon, look at each edge of the polygon, and determine if it separates
             // the two shapes
-            var polygon = polygons[i];
-            for (i1 = 0; i1 < polygon.points.length; i1++) {
+            var polygon = polygons[i].getPoints();
+            for (i1 = 0; i1 < polygon.length; i1++) {
 
                 // grab 2 vertices to create an edge
-                var i2 = (i1 + 1) % polygon.points.length;
-                var p1 = polygon.points[i1];
-                var p2 = polygon.points[i2];
+                var i2 = (i1 + 1) % polygon.length;
+                var p1 = polygon[i1];
+                var p2 = polygon[i2];
 
                 // find the line perpendicular to this edge
-                var normal = { x: p2.y - p1.y, y: p1.x - p2.x };
+                var normal = [p2[1] - p1[1],  p1[0] - p2[0]];
 
                 minA = maxA = undefined;
                 // for each vertex in the first shape, project it onto the line perpendicular to the edge
                 // and keep track of the min and max of these values
-                for (j = 0; j < a.length; j++) {
-                    projected = normal.x * a[j].x + normal.y * a[j].y;
+                for (j = 0; j < aPoints.length; j++) {
+                    projected = normal[0] * aPoints[j][0] + normal[1] * aPoints[j][1];
                     if (isUndefined(minA) || projected < minA) {
                         minA = projected;
                     }
@@ -1203,8 +1205,8 @@ return BombTouchApp.
                 // for each vertex in the second shape, project it onto the line perpendicular to the edge
                 // and keep track of the min and max of these values
                 minB = maxB = undefined;
-                for (j = 0; j < b.length; j++) {
-                    projected = normal.x * b[j].x + normal.y * b[j].y;
+                for (j = 0; j < bPoints.length; j++) {
+                    projected = normal[0] * bPoints[j][0] + normal[1] * bPoints[j][1];
                     if (isUndefined(minB) || projected < minB) {
                         minB = projected;
                     }
@@ -1223,6 +1225,10 @@ return BombTouchApp.
         return true;
     };
 
+  function isUndefined(val){
+    return typeof(val) === 'undefined';
+  }
+
   function collides(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   }
@@ -1235,8 +1241,8 @@ return BombTouchApp.
   }
 
   function entitiesCollide(a,b){
-    //return doPolygonsIntersect(a.getHitBox(), b.getHitBox());
-    return false;
+    return doPolygonsIntersect(a.getHitBox(), b.getHitBox());
+    
   }
 
   

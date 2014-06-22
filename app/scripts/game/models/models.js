@@ -20,24 +20,25 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.duration = duration || 2000;
   }
 
-  function SquareHitBox(opts, rotationDifference){
+  function SquareHitBox(opts){
     this.pos = opts.pos;
     this.size = opts.size;
     this.width = opts.size[0];
     this.hitboxStartPoint = opts.hitboxStartPoint;
 
-    var withpadding = petra.sumArrays(opts.pos, opts.hitboxStartPoint);
+    var withpadding = petra.sumArrays([0,0], opts.hitboxStartPoint);
     this.points = [];
 
-    this.topLeft = petra.sumArrays(withpadding, rotationDifference);
-    this.topRight = petra.sumArrays(petra.sumArrays(withpadding, [opts.size[0], 0]), rotationDifference);
-    this.bottomLeft = petra.sumArrays(petra.sumArrays(withpadding, [0, opts.size[1]]), rotationDifference);
-    this.bottomRight = petra.sumArrays(petra.sumArrays(withpadding, [opts.size[0], opts.size[1]]), rotationDifference);
+    this.topLeft = withpadding;
+    this.topRight = petra.sumArrays(withpadding, [opts.size[0], 0]);
+    this.bottomLeft = petra.sumArrays(withpadding, [0, opts.size[1]]);
+    this.bottomRight = petra.sumArrays(withpadding, [opts.size[0], opts.size[1]]);
 
     this.points.push(this.topLeft);
     this.points.push(this.topRight);
     this.points.push(this.bottomLeft);
     this.points.push(this.bottomRight);
+    
    /* var topLeft = petra.rotatePoint(opts.pos, opts.hitboxStartPoint, angle, centerOfRotation);
     
     var topRight = petra.rotatePoint(opts.pos,[opts.hitboxStartPoint[0]  + opts.size[0], opts.hitboxStartPoint[1]], angle, centerOfRotation);
@@ -51,13 +52,24 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   SquareHitBox.prototype.rotate = function(angle){
     var cos = Math.cos(angle);
     var sin = Math.sin(angle);
-    for(var i = 0; this.points.length; ì++){
+    for(var i = 0; i <this.points.length; i++){
       var x = this.points[i][0];
       var y = this.points[i][1];
 
       this.points[i][0] = x*cos - y*sin;
       this.points[i][1] = y*cos + x*sin;
     }
+  }
+
+  SquareHitBox.prototype.getPos = function(){
+    return petra.sumArrays(this.topLeft, this.pos);
+  } 
+  SquareHitBox.prototype.getPoints = function(){
+    var arr = [];
+    for(var i = 0; i < this.points.length; i++){
+      arr.push(petra.sumArrays(this.points[i], this.pos));
+    }
+    return arr;
   }
 
   function RenderableText(opts){
@@ -118,12 +130,12 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.render = function(ctx){
-    if(this.hitbox  ){
+    if(this.hitbox  || true){
       ctx.beginPath();
       var hitbox = this.getHitBox();
 
       for(var i = 0; i < hitbox.points.length; i++){
-        ctx.rect(hitbox.points[i][0] - hitbox.pos[0], hitbox.points[i][1] - hitbox.pos[1], 4, 4);
+        ctx.rect(hitbox.points[i][0] , hitbox.points[i][1] , 4, 4);
       }
       
       ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
@@ -199,12 +211,14 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
         size: this.hitbox.size
       };
     }
-    var rotationDifference = petra.substractArrays(this.pos, petra.rotatePoint(this.pos,this.shootOrigin, this.getBulletAngle(), this.getCenterOfRotation()));
-    return new SquareHitBox(opts, rotationDifference);
+    
+    squareHitB = new SquareHitBox(opts);
+    squareHitB.rotate(this.getBulletAngle());
+    return squareHitB;
   };
 
   RenderableEntity.prototype.getHitBoxLeftPadding = function(){
-    return this.getHitBox().topLeft[0];
+    return this.getHitBox().getPos()[0];
   }
 
   RenderableEntity.prototype.getX = function(){
