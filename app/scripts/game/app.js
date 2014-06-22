@@ -747,7 +747,7 @@ return BombTouchApp.
       var reflectionAngle = checkCanvasLimits(nextPosition, entity.getSize());
       if(reflectionAngle != null){
         entity.bounces -= 1;
-        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle);
+        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle * Math.PI);
       }
       return entity;
     }
@@ -958,7 +958,7 @@ return BombTouchApp.
 
   function enemyShoot(entity, angle){
     var shootOrigin = entity.getShootOrigin();
-    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle ,rotateSprite: angle});
     bullet.speed = [300,300];
     enemyBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));

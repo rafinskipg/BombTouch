@@ -71,11 +71,12 @@
                 ctx.translate(-translation[0],  -translation[1])  
             }
             if(angle){  
-                //ctx.translate(centerOfRotation[0], centerOfRotation[1])  
+                ctx.translate(centerOfRotation[0], centerOfRotation[1])  
                 angle = this.lookingLeft ? angle - Math.PI : angle; 
                 ctx.rotate((angle)); 
-                origX  -= centerOfRotation[0];   
-                origY  -= centerOfRotation[1];   
+                ctx.translate(-centerOfRotation[0], -centerOfRotation[1])  
+                //origX  -= centerOfRotation[0];   
+                //origY  -= centerOfRotation[1];   
             }
 
          

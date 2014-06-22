@@ -92,6 +92,19 @@ define( ['game/loader/loader','raf'], function(Loader){
   }
 
   Scene.prototype.renderEntity = function(entity) {
+    
+    if(window.DEBUGGER){
+      this.ctx.beginPath();
+      this.ctx.rect((this.offSetX + entity.getX()),this.offSetY + entity.getY(), 5, 7);
+      this.ctx.fillStyle = 'purple';
+      this.ctx.fill();
+      
+      this.ctx.beginPath();
+      this.ctx.rect((this.offSetX + entity.getShootOrigin()[0]),this.offSetY + entity.getShootOrigin()[1], 15, 7);
+      this.ctx.fillStyle = 'purple';
+      this.ctx.fill();
+    }
+
     this.ctx.save();
     this.ctx.translate(Math.round(this.offSetX + entity.getX()), Math.round(this.offSetY + entity.getY()));
     entity.render(this.ctx);

@@ -114,7 +114,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2],null, null, true];
   
   //BUllets
-  var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], true ,null, true];
+  var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null ,null, true];
   var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13],null, null, true];
   var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null,null, true];
   var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7,8,9,10,11], null, null, true];
@@ -468,6 +468,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 300,
       totalLife: 300,
       resize: [50,50],
+      shootOrigin: [0,-20],
       hitbox: {
         pos: [10,10],
         size: [20,40]
