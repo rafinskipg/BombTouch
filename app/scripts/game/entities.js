@@ -61,6 +61,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 1, [0], true];
   var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0], true];
   var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0], true];
+  var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 1, [0], true];
   var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [75,50], 1, [0], true];
   
   var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0], true];
@@ -448,6 +449,15 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       totalLife: 65,
       resize: [50,50],
       damage: 5
+    },'junk4' : {
+      sprite: level1_junk4Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
     },
     'rat' : {
       sprite: level1_ratSprite,
@@ -521,6 +531,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       resize: [50,50]
     }, 'junk3' : {
       sprite: level1_junk3Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    },'junk4' : {
+      sprite: level1_junk4Sprite,
       speed: [65,65],
       angle: 1,
       resize: [50,50]
