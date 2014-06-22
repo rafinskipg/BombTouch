@@ -1,9 +1,9 @@
-define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector','resources','sprite','input','raf'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR){
+define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector','resources','sprite','input','raf', 'quad_tree'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR){
 
 return BombTouchApp.
     factory('brainSrv', ['audioSrv','settingsSrv', function(audioSrv, settingsSrv) {
   
-  var CURRENT_STAGE;
+  var CURRENT_STAGE, QUAD;
 
   /****************************
   ****************************
@@ -341,6 +341,14 @@ return BombTouchApp.
     player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
     player.bonuses = {};
     TIMERS = getDefaultTimers();
+
+    var bounds = {
+      x:0,
+      y:0,
+      width:canvas.width,
+      height:canvas.height
+    }
+    QUAD = new QuadTree(bounds);
   };
 
   function suscribeToEvents(){
@@ -641,10 +649,37 @@ return BombTouchApp.
     TIMERS.gameTime += dt;
     LEVELS_DIRECTOR.update(dt,realtimeDt);
     handleInput(dt);
+    //updateTree();
+    
     updateEntities(dt);
     checkCollisions();
     checkGameEndConditions();
   };
+
+  function updateTree(){
+    QUAD.clear();
+    insertTree(enemies,'enemy')
+    insertTree(bosses,'boss')
+    insertTree(bullets,'bullets')
+    insertTree(enemyBullets,'enemyBullets')
+    insertTree(neutralBullets,'neutralBullets')
+    insertTree(bonuses, 'bonuses');
+    insertTree([player], 'player')
+  }
+
+  function insertTree(arr, name){
+    for(var i = 0; i < arr.length; i++){
+      var size = arr[i].getSize();
+      QUAD.insert({
+        x: arr[i].getX(),
+        y: arr[i].getY(),
+        width: size[0],
+        height: size[1],
+        type: name,
+        indexOriginalObject: i
+      })
+    }
+  }
 
   function dogeBonusObtain(entity){
     LEVELS_DIRECTOR.pickedDogeBonus();
@@ -958,7 +993,7 @@ return BombTouchApp.
 
   function enemyShoot(entity, angle){
     var shootOrigin = entity.getShootOrigin();
-    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle ,rotateSprite: angle});
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
     bullet.speed = [300,300];
     enemyBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
@@ -1065,13 +1100,19 @@ return BombTouchApp.
   }
   function updateBullets(dt){
     bullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(bullets, dt);
+    /*bullets = hu.compact(bullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   }
 
   function updateEnemyBullets(dt){
     enemyBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(enemyBullets, dt);
+    /*enemyBullets = hu.compact(enemyBullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   } 
   function updateNeutralBullets(dt){
     neutralBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(neutralBullets, dt);
+    /*neutralBullets = hu.compact(neutralBullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   }
 
   function updateEnemies(dt){
@@ -1270,6 +1311,14 @@ return BombTouchApp.
     }
   }
 
+  /*function ifCollidedAddSpark(entity){
+    if(entity.collision){
+      var portionofspeed = [entity.speed[0] * 0.8, entity.speed[1] * 0.8];
+      addSpark(entity.pos, entity.collision.speed,  entity.collision.angle);
+      addBulletCasing(entity.pos, [entity.speed[0] - portionofspeed[0], entity.speed[1] - portionofspeed[1]], entity.angle);
+    }
+    return entity;
+  }*/
   function ifCollidesAddSpark(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
@@ -1288,6 +1337,12 @@ return BombTouchApp.
       }
     }
   }
+
+  /*function removeIfCollided(entity){
+    if(!entity.collision){
+      return entity;
+    }
+  }*/
 
   function removeIfCollideWithAndPlaySound(entity){
     return function(item){
@@ -1326,8 +1381,53 @@ return BombTouchApp.
     addExplosion(enemy.pos, enemy.getSize());    
   }
 
+  function  nearEntities(point, size){
+    var items = QUAD.retrieve({x:point[0], y:point[0], height:size[0], width:size[1]});
+    return items;
+  }
+
+  function getNearNearEntitiesForEnemy(enemy){
+    var items = nearEntities(enemy.pos, enemy.getSize());
+    items = hu.compact(items.map(function(item){
+      if(item.type == 'neutralBullets' || 
+        item.type == 'bullets'){
+        return item;
+      }
+    }))
+    return items;
+  }
   function collisionToEnemyGroup(enemyGroup){
       enemyGroup = hu.compact(enemyGroup.map(function(enemy){
+        /*
+        var nearEntities = getNearNearEntitiesForEnemy(enemy);
+       
+
+        nearEntities.map(function(entity){
+          var object;
+          console.log(entity.indexOriginalObject);
+          if(entity.type == 'bullets' ){
+            object = bullets[entity.indexOriginalObject]
+          }else if(entity.type == 'neutralBullets'){
+            object = neutralBullets[entity.indexOriginalObject]
+          }
+
+          if(entitiesCollide(object, enemy)){
+              console.log('ciolide')
+              object.collision = {
+                pos: object.pos,
+                speed: enemy.speed,
+                angle: enemy.angle
+              }
+              enemy.life -= object.damage;
+            }
+          
+
+        })*/
+
+        if(entitiesCollide(enemy, player)){
+          playerDamaged(enemy.damage);
+          enemy.life -= player.damage;
+        }
 
         bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
           .map(ifCollidesAddSpark(enemy))
@@ -1340,10 +1440,7 @@ return BombTouchApp.
         specials
           .map(ifCollidesApplyDamageTo(enemy));
 
-        if(entitiesCollide(enemy, player)){
-          playerDamaged(enemy.damage);
-          enemy.life -= player.damage;
-        }
+        
 
         if(enemy.life > 0){
           return enemy;

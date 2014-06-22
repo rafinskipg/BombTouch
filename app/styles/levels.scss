@@ -1,10 +1,10 @@
 .levels{
   
   .level{
-    float: left;
-    width: 50%;
-    position:relative;
-    margin-bottom: 10px;
+  position: relative;
+  margin-bottom: 10px;
+  background: rgba(76, 119, 165, 0.22);
+  border: 1px solid;
 
     .content{
       padding: 20px;
@@ -28,7 +28,9 @@
     .image{
       padding: 15px;
       img{
-
+        border-radius: 100px;  
+              max-width: 100px;
+        background-color: black;
       }
     }
     .cristal{

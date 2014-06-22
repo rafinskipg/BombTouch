@@ -61,7 +61,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 1, [0], true];
   var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0], true];
   var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0], true];
-  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50, 50], 1, [0], true];
+  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [75,50], 1, [0], true];
   
   var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0], true];
   var level1_worm_bodySprite  = ['images/enemies/level_1.png', [50,150], [50, 50], 1, [0], true];
@@ -117,7 +117,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null ,null, true];
   var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13],null, null, true];
   var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null,null, true];
-  var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7,8,9,10,11], null, null, true];
+  var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7,8,9,10,11], true, null, true];
   var portalBackSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, null, true];
   var portalFrontSpriteSheet = ['images/sparks/sparks.png', [0,400], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0],null, null, true];
   
@@ -456,7 +456,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       angle: 1,
       life: 100,
       totalLife: 100,
-      resize: [50,50],
+      resize: [75,50],
       damage: 20,
       actions : [{name: 'enemyShoot', delay: 1.5}]
     },
@@ -468,10 +468,10 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 300,
       totalLife: 300,
       resize: [50,50],
-      shootOrigin: [0,-20],
+      shootOrigin: [-30,20],
       hitbox: {
-        pos: [10,10],
-        size: [20,40]
+        pos: [5,5],
+        size: [40,40]
       },
       bulletName: 'blueray',
       damage: 20,

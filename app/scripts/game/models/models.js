@@ -50,26 +50,39 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     */
   }
 
-  SquareHitBox.prototype.rotate = function(angle){
+  SquareHitBox.prototype.rotatePoint = function(point, angle, center){
+    var s  = Math.sin(angle);
+    var c = Math.cos(angle);
+    point[0]-=center[0];
+    point[1]-=center[1];
 
+    xnew = point[0]* c - point[1]*s;
+    ynew = point[0]* s + point[1]*c;
+
+    return [xnew + center[0], ynew + center[1]]
+  }
+
+
+  SquareHitBox.prototype.rotate = function(angle){
     var cos = Math.cos(angle);
     var sin = Math.sin(angle);
-
+    
     for(var i = 0; i <this.points.length; i++){
-      var x = this.points[i][0] - this.size[0];
-      var y = this.points[i][1] - this.size[1];
+      var x = this.points[i][0] -this.centerOfRotation[0] ;
+      var y = this.points[i][1] - this.centerOfRotation[1];
 
-      this.points[i][0] = x*cos - y*sin + this.centerOfRotation[0];
-      this.points[i][1] = y*cos + x*sin + this.centerOfRotation[1];
+      this.points[i][0] = x*cos - y*sin + this.centerOfRotation[0] ;
+      this.points[i][1] = y*cos + x*sin  + this.centerOfRotation[1];
     }
   }
 
   SquareHitBox.prototype.getPos = function(){
-    return petra.sumArrays(this.topLeft, this.pos);
+    return petra.sumArrays(this.pos, this.hitboxStartPoint);
   } 
   SquareHitBox.prototype.getPoints = function(){
     var arr = [];
     for(var i = 0; i < this.points.length; i++){
+      //arr.push(petra.sumArrays(this.points[i], this.pos));
       arr.push(petra.sumArrays(this.points[i], this.pos));
     }
     return arr;
@@ -138,7 +151,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.render = function(ctx){
-    if(this.hitbox || window.DEBUGGER){
+    if(window.DEBUGGER && this.hitbox){
       ctx.beginPath();
       var hitbox = this.getHitBox();
 
@@ -240,7 +253,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.getX = function(){
-    return this.pos[0];
+      return this.pos[0];
   }
 
   RenderableEntity.prototype.getY = function(){
@@ -341,8 +354,22 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     var b = y*cos + x*sin;
      
     return petra.sumArrays(this.pos, [a, b])*/
+    var angle = this.getBulletAngle() ;
+    angle = this.getSprite().lookingLeft ? angle - Math.PI: angle;
+    var center = this.getCenterOfRotation();
+    var point =petra.sumArrays([0,0], this.shootOrigin);
 
-    return petra.rotatePoint(this.pos,this.shootOrigin, this.getBulletAngle(), this.getCenterOfRotation());
+     var s  = Math.sin(angle);
+    var c = Math.cos(angle);
+    point[0]-=center[0];
+    point[1]-=center[1];
+
+    xnew = point[0]* c - point[1]*s;
+    ynew = point[0]* s + point[1]*c;
+
+    return petra.sumArrays(this.pos, [xnew + center[0], ynew + center[1]]);
+
+//    return petra.rotatePoint(this.pos,this.shootOrigin, this.getBulletAngle(), this.getCenterOfRotation());
   }
 
   return  {

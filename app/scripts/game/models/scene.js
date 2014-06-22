@@ -96,7 +96,7 @@ define( ['game/loader/loader','raf'], function(Loader){
     if(window.DEBUGGER){
       this.ctx.beginPath();
       this.ctx.rect((this.offSetX + entity.getX()),this.offSetY + entity.getY(), 5, 7);
-      this.ctx.fillStyle = 'purple';
+      this.ctx.fillStyle = 'green';
       this.ctx.fill();
       
       this.ctx.beginPath();
@@ -145,7 +145,6 @@ define( ['game/loader/loader','raf'], function(Loader){
       this.shaking = false;
       this.offSetX = 0;
       this.offSetY = 0;
-      console.log('ended')
       return;
     }
 
