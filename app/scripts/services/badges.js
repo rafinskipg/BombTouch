@@ -12,27 +12,37 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
           {
             name: 'level1',
             alias: '',
-            text: 'Kill all the level 1 monsters'
+            text: 'Complete the level 1'
           },
           {
             name: 'level2',
             alias: '',
-            text: 'Kill all the level 2 monsters'
+            text: 'Complete the level 2'
           },
           {
             name: 'level3',
             alias: '',
-            text: 'Kill all the level 3 monsters'
+            text: 'Complete the level 3'
           },
           {
             name: 'level4',
             alias: '',
-            text: 'Kill all the level 4 monsters'
+            text: 'Complete the level 4'
           },
           {
             name: 'level5',
             alias: '',
-            text: 'Kill all the level 5 monsters'
+            text: 'Complete the level 5'
+          },
+          {
+            name: 'level1_stage1',
+            alias: '',
+            text: 'Junk Warrior'
+          },
+          {
+            name: 'level1_stage2',
+            alias: '',
+            text: 'Rat killer'
           },
           {
             name: 'social',
@@ -62,7 +72,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
           {
             name: 'chaos',
             alias: '',
-            text: 'Kill everything!'
+            text: 'Kill everything on a level!'
           },{
             name: 'died',
             alias: '',
@@ -80,14 +90,15 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       })
     }
 
-    function checkIfWonBadges( state ){
+    function checkIfWonBadges( state, level ){
       var completed = localStorageSrv.getCompletedBadges();
       var gameTotals = localStorageSrv.getTotals();
       var newBadges = [];
       var possibleBadges = [];
 
+      //TODO : Check if we have all the levels badges to win the completion one.
       if(state.win){
-        possibleBadges.push('complete');
+        possibleBadges.push('level'+level);
       }
 
       if(state.died){
@@ -96,13 +107,14 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
 
       var totalEnemiesKilled = 0;
       var chaos = true;
-      state.levelsInfo.levels.map(function(level, index){
-        if(level.completed && level.total == level.killed && level.total > 0){
-          possibleBadges.push('level'+(index+1));
+      state.levelsInfo.stages.map(function(stage, index){
+        if(stage.completed && stage.total == stage.killed && stage.total > 0){
+          //TODO: Check if we use this badges
+          possibleBadges.push('level'+level+'_stage'+(index+1));
         }else{
           chaos = false;
         }
-        totalEnemiesKilled+=level.killed;
+        totalEnemiesKilled+=stage.killed;
       })
 
       if(state.win && chaos){

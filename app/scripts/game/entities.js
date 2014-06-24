@@ -1,4 +1,4 @@
-define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
+define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   // Sprite(url, pos, size, speed, frames, dir, once)
   var bombareaSpriteSchema = ['images/newsprites.png',
     [15, 340],
@@ -6,12 +6,14 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     16,
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     null,
+    null,
     true];
   var specialSpriteSchema = ['images/boom.png',
     [0, 0],
     [590, 100],
     40,
     [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4,3,2,1,2,3,4,3,2,1,0,1,2,3],
+    null,
     'vertical',
     true];
 
@@ -21,6 +23,7 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     16,
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     null,
+    null,
     true];
 
   var bombSpriteSchema = ['images/newsprites.png',
@@ -28,6 +31,7 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     [50, 42],
     14,
     [0,1,2,3,4,5,6,7],
+    null,
     null,
     true];
 
@@ -48,33 +52,51 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
   var lifeSpriteSchema = ['images/weapons/bullets.png', [0, 10], [55, 10], 1, [0]];
 
   //Enemies
-  var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1]];
-  var dolanSpriteSchema = ['images/newsprites.png', [350,100], [85,73], 8, [0, 1, 2,3]];
-  var flappySpriteSchema = ['images/newsprites.png', [4,450], [125,117], 7, [0,1,2,3,4]];
-  var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,0,0,0,0,1,2,3,4,5,6,7,8,9,9,9]];
-  var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7]];
+  var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1], true];
+  var dolanSpriteSchema = ['images/newsprites.png', [350,100], [85,73], 8, [0, 1, 2,3], true];
+  var flappySpriteSchema = ['images/newsprites.png', [4,450], [125,117], 7, [0,1,2,3,4], true];
+  var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,0,0,0,0,1,2,3,4,5,6,7,8,9,9,9], true];
+  var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7], true];
+  //Level1
+  var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 1, [0], true];
+  var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0], true];
+  var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0], true];
+  var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 1, [0], true];
+  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [75,50], 1, [0], true];
+  
+  var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0], true];
+  var level1_worm_bodySprite  = ['images/enemies/level_1.png', [50,150], [50, 50], 1, [0], true];
+  var level1_worm_tailSprite  = ['images/enemies/level_1.png', [100,150], [50, 50], 1, [0], true];
+  var level1_battleStationSprite  = ['images/enemies/level_1.png', [0,200], [100, 100], 1, [0], true];
+  var level1_junkMutantSprite  = ['images/enemies/level_1.png', [0,300], [100, 100], 1, [0],true];
+  var level1_droneSpriteDefinition = {
+    normal: {
+      standby :['images/enemies/level_1.png', [0,100], [50, 50], 1, [0],true],
+      aiming :['images/enemies/level_1.png', [0,100], [50, 50], 1, [0],true]
+    }
+  }
   //Bosses
   var bossSpriteDefinition ={
     normal: {
-      standby :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4]],
-      shooting :['images/enemies/boss_1.png', [0,0], [40,75], 15, [4,3,2,1,0,0,2,3,4]],
-      talking :['images/enemies/boss_1.png', [0,0], [40,75], 4, [5,4,5,6,5,4]],
-      happy :['images/enemies/boss_1.png', [0,0], [40,75], 4, [7]],
-      teleport :['images/enemies/boss_1.png', [80,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0], 'vertical']
+      standby :['images/enemies/boss_1.png', [0,0], [40,75], 4, [4],true],
+      shooting :['images/enemies/boss_1.png', [0,0], [40,75], 15, [4,3,2,1,0,0,2,3,4],true],
+      talking :['images/enemies/boss_1.png', [0,0], [40,75], 4, [5,4,5,6,5,4],true],
+      happy :['images/enemies/boss_1.png', [0,0], [40,75], 4, [7],true],
+      teleport :['images/enemies/boss_1.png', [80,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0],true, 'vertical']
     },
     damaged: {
-      standby :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4]],
-      shooting :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4,3,3,2,1,0,1,0]],
-      talking :['images/enemies/boss_1.png', [0,75], [40,75], 4, [5,4,5,6,5,4]],
-      happy :['images/enemies/boss_1.png', [0,75], [40,75], 4, [7]],
-      teleport :['images/enemies/boss_1.png', [40,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0], 'vertical']
+      standby :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4],true],
+      shooting :['images/enemies/boss_1.png', [0,75], [40,75], 4, [4,3,3,2,1,0,1,0],true],
+      talking :['images/enemies/boss_1.png', [0,75], [40,75], 4, [5,4,5,6,5,4],true],
+      happy :['images/enemies/boss_1.png', [0,75], [40,75], 4, [7],true],
+      teleport :['images/enemies/boss_1.png', [40,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0],true, 'vertical']
     },
     verydamaged: {
-      standby :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4]],
-      shooting :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4,3,3,2,1,0,1,0]],
-      talking :['images/enemies/boss_1.png', [0,150], [40,75], 4, [5,4,5,6,5,4]],
-      happy :['images/enemies/boss_1.png', [0,150], [40,75], 4, [7]],
-      teleport :['images/enemies/boss_1.png', [0,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0], 'vertical']
+      standby :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4],true],
+      shooting :['images/enemies/boss_1.png', [0,150], [40,75], 4, [4,3,3,2,1,0,1,0],true],
+      talking :['images/enemies/boss_1.png', [0,150], [40,75], 4, [5,4,5,6,5,4],true],
+      happy :['images/enemies/boss_1.png', [0,150], [40,75], 4, [7],true],
+      teleport :['images/enemies/boss_1.png', [0,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0],true, 'vertical']
     }
   } 
  
@@ -90,14 +112,17 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
   var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [300, 300], [100,100], 10, [0, 1,2,3,4,5,6,7]];
   var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
   
-  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2], null, true];
-  var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null, true];
-  var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13], null, true];
-  var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null, true];
-  var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7,8,9,10,11], null, true];
-  var portalBackSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
-  var portalFrontSpriteSheet = ['images/sparks/sparks.png', [0,400], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, true];
+  var graveSpriteSheet = ['images/newsprites.png', [2,100], [30,30], 4 , [0,1,2,0,1,2],null, null, true];
   
+  //BUllets
+  var bulletCasingSpriteSheet = ['images/sparks/sparks.png', [0,150], [50,50], 14 , [0,1,2,3,4,5,6,7,8,9,10], null ,null, true];
+  var sparkSpriteSheet = ['images/sparks/sparks.png', [0,200], [50,50], 18 , [0,1,2,3,4,5,6,7,8,9,10,11,12,13],null, null, true];
+  var shootFireSpriteSheet = ['images/sparks/sparks.png', [0,250], [50,50], 20 , [0,1,2,3,4,5,6,7], null,null, true];
+  var bossShotFireSpriteSheet = ['images/sparks/sparks.png', [0,300], [50,50], 20 , [0,1,2,3,4,5,6,7,8,9,10,11], true, null, true];
+  var portalBackSpriteSheet = ['images/sparks/sparks.png', [0,350], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0], null, null, true];
+  var portalFrontSpriteSheet = ['images/sparks/sparks.png', [0,400], [50,50], 40 , [0,1,2,3,4,5,6,5,5,6,5,6,5,6,5,4,3,2,1,0],null, null, true];
+  
+  //Background entities
   var nebulaSpriteSheet = ['images/nebula/nebula1.png', [0,0], [1030,780], 1 , [0]]
   var nebula2SpriteSheet = ['images/nebula/nebula2.png', [0,0], [1023,771], 1 , [0]]
   var nebula3SpriteSheet = ['images/nebula/nebula3.png', [0,0], [600,600], 1 , [0]]
@@ -107,13 +132,13 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
   var asteroidsSpriteSheet = ['images/nebula/asteroids.png', [0,0], [600,600], 1 , [0]]
   var asteroids2SpriteSheet = ['images/nebula/asteroids2.png', [0,0], [600,600], 1 , [0]]
   var asteroids3SpriteSheet = ['images/nebula/asteroids3.png', [0,0], [600,600], 1 , [0]]
-  var cometSpriteSheet = ['images/nebula/comet.png', [0,0], [750,200], 5 , [0], 'vertical']
+  var dustSpriteSheet = ['images/backgrounds/dust.png', [0,0], [600,400], 1 , [0]]
 
  // var bonusSpriteSchema = ['images/weapons/bonus.png', [50,50], [100,50], 1, [0]];
   var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 12, [0,1,2,3,4,5,6,7,8]];
   var doubleShootBonusSpriteSchema = ['images/weapons/bonus.png', [100,150], [50,50], 8, [0,1,2,3,4,5]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
-
+  var greenGemSpriteSheet =['images/weapons/bonus.png', [0,200], [50,50], 1, [0]];
   //Var Space invaders version
   var spaceInvaderSpriteSchema = ['images/enemies/rock.png', [0,0], [55,55],8,[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]]
 
@@ -195,10 +220,12 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
       damage: 80,
       baseDamage: 80,
       bulletName : 'blueray',
+      critChance: 0.05,
       hitbox: {
         pos: [25,30],
         size: [30,40]
       },
+      shootOrigin : [80, 40],
       speed: [200,200],
       angle: 0,
       life: 1000,
@@ -228,70 +255,10 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
         }
       ]
     },
-    'dogeBonus': {
-      speed: [200,200],
-     // resize: [120,60],
-      resize: [50,50],
-      sprite: bonusSpriteSchema,
-      angle : 1
-    }, 
-    'doubleShootBonus': {
-      speed: [200,200],
-      sprite: doubleShootBonusSpriteSchema,
-      angle : 1
-    },
+
     'bonusWeapon':{
       sprite: bonusWeaponSpriteSchema,
       speed: [20,20]
-    },
-    'enemy1' : {
-      sprite: tacnyanSpriteSchema,
-      speed: [45,45],
-      points: 100,
-      angle: 1,
-      life: 100,
-      totalLife: 100,
-      resize: [90,60],
-      damage: 100
-    },
-    'enemy2' : {
-      sprite: dolanSpriteSchema,
-      speed: [55,55],
-      points: 200,
-      angle: 1,
-      life: 200,
-      totalLife: 200,
-      resize: [50,50],
-      damage: 120
-    },
-    'enemy3' : {
-      sprite: flappySpriteSchema,
-      speed: [65,65],
-      points: 300,
-      angle: 1,
-      life: 300,
-      totalLife: 300,
-      resize: [50,50],
-      damage: 140
-    },
-    'enemy4' : {
-      sprite: dramaticSpriteSchema,
-      speed: [75,75],
-      points: 400,
-      angle: 1,
-      life: 400,
-      totalLife: 400,
-      resize: [50,45],
-      damage: 160
-    },
-    'enemy5' : {
-      sprite: level5SpriteSchema,
-      speed: [85,85],
-      points: 500,
-      angle: 1,
-      life: 500,
-      totalLife: 500,
-      damage: 180
     },
     'boss':{
       speed: [25,25],
@@ -368,8 +335,9 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     'bulletcasing':{
       sprite: bulletCasingSpriteSheet,
       resize: [100,100],
-      renderTranslated: [-20,40],
-      speed: [0,0]
+      renderTranslated: [20, 40],
+      speed: [0,0],
+      centerOfRotation: [0, 50]
     },
     'bossShootFire':{
       sprite: bossShotFireSpriteSheet,
@@ -401,67 +369,234 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     }
   };
 
+  var joke_entities = {
+        'enemy1' : {
+      sprite: tacnyanSpriteSchema,
+      speed: [45,45],
+      points: 100,
+      angle: 1,
+      life: 100,
+      totalLife: 100,
+      resize: [90,60],
+      damage: 100
+    },
+    'enemy2' : {
+      sprite: dolanSpriteSchema,
+      speed: [55,55],
+      points: 200,
+      angle: 1,
+      life: 200,
+      totalLife: 200,
+      resize: [50,50],
+      damage: 120
+    },
+    'enemy3' : {
+      sprite: flappySpriteSchema,
+      speed: [65,65],
+      points: 300,
+      angle: 1,
+      life: 300,
+      totalLife: 300,
+      resize: [50,50],
+      damage: 140
+    },
+    'enemy4' : {
+      sprite: dramaticSpriteSchema,
+      speed: [75,75],
+      points: 400,
+      angle: 1,
+      life: 400,
+      totalLife: 400,
+      resize: [50,45],
+      damage: 160
+    },
+    'enemy5' : {
+      sprite: level5SpriteSchema,
+      speed: [85,85],
+      points: 500,
+      angle: 1,
+      life: 500,
+      totalLife: 500,
+      damage: 180
+    }
+  };
+
+  var level_1_entities = {
+    'junk1' : {
+      sprite: level1_junk1Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    }, 'junk2' : {
+      sprite: level1_junk2Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    }, 'junk3' : {
+      sprite: level1_junk3Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    },'junk4' : {
+      sprite: level1_junk4Sprite,
+      speed: [65,65],
+      points: 25,
+      angle: 1,
+      life: 65,
+      totalLife: 65,
+      resize: [50,50],
+      damage: 5
+    },
+    'rat' : {
+      sprite: level1_ratSprite,
+      speed: [65,65],
+      points: 50,
+      angle: 1,
+      life: 100,
+      totalLife: 100,
+      resize: [75,50],
+      damage: 20,
+      actions : [{name: 'enemyShoot', delay: 1.5}]
+    },
+    'drone': {
+      sprite: level1_droneSpriteDefinition.normal.standby,
+      speed: [15,15],
+      points: 50,
+      angle: 1,
+      life: 300,
+      totalLife: 300,
+      resize: [50,50],
+      shootOrigin: [-30,20],
+      hitbox: {
+        pos: [5,5],
+        size: [40,40]
+      },
+      bulletName: 'blueray',
+      damage: 20,
+      actions : [{name: 'aim', delay: 1.5}, {name : 'neutralShoot', delay: 0.2}],
+      animations: [
+        {
+          name: 'aiming',
+          sprite:  level1_droneSpriteDefinition.normal.aiming
+        }
+      ],
+    }
+  }
+
+
+  var bonusItems  = {
+    'greenGem': {
+      speed: [10,10],
+      resize: [50,50],
+      sprite: greenGemSpriteSheet,
+      points: 100,
+      angle: 1
+    },
+    'dogeBonus': {
+      speed: [200,200],
+      resize: [50,50],
+      sprite: bonusSpriteSchema,
+      angle : 1
+    }, 
+    'doubleShootBonus': {
+      speed: [200,200],
+      sprite: doubleShootBonusSpriteSchema,
+      angle : 1
+    }
+  }
 
 
   var backgroundEntities ={
+    'junk1' : {
+      sprite: level1_junk1Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    }, 'junk2' : {
+      sprite: level1_junk2Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    }, 'junk3' : {
+      sprite: level1_junk3Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    },'junk4' : {
+      sprite: level1_junk4Sprite,
+      speed: [65,65],
+      angle: 1,
+      resize: [50,50]
+    },
     'nebula': {
-      speed: 10,
+      speed: [10,10],
       resize: [400,350],
       sprite: nebulaSpriteSheet,
       angle: 1
     },
     'nebula2': {
-      speed:10 ,
+      speed:[10,10],
       resize: [400,400],
       sprite: nebula2SpriteSheet,
       angle: 1
     },'nebula3': {
-      speed:10 ,
+      speed: [10,10],
       resize: [400,400],
       sprite: nebula3SpriteSheet,
       angle: 1
     },
     'asteroids': {
-      speed: 50,
+      speed: [50,50],
       resize: [400,400],
       sprite: asteroidsSpriteSheet ,
       angle: 1
     },
     'asteroids2': {
-      speed: 50,
+      speed: [50,50],
       resize: [400,400],
       sprite: asteroids2SpriteSheet,
       angle: 1
     },
     'asteroids3': {
-      speed: 50,
+      speed: [50,50],
       resize: [400,400],
       sprite: asteroids3SpriteSheet,
       angle: 1
     },
     'blackhole': {
-      speed: 5,
+      speed: [5,5],
       resize: [400,400],
       sprite: blackholeSpriteSheet,
       angle: 1
     },
     'galaxy': {
-      speed: 10,
+      speed: [10,10],
       resize: [400,400],
       sprite: galaxySpriteSheet,
       angle: 1
     },
     'galaxy2':{
-      speed: 10,
+      speed: [10,10],
       resize: [400,400],
       sprite: galaxy2SpriteSheet,
       angle: 0.8,
       rotateSprite: -0.8
     },
-    'comet':{
-      speed: 10,
-      resize: [150,50],
-      sprite: cometSpriteSheet,
+    'dust':{
+      speed: [10,10],
+      sprite: dustSpriteSheet,
       angle: 1.2,
       rotateSprite: 0.2
     }
@@ -469,23 +604,25 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
 
   function GameEntity(entityDefinition, opts){
     
+    entityDefinition.angle = entityDefinition.angle ? entityDefinition.angle * Math.PI : null;
+    entityDefinition.rotateSprite = entityDefinition.rotateSprite ?  entityDefinition.rotateSprite * Math.PI : null;
+
     for(var opt in opts){
       entityDefinition[opt] = opts[opt];
     }
     
     if(opts.rotateSprite){
-      //entityDefinition.angle =  opts.rotateSprite * 1 +1 ;
       entityDefinition.rotateSprite = opts.rotateSprite;
     }
     
     var entity =  new Models.Entity(entityDefinition);
     //Scale
     var size = entity.getSize();
-    entity.resizeByFactor(1.2);
+    entity.resizeByFactor(0.8);
     
     if(entityDefinition.totalLife){
       var lifeBoxOpts = JSON.parse(JSON.stringify(entities['life']));
-      lifeBoxOpts.resize =  [entity.getHitBoxWidth(), 15];
+      lifeBoxOpts.resize =  [entity.getHitBox().width, 15];
       entity.lifeBox =  new Models.Entity(lifeBoxOpts);
     }
     return entity;
@@ -502,38 +639,80 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     var entity =  new GameEntity(JSON.parse(JSON.stringify(entityList[name])), opts);
     entity.name = name;
 
-    if(name == 'doubleShootBonus' || name == 'dogeBonus'){
-      entity.angle = petra.randomFloat(7/12,17/12);
-      entity.bounces = 5;
-    }
     return entity;
   }
- 
+  
   function getBackgroundEntity(name, opts){
     var entity = getEntity(name, opts, backgroundEntities);
     return entity;
   }
-  function getEnemy(pos, level){
-    return getEntity('enemy'+level, {pos: pos});
+
+  function getEnemy(pos, name, entitiesList){
+    var list; 
+    if(entitiesList == 'joke'){
+      list = joke_entities;
+    }else if(entitiesList == 'level_1'){
+      list = level_1_entities;
+    }
+
+    var entity = getEntity(name, {pos: pos}, list);
+
+    entity.behaviourUpdate = function(dt){
+      this.pos = petra.moveByAngle(dt)(this).pos;
+    }.bind(entity);
+
+    return entity;
   }
- 
+  
+  function getBonus(name, opts){
+    var list = bonusItems;
+
+    var entity = getEntity(name, opts, list);
+    entity.angle = - petra.randomFloat(7/12,17/12) * Math.PI;
+    entity.bounces = 5;
+    return entity;
+  }
+
   function getBoss(pos){
     var entity = getEntity('boss', {pos:pos});
+    var shoot = {
+      name : 'enemyShoot',
+      delay: 0.7
+    };
+    var doubleShoot = {
+      name : 'doubleShoot', 
+      delay: 0.2
+    }
+    var move = {
+      name: 'move', 
+      delay: 1.2
+    };
+    var launchEnemy = {
+      name: 'launchEnemy',
+      delay: 0.5
+    };
 
-    entity.actions = [
-      'enemyShoot',
-      'doubleShoot',
-      'move',
-      'enemyShoot',
-      'launchEnemy',
-      'doubleShoot',
-      'teleport',
-      'enemyShoot',
-      'doubleShoot',
-      'enemyShoot',
-      'talk'
-    ];
+    var teleport = {
+      name : 'teleport',
+      delay: 0.8
+    };
 
+    var talk = {
+      name : 'talk',
+      delay: 1.5
+    }
+    entity.actions = [];
+
+    entity.actions.push(shoot)
+    entity.actions.push(shoot)
+    entity.actions.push(doubleShoot)
+    entity.actions.push(launchEnemy)
+    entity.actions.push(teleport)
+    entity.actions.push(doubleShoot)
+    entity.actions.push(shoot)
+    entity.actions.push(move)
+    entity.actions.push(doubleShoot)
+    entity.actions.push(talk)
     return entity;
   }
 
@@ -557,7 +736,8 @@ define( [ 'game/models/models','game/petra', 'hu'], function(Models,petra, hu){
     getBackgroundEntity: getBackgroundEntity,
     getEnemy: getEnemy,
     getSpaceInvader: getSpaceInvader,
-    getBoss: getBoss
+    getBoss: getBoss,
+    getBonus: getBonus
   }
 });
 

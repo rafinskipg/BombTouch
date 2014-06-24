@@ -1,4 +1,4 @@
-define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'], function(hu, EL, petra, ASSETSList, models){
+define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], function(hu, EL, petra, ASSETSList, models){
   var TIME,
     TIME_SINCE_LAST_OUT,
     BG_X,
@@ -15,7 +15,7 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     'blackhole',
     'galaxy',
     'galaxy2',
-    'comet'
+    'dust'
   ];
 
   var Scenario = function(canvasId, endCallback, scenespeed, bgspeed){
@@ -25,6 +25,11 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
       bgspeed : bgspeed,
       BGx : 0
     });
+    this.scene.backgrounds = [];
+    this.scene.backgrounds.push('images/backgrounds/galaxy.png');
+    this.scene.backgrounds.push('images/backgrounds/dust.png');
+    this.scene.backgrounds.push('images/backgrounds/thing.png');
+
   };
   
   Scenario.prototype.init = function() {
@@ -39,13 +44,17 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     
     this.scene.updateBackground = (function(dt){ 
       this.BGx -= dt;
-      this.ctx.drawImage(resources.get('images/background.png'), this.BGx, 0,this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(resources.get('images/background.png'), this.BGx + this.canvas.width, 0,this.canvas.width, this.canvas.height);
-     
+      this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.offSetX + this.BGx, this.offSetY + 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get(this.backgrounds[0]), this.offSetX +  this.BGx,  this.offSetY + 0,640, 400);
+      this.ctx.drawImage(resources.get('images/backgrounds/background.png'),this.offSetX +  this.BGx + this.canvas.width, this.offSetY + 0,this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(resources.get(this.backgrounds[1]), this.offSetX +  this.BGx + this.canvas.width,this.offSetY +  0,640, 400);
+      
       // If the image scrolled off the screen, reset
       if (this.BGx < -this.canvas.width){
         this.BGx =0;
+        this.backgrounds.push(this.backgrounds.shift());
       }
+
     }).bind(this.scene);
     this.scene.load();
   }
@@ -55,17 +64,24 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
   }
   Scenario.prototype.update = function(){ }
 
-  Scenario.prototype.setRenderEntities = function(fn){
+  Scenario.prototype.setRenderEntities = function(fnEntities, fnTextEntities){
     var self = this;
     this.scene.render = (function(){
-      var listOfEntitiesArrays = fn();
+      var listOfEntitiesArrays = fnEntities();
       this.renderEntities(self.bgElements);
       for(var i = 0; i < listOfEntitiesArrays.length; i++){
         this.renderEntities(listOfEntitiesArrays[i]);
       }
+
+      var listOfTextEntitiesArrays = fnTextEntities();
+      for(var i = 0; i < listOfTextEntitiesArrays.length; i++){
+        this.renderTexts(listOfTextEntitiesArrays[i]);
+      }
+
       this.renderEntities(self.frontElements);
     }).bind(this.scene);
   }
+  
 
   Scenario.prototype.updateBackgrounds = function(dt){
     TIME +=dt;
@@ -74,13 +90,13 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
 
     this.frontElements = hu.compact(
       this.frontElements
-      .map(self.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft)); 
 
     this.bgElements = hu.compact(
       this.bgElements
-      .map(self.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(petra.moveByAngle(dt))
       .map(petra.removeIfOutsideScreenleft));
 
@@ -91,7 +107,7 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
     }
   }
 
-  Scenario.prototype.updateSprite = function updateSprite(dt){
+  function updateEntity(dt){
     return function(entity){
       entity.update(dt);
       return entity;
@@ -117,6 +133,10 @@ define( [ 'hu','game/entities', 'game/petra','game/assets', 'game/models/models'
       opts.resizePercentage = 1+Math.random().toFixed(2);
       this.frontElements.push(EL.getBackgroundEntity(item, opts));  
     }
+  }
+
+  Scenario.prototype.screenShake = function(){
+    this.scene.screenShake(0.5);
   }
 
   return Scenario;

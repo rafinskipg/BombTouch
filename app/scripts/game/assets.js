@@ -1,10 +1,13 @@
 define( [], function(){
   var list = [
     'images/newsprites.png',
-    'images/background.png',
-    'images/orbes/coin.png',
+    'images/backgrounds/background.png',
+    'images/backgrounds/galaxy.png',
+    'images/backgrounds/thing.png',
+    'images/backgrounds/dust.png',
     'images/enemies/tacnyan.png',
     'images/enemies/rock.png',
+    'images/enemies/level_1.png',
     'images/bonusWeapon.png',
     'images/enemies/boss_1.png',
     'images/doggy/pixeleddog.png',
@@ -23,7 +26,6 @@ define( [], function(){
     'images/nebula/asteroids2.png',
     'images/nebula/asteroids3.png',
     'images/nebula/blackhole.png',
-    'images/nebula/comet.png',
     'images/nebula/galaxy.png',
     'images/nebula/galaxy2.png',
     'images/messages/cooldogdamaged.png',

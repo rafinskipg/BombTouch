@@ -1,18 +1,10 @@
-define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDirector','game/petra','resources','sprite','input','game/raf'], function(models, hu, EL, Scenario, LEVELS_DIRECTOR, petra){
+define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector','resources','sprite','input','raf', 'quad_tree'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR){
 
-  var throttle = function(lambda, ms){
-    var allow = true;
-    return function(){
-      if(allow){
-        allow = false,
-        lambda();
+return BombTouchApp.
+    factory('brainSrv', ['audioSrv','settingsSrv', function(audioSrv, settingsSrv) {
+  
+  var CURRENT_STAGE, QUAD;
 
-        setTimeout(function(){
-          allow = true;
-        },ms);
-      }
-    }
-  }
   /****************************
   ****************************
     GAME Variables
@@ -20,7 +12,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   ****************************/
   function getDefaultState(){
     var options =  {
-      sound_enabled: true,
       iteration: 1,
       win: false,
       died: false,
@@ -31,7 +22,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       paused: false,
       post_game_completed : false,
       background_speed: 50,
-      game_speed: 1.0
+      gemsPicked: 0
     };
     return options;
   }
@@ -58,7 +49,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bonusWeapons,
     bosses,
     enemyBullets,
+    neutralBullets,
     graves,
+    pointsToRender,
     player;
 
   function setDefaultStateForEntities(){
@@ -71,7 +64,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bonuses = [];
     bonusWeapons = [];
     bosses = [];
+    pointsToRender = [];
     enemyBullets = [];
+    neutralBullets =[];
     graves = [];
     player = {};
   }
@@ -82,7 +77,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   //Suscribe to events of the game
   var notifyGameEnd = [];
-  var notifyLevelUp = [];
   var notifyPoints = [];
   var notifyMessages = [];
   var notifyPower = [];
@@ -175,13 +169,15 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         'let your story end']
     }
   };
-
-  var main_character_name = 'cooldog';
-  var main_enemy_name = 'boss_1';
-  var main_character_super_damaged = 'cooldogdamaged';
-  var main_character_damaged = 'cooldogdamaged';
-  var main_character_super_name = 'cooldog';
-  var bonus_image_name = 'dog';
+  
+  var names = {
+    main_character_name :'cooldog',
+    main_enemy_name :'boss_1',
+    main_character_super_damaged :'cooldogdamaged',
+    main_character_damaged :'cooldogdamaged',
+    main_character_super_name :'cooldog',
+    bonus_image_name :'dog'
+  }
   //var main_character_super_name = 'supercooldog';
 
   var time_between_bullets = 0.300;
@@ -209,43 +205,21 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   };
 
-  function start() {
+  function start(LEVEL_STRUCTURE) {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,1);
-    LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
-      enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
-    });
-
-    LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
-      bosses.push(createFunction([canvas.width, canvas.height/2]));
-      STATE.background_speed = 1.6;
-    });
-
-    LEVELS_DIRECTOR.suscribeAddBonus(function(createFunction){
-      var bonus = createFunction([canvas.width,  Math.random() * (canvas.height - 39)]);
-      if(bonus.name == 'dogeBonus'){
-        bonus.obtain = dogeBonusObtain;  
-      }else if(bonus.name == 'doubleShootBonus'){
-        bonus.obtain = doubleWeaponBonusObtain;
-      }
-      bonuses.push(bonus);
-    });
+    //TODO , here send levels director the stage 0, at "continue game" send the current Stag, increment the current stag
 
     //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
+    LEVELS_DIRECTOR.init(names, 1,true,canvas,LEVEL_STRUCTURE);
     suscribeToEvents();
-    //playSound(SOUNDS.ambient);
-
-    //showInitialDialogs();
     main();
   };
 
   function restart(){
     reset();
-    console.log('restart ?')
-    //playSound(SOUNDS.ambient);
     main();
   }
 
@@ -358,17 +332,23 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function reset() {
-    var newState = getDefaultState();
-    newState.sound_enabled = STATE.sound_enabled === false ? false: true;
-    newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
-    STATE = newState;
+    STATE = getDefaultState();
+    STATE.game_speed = settingsSrv.getDifficulty();
     SCENARIO = new Scenario("canvas", endGame, STATE.game_speed, STATE.background_speed);
-    SCENARIO.setRenderEntities(getEntitiesToRender);
+    SCENARIO.setRenderEntities(getEntitiesToRender, getTextEntitiesToRender);
     SCENARIO.init();
     setDefaultStateForEntities();
-    player = EL.getEntity(main_character_name,{pos: [50, canvas.height / 2]});
+    player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
     player.bonuses = {};
     TIMERS = getDefaultTimers();
+
+    var bounds = {
+      x:0,
+      y:0,
+      width:canvas.width,
+      height:canvas.height
+    }
+    QUAD = new QuadTree(bounds);
   };
 
   function suscribeToEvents(){
@@ -390,30 +370,42 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         player.damage = normalPlayerOptions.damage;
       }
     });*/
+      
+    LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
+      enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
+    }, 'brainSrv');
 
-    LEVELS_DIRECTOR.suscribeLevelUp(function(){
+    LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
+      bosses.push(createFunction([canvas.width, canvas.height/2]));
+      STATE.background_speed = 1.6;
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeAddBonus(function(bonus){
+      if(bonus.name == 'dogeBonus'){
+        bonus.obtain = dogeBonusObtain;  
+      }else if(bonus.name == 'doubleShootBonus'){
+        bonus.obtain = doubleWeaponBonusObtain;
+      } else if(bonus.name == 'greenGem'){
+        bonus.obtain = greenGemBonusObtain;
+      }
+      bonuses.push(bonus);
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeAmbientEntities(function(entity){
+      miscelanea_back.push(entity);
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeMessages(function(opts){
+      showMessages(opts.messages, opts.timeout, opts.type);
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeStageUp(function(stage){
+      CURRENT_STAGE = stage;
       SOUNDS['levelup'].play();
-      var message = new models.Message(MESSAGES.levelup, bonus_image_name);
+      var message = new models.Message(MESSAGES.levelup, names.bonus_image_name);
       showMessages([message]);
-    })
-    notifyLevelUp.map(function(fn){
-      LEVELS_DIRECTOR.suscribeLevelUp(fn);
-    });
-  }
+    }, 'brainSrv')
 
-  function showInitialDialogs(){
-    var messages = [];
-    messages.push( new models.Message('ENEMY! The end of this quest is near', main_character_name,3000))
-    messages.push( new models.Message('ha ha ha, of course, you have travelled so far ... to die', main_enemy_name,3000))
-    messages.push( new models.Message('...', main_character_name,700))
-    messages.push( new models.Message('I\'m not afraid of what you have got for me', main_character_name,2000))
-    messages.push( new models.Message( 'Oh yeah? Just meet me if you are ready, after ending you I will destroy your universe', main_enemy_name,3000))
-    messages.push( new models.Message( 'I\'m doing this for me, and I\'m made from the universe. I\'m two times strong' , main_character_name,3000))
-    messages.push( new models.Message('You are a piece of nothing', main_enemy_name,2000))
-    messages.push( new models.Message( 'Lets demonstrate him that we are something... and remember to write a good end to this story.', main_character_name,3000))
-
-    showMessages(messages,0,'full');
-    
   }
 
   /****************************
@@ -424,7 +416,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   
   function endGame() {
     STATE.game_over = true;
-    //stopAmbientSound();
     graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
@@ -449,7 +440,6 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function pause(){
     STATE.paused = true;
     SCENARIO.pause();
-    //pauseAmbientSound();
   }
 
   function isPaused(){
@@ -459,13 +449,12 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function resume(){
     STATE.paused = false;
     SCENARIO.pause();
-    //playSound(SOUNDS.ambient);
     main();
   }
 
   function playSound(sound){
-    if(!isPaused() && STATE.sound_enabled){
-      sound.play();
+    if(!isPaused() && settingsSrv.getSound() == true){
+      audioSrv.playSound(sound);
     }
   }
 
@@ -494,14 +483,28 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
         player.shooting = true;
       }
       TIMERS.shootSpriteTime = 0.5;
-      
-      var y = player.pos[1] + player.getHeight() / 2;
-      var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
+
+      var isCriticalStrike = petra.passProbabilities(player.critChance);
+      if(isCriticalStrike){
+        pointsToRender.push(new models.RenderableText({
+          text: 'CRITICAL STRIKE!!',
+          color: 'rgba(69, 187, 111, 0.49)',
+          timeAlive: 0, 
+          speed: [50,50],
+          pos: player.pos
+        }));
+      }
+      var damage = isCriticalStrike ? player.damage * 2 : player.damage;
+
+      //var y = player.pos[1] + player.getHeight() / 2;
+      //var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
+      var bulletpos = player.getShootOrigin();
+
       if(player.bonuses.doubleShoot > 0){
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 0.2,  rotateSprite: 0.2 }));  
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: 1.8, rotateSprite: 1.8 }));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 0.2*Math.PI,  rotateSprite: 0.2 *Math.PI}));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 1.8*Math.PI, rotateSprite: 1.8*Math.PI }));  
       }else{
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: player.damage, angle: player.angle}));  
+        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: player.angle}));  
       }
       
       addShootFire(bulletpos);
@@ -519,7 +522,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var randomPos = parseInt(Math.random() * array.length)
     return array[randomPos];
   }
-  var createRick = throttle(function(){
+  var createRick = petra.throttle(function(){
     var possibleRickSizes = [
       [70,110],
       [140,220],
@@ -550,7 +553,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
-  var megaShoot = throttle(megaShootUntrottled, 1000);
+  var megaShoot = petra.throttle(megaShootUntrottled, 1000);
 
   function addExplosion(pos, size){
     explosions.push(EL.getEntity('explosion',{pos: pos, resize: size}));
@@ -568,11 +571,18 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     miscelanea_front.push(EL.getEntity('shootfire', {pos: pos, speed: speed, angle: angle}));
   }
 
-  function addPoints(pts){
+  function addPoints(pts, pos){
     STATE.points += pts;
     for(var i = 0; i<notifyPoints.length; i++){
       notifyPoints[i](STATE.points);
     }
+    pointsToRender.push(new models.RenderableText({
+      text: pts,
+      color: 'rgba(39, 214, 46, 0.61)',
+      timeAlive: 0, 
+      speed: [50,50],
+      pos: petra.sumIntegerToArray(pos, 30)
+    }));
   }
     
   function addPower(pow){
@@ -639,24 +649,55 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     TIMERS.gameTime += dt;
     LEVELS_DIRECTOR.update(dt,realtimeDt);
     handleInput(dt);
+    //updateTree();
+    
     updateEntities(dt);
     checkCollisions();
     checkGameEndConditions();
   };
 
+  function updateTree(){
+    QUAD.clear();
+    insertTree(enemies,'enemy')
+    insertTree(bosses,'boss')
+    insertTree(bullets,'bullets')
+    insertTree(enemyBullets,'enemyBullets')
+    insertTree(neutralBullets,'neutralBullets')
+    insertTree(bonuses, 'bonuses');
+    insertTree([player], 'player')
+  }
+
+  function insertTree(arr, name){
+    for(var i = 0; i < arr.length; i++){
+      var size = arr[i].getSize();
+      QUAD.insert({
+        x: arr[i].getX(),
+        y: arr[i].getY(),
+        width: size[0],
+        height: size[1],
+        type: name,
+        indexOriginalObject: i
+      })
+    }
+  }
+
   function dogeBonusObtain(entity){
     LEVELS_DIRECTOR.pickedDogeBonus();
     entity.hasBonus = true;
-    addPoints(200);
+    addPoints(200, entity.pos);
     entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
     entity.damage = entity.baseDamage + 50;
     bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
     playSound(SOUNDS.yeah);
-    var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
+    var message = new models.Message(MESSAGES.wow, names.bonus_image_name, 1500);
     showMessages([message]);
   }
   function doubleWeaponBonusObtain(entity){
     entity.bonuses.doubleShoot = 10;
+  }
+  function greenGemBonusObtain(entity, bonus){
+    addPoints(bonus.points, bonus.pos);
+    STATE.gemsPicked++;
   }
 
   function updateEntities(dt) {
@@ -666,11 +707,13 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     updateEnemies(dt);
     updateSpecials(dt);
     updateExplosions(dt);
+    updatePointsToRender(dt);
     updateMiscelanea_front(dt);
     updateMiscelanea_back(dt);
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
+    updateNeutralBullets(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
@@ -727,7 +770,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
-      entities.map(SCENARIO.updateSprite(dt))
+      entities.map(updateEntity(dt))
         .map(petra.moveByAngle(dt))
         .map(removeIfDone)
     ); 
@@ -739,7 +782,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       var reflectionAngle = checkCanvasLimits(nextPosition, entity.getSize());
       if(reflectionAngle != null){
         entity.bounces -= 1;
-        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle);
+        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle * Math.PI);
       }
       return entity;
     }
@@ -758,11 +801,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
       var angleInRadians = Math.atan(entity.getX()+1000, entity.getY()) + phi;
-      var xC = radius * Math.cos(angleInRadians)+phi;
-      var yC = radius * Math.sin(angleInRadians)+phi;
+      var xC = radius * Math.cos(angleInRadians);
+      var yC = radius * Math.sin(angleInRadians);
 
-      xC = xC + player.pos[0];
-      yC = yC + player.pos[1];
+      xC = xC + player.getX();
+      yC = yC + player.getY();
       entity.pos =[xC,yC]
       return entity;
     }
@@ -868,19 +911,35 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function shootThrottled(time, dt, shootType){
     return entityStepsInTime(time,dt)(function(entity){
-      shootType(entity, entity.angle);
+      if(shootType == 'blueShoot'){
+        blueShoot(entity, entity.angle);
+      }else{
+        enemyShoot(entity, entity.angle);
+      }
+      
       return entity;
     });
   }
-  function playActionThrottled(time, dt){
-    return entityStepsInTime(time,dt)(function(entity){
-      playAction(entity.actions.pop(), entity);
-      return entity;
-    });
+
+  function playActionThrottled( dt, keep){
+    return function(entity){
+      if(!entity.actions || !entity.actions.length > 0){
+        return entity;
+      }
+      return entityStepsInTime(entity.actions[entity.actions.length - 1 ].delay,dt)(function(entity){
+        var action = entity.actions.pop()
+        if(keep){
+          entity.actions.unshift(action);
+        }
+        playAction(action.name, entity);
+        return entity;
+      }.bind(this))(entity);
+    }
   }
   function playAction(action, entity){
     var lifePercent = entity.life / entity.totalLife;
     var life = 'normal';
+    
     if(lifePercent < 0.7 && lifePercent > 0.4 ){
       life = 'damaged';
     }else if(lifePercent < 0.4){
@@ -889,16 +948,22 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     
     if(action =='enemyShoot'){
       entity.setAnimation('shoot'+life);
-      enemyShoot(entity,  entity.angle );
+      enemyShoot(entity,  entity.getBulletAngle() );
+    }else if(action =='neutralShoot'){
+      entity.setAnimation('shoot'+life);
+      neutralShoot(entity,  entity.getBulletAngle() );
+    }else if(action == 'aim'){
+      //TODO, get near entity
+      entity.setAnimation('aiming');
+      entity.aimingAt = player;
     }else if(action =='doubleShoot'){
       entity.setAnimation('shoot'+life);
-      enemyShoot(entity,0.6 );
-      enemyShoot(entity,0.8 );
-      enemyShoot(entity,1.0 );
-      enemyShoot(entity,1.2 );
-      enemyShoot(entity,1.4 );
+      enemyShoot(entity,0.6 *Math.PI );
+      enemyShoot(entity,0.8 *Math.PI);
+      enemyShoot(entity,1.0 *Math.PI);
+      enemyShoot(entity,1.2 *Math.PI);
+      enemyShoot(entity,1.4 *Math.PI);
     }else if(action =='teleport'){
-
       entity.setAnimation('teleport'+life, function(frame,index){
         var times = 0;
         if(frame == 6 && times < 1){
@@ -915,10 +980,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
       entity.setAnimation('talk'+life);
       playSound(SOUNDS[chosenPhrase]);
       
-      var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
+      var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
       showMessages([message]);
     }else if(action == 'launchEnemy'){
-      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], Math.ceil(Math.random() *5 ));
+      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], 'enemy'+Math.ceil(Math.random() *5 ), 'joke');
       enemies.push(enemy);
       miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
       miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
@@ -927,10 +992,19 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   function enemyShoot(entity, angle){
-    var bullet = EL.getEntity(entity.bulletName, {pos: entity.pos, damage: entity.damage, angle: angle });
+    var shootOrigin = entity.getShootOrigin();
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
     bullet.speed = [300,300];
     enemyBullets.push(bullet);      
-    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: entity.pos, speed: entity.speed, angle: entity.angle}));
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
+    playSound(SOUNDS.shoot);
+  } 
+  function neutralShoot(entity, angle){
+    var shootOrigin = entity.getShootOrigin();
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle, rotateSprite: angle });
+    bullet.speed = [300,300];
+    neutralBullets.push(bullet);      
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
     playSound(SOUNDS.shoot);
   }
 
@@ -948,11 +1022,11 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function moveToPlayerVertically(dt){
     return function(entity){
-      if(player.pos[1] < entity.getY() - 40){
+      if(player.getY() < entity.getY() - 40){
         entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
-      if(player.pos[1] > entity.getY() - 40){
+      if(player.getY() > entity.getY() - 40){
         entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 
@@ -1020,27 +1094,41 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
 
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
-      entities.map(SCENARIO.updateSprite(dt))
+      entities.map(updateEntity(dt))
       .map(petra.moveByAngle(dt))
       .map(removeIfOutsideScreen));
   }
   function updateBullets(dt){
     bullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(bullets, dt);
+    /*bullets = hu.compact(bullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   }
 
   function updateEnemyBullets(dt){
     enemyBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(enemyBullets, dt);
+    /*enemyBullets = hu.compact(enemyBullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
+  } 
+  function updateNeutralBullets(dt){
+    neutralBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(neutralBullets, dt);
+    /*neutralBullets = hu.compact(neutralBullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   }
 
   function updateEnemies(dt){
     enemies = hu.compact(
-      enemies.map(SCENARIO.updateSprite(dt))
-      .map(petra.moveByAngle(dt))
-      .map(shootThrottled(1.2, dt, enemyShoot))
+      enemies.map(updateEntity(dt))
+      .map(updateEntity(dt))
+      .map(playActionThrottled(dt, true))
       .map(petra.removeIfOutsideScreenleft));
   }
-
   
+  function updateEntity(dt){
+    return function(entity){
+      entity.update(dt);
+      return entity;
+    }
+  }
   function updateSpecials(dt){
     specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
   }
@@ -1054,6 +1142,23 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateMiscelanea_back(dt){
     miscelanea_back = updateEntitiesAndRemoveIfDone(miscelanea_back, dt);        
   }
+
+  function updatePointsToRender(dt){
+    pointsToRender = hu.compact(
+      pointsToRender
+      .map(updateTimeCounter(dt))
+      .map(moveUp(dt))
+      .map(removeIfTimeCounterGreaterThan(1))
+      );
+  }
+
+  function moveUp(dt){
+    return function(entity){
+      entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
+      return entity;
+    }
+  }
+
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 30)))
@@ -1062,7 +1167,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
       .map(wrapperReadyForActionOnly(petra.moveByAngle(dt)))
-      .map(SCENARIO.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(ifCollidesApplyBonusTo(player))
       .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
@@ -1071,23 +1176,23 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function updateBonusWeapons(dt){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
-      .map(shootThrottled(0.5, dt, blueShoot))
+      .map(shootThrottled(0.5, dt, 'blueShoot'))
       .map(removeBonusIfTImeGreaterThan(15)));
   }
 
   function updateBosses(dt){
     bosses = hu.compact(bosses
-      .map(SCENARIO.updateSprite(dt))
+      .map(updateEntity(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
+      .map(wrapperReadyForActionOnly(playActionThrottled(dt, false)))
       .map(resetBossActionsIfEmpty)
       .map(moveToPlayerVertically(dt)));
   }
 
   function updateGraves(dt){
     graves = hu.compact(
-      graves.map(SCENARIO.updateSprite(dt))
+      graves.map(updateEntity(dt))
       .map(endPostGameIfDone));
   }
 
@@ -1096,26 +1201,96 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     Collision Handling
   ****************************
   ****************************/   
+      /**
+     * Helper function to determine whether there is an intersection between the two polygons described
+     * by the lists of vertices. Uses the Separating Axis Theorem
+     *
+     * @param a an array of connected points [{x:, y:}, {x:, y:},...] that form a closed polygon
+     * @param b an array of connected points [{x:, y:}, {x:, y:},...] that form a closed polygon
+     * @return true if there is any intersection between the 2 polygons, false otherwise
+     */
+    function doPolygonsIntersect (a, b) {
+        var polygons = [a, b];
+        var minA, maxA, projected, i, i1, j, minB, maxB;
+        var aPoints = a.getPoints();
+        var bPoints = b.getPoints();
+
+        for (i = 0; i < polygons.length; i++) {
+
+            // for each polygon, look at each edge of the polygon, and determine if it separates
+            // the two shapes
+            var polygon = polygons[i].getPoints();
+            for (i1 = 0; i1 < polygon.length; i1++) {
+
+                // grab 2 vertices to create an edge
+                var i2 = (i1 + 1) % polygon.length;
+                var p1 = polygon[i1];
+                var p2 = polygon[i2];
+
+                // find the line perpendicular to this edge
+                var normal = [p2[1] - p1[1],  p1[0] - p2[0]];
+
+                minA = maxA = undefined;
+                // for each vertex in the first shape, project it onto the line perpendicular to the edge
+                // and keep track of the min and max of these values
+                for (j = 0; j < aPoints.length; j++) {
+                    projected = normal[0] * aPoints[j][0] + normal[1] * aPoints[j][1];
+                    if (isUndefined(minA) || projected < minA) {
+                        minA = projected;
+                    }
+                    if (isUndefined(maxA) || projected > maxA) {
+                        maxA = projected;
+                    }
+                }
+
+                // for each vertex in the second shape, project it onto the line perpendicular to the edge
+                // and keep track of the min and max of these values
+                minB = maxB = undefined;
+                for (j = 0; j < bPoints.length; j++) {
+                    projected = normal[0] * bPoints[j][0] + normal[1] * bPoints[j][1];
+                    if (isUndefined(minB) || projected < minB) {
+                        minB = projected;
+                    }
+                    if (isUndefined(maxB) || projected > maxB) {
+                        maxB = projected;
+                    }
+                }
+
+                // if there is no overlap between the projects, the edge we are looking at separates the two
+                // polygons, and we know there is no overlap
+                if (maxA < minB || maxB < minA) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+  function isUndefined(val){
+    return typeof(val) === 'undefined';
+  }
+
   function collides(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   }
 
   function boxCollides(hitboxA, hitboxB) {
-    return collides(hitboxA.pos[0], hitboxA.pos[1],
-                    hitboxA.pos[0] + hitboxA.size[0], hitboxA.pos[1] + hitboxA.size[1],
-                    hitboxB.pos[0], hitboxB.pos[1],
-                    hitboxB.pos[0] + hitboxB.size[0], hitboxB.pos[1] + hitboxB.size[1]);
+    return collides(hitboxA.topLeft[0], hitboxA.bottomLeft,
+                    hitboxA.topRight, hitboxA.bottomRight,
+                    hitboxB.topLeft, hitboxB.bottomLeft,
+                    hitboxB.topRight, hitboxB.bottomRight);
   }
 
   function entitiesCollide(a,b){
-    return boxCollides(a.getHitBox(), b.getHitBox());
+    return doPolygonsIntersect(a.getHitBox(), b.getHitBox());
+    
   }
 
   
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
-        bonus.obtain(entity);
+        bonus.obtain(entity, bonus);
       }
       return bonus;
     }
@@ -1123,12 +1298,27 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function ifCollidesApplyDamageTo(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
+        pointsToRender.push(new models.RenderableText({
+          text: item.damage,
+          color: 'rgba(169, 81, 185, 0.61)',
+          timeAlive: 0, 
+          speed: [50,50],
+          pos: entity.pos
+        }));
         entity.life -= item.damage;
       }
       return item;
     }
   }
 
+  /*function ifCollidedAddSpark(entity){
+    if(entity.collision){
+      var portionofspeed = [entity.speed[0] * 0.8, entity.speed[1] * 0.8];
+      addSpark(entity.pos, entity.collision.speed,  entity.collision.angle);
+      addBulletCasing(entity.pos, [entity.speed[0] - portionofspeed[0], entity.speed[1] - portionofspeed[1]], entity.angle);
+    }
+    return entity;
+  }*/
   function ifCollidesAddSpark(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
@@ -1148,6 +1338,12 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     }
   }
 
+  /*function removeIfCollided(entity){
+    if(!entity.collision){
+      return entity;
+    }
+  }*/
+
   function removeIfCollideWithAndPlaySound(entity){
     return function(item){
       var shouldReturnItem = removeIfCollideWith(entity)(item);
@@ -1161,33 +1357,90 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function playerDamaged(damage){
     playSound(SOUNDS.ouch);
     player.life -= damage;
+    
+    SCENARIO.screenShake();
 
-    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged))
+    pointsToRender.push(new models.RenderableText({
+      text: damage,
+      color: 'rgba(255, 0, 0, 0.61)',
+      timeAlive: 0, 
+      speed: [50,50],
+      pos: [player.getX(), player.getY()]
+    }));
+
+    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? names.main_character_super_damaged : names.main_character_damaged))
     showMessages([messageOuch]);
   }
 
   function killEnemy(enemy){
     LEVELS_DIRECTOR.killedEnemy(enemy);
-    addPoints(enemy.points);
+    addPoints(enemy.points, enemy.pos);
+
     addPower(enemy.points);
     playSound(SOUNDS.death);
     addExplosion(enemy.pos, enemy.getSize());    
   }
 
+  function  nearEntities(point, size){
+    var items = QUAD.retrieve({x:point[0], y:point[0], height:size[0], width:size[1]});
+    return items;
+  }
+
+  function getNearNearEntitiesForEnemy(enemy){
+    var items = nearEntities(enemy.pos, enemy.getSize());
+    items = hu.compact(items.map(function(item){
+      if(item.type == 'neutralBullets' || 
+        item.type == 'bullets'){
+        return item;
+      }
+    }))
+    return items;
+  }
   function collisionToEnemyGroup(enemyGroup){
       enemyGroup = hu.compact(enemyGroup.map(function(enemy){
+        /*
+        var nearEntities = getNearNearEntitiesForEnemy(enemy);
+       
+
+        nearEntities.map(function(entity){
+          var object;
+          console.log(entity.indexOriginalObject);
+          if(entity.type == 'bullets' ){
+            object = bullets[entity.indexOriginalObject]
+          }else if(entity.type == 'neutralBullets'){
+            object = neutralBullets[entity.indexOriginalObject]
+          }
+
+          if(entitiesCollide(object, enemy)){
+              console.log('ciolide')
+              object.collision = {
+                pos: object.pos,
+                speed: enemy.speed,
+                angle: enemy.angle
+              }
+              enemy.life -= object.damage;
+            }
+          
+
+        })*/
+
+        if(entitiesCollide(enemy, player)){
+          playerDamaged(enemy.damage);
+          enemy.life -= player.damage;
+        }
 
         bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(ifCollidesAddSpark(enemy))
+          .map(removeIfCollideWith(enemy)));
+
+        neutralBullets = hu.compact(neutralBullets.map(ifCollidesApplyDamageTo(enemy))
           .map(ifCollidesAddSpark(enemy))
           .map(removeIfCollideWith(enemy)));
           
         specials
           .map(ifCollidesApplyDamageTo(enemy));
 
-        if(entitiesCollide(enemy, player)){
-          playerDamaged(enemy.damage);
-          enemy.life -= player.damage;
-        }
+        
 
         if(enemy.life > 0){
           return enemy;
@@ -1205,6 +1458,9 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     bosses = collisionToEnemyGroup(bosses);
 
     enemyBullets = hu.compact(enemyBullets
+        .map(removeIfCollideWithAndPlaySound(player)));
+
+    neutralBullets = hu.compact(neutralBullets
         .map(removeIfCollideWithAndPlaySound(player)));
   }
 
@@ -1244,6 +1500,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     var entitiesToRender = [
       bullets,
       enemyBullets,
+      neutralBullets,
       bosses,
       miscelanea_back,
       enemies,
@@ -1265,6 +1522,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
     return entitiesToRender;
   };
 
+  function getTextEntitiesToRender(){
+    return [pointsToRender];
+  }
+
   
 
   /****************************
@@ -1275,9 +1536,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function suscribeGameOver( fn){
     notifyGameEnd.push(fn);
   }
-  function suscribeLevelUp( fn){
-    notifyLevelUp.push(fn);
-  }
+
   function suscribePoints(fn){
     notifyPoints.push(fn);
   }
@@ -1290,21 +1549,7 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   function suscribeMaxPower(fn){
     notifyMaxPower.push(fn);
   }
-  function setSound(bool){
-    STATE.sound_enabled = bool;
-  }
-  function setSoundInGame(bool){
-    if(!STATE.sound_enabled){
-      STATE.sound_enabled = bool;
-      //playSound(SOUNDS.ambient);
-    }else{
-      //pauseAmbientSound();
-      STATE.sound_enabled = bool;
-    }
-  }
-  function setDifficulty(speed){
-    STATE.game_speed = speed;
-  }
+
 
   /****************************
   ****************************
@@ -1314,14 +1559,10 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   var GAME = function() {
     return {
       suscribeGameOver : suscribeGameOver,
-      suscribeLevelUp : suscribeLevelUp,
       suscribePoints : suscribePoints,
       suscribePower : suscribePower,
       suscribeMessages: suscribeMessages,
       megaShoot : megaShoot,
-      setSound : setSound,
-      setSoundInGame: setSoundInGame,
-      setDifficulty: setDifficulty,
       endGame : endGame,
       start : start,
       restart : restart,
@@ -1332,5 +1573,5 @@ define( [ 'game/models/models', 'hu','game/entities','game/scenario', 'levelsDir
   }
 
   return  GAME;
-
+  }]);
 });

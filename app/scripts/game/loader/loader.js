@@ -1,27 +1,33 @@
-define( ['resources','game/raf', 'game/QuadTree'], function(){
+define( ['resources','raf', 'quad_tree'], function(){
   var previouslyLoaded = false;
   var canvas,ctx, then = 0;
   var particles = [];
   var quad;
+  var currentFiles = 0;
+  var totalFiles = 0;
   var gravity = 0.5; 
   var id ;
 
   function load(elements, cb){
     if(!previouslyLoaded){
       previouslyLoaded = true;
-      resources.load(elements);
-    }
-    if(!resources.isReady()){
+      resources.load(elements, function(){
+          canvas.className = '';
+          cancelAnimationFrame(id);
+          previouslyLoaded = false;
+          cb();
+      }.bind(this), function(current, total){
+        currentFiles = current;
+        totalFiles = total;
+      }.bind(this));
+      load(elements,cb);
+    }else{
       mainLoop();
-      
       id =requestAnimationFrame(function(){
         load(elements,cb);
       });
-      return;
     }
-    canvas.className = '';
-    cancelAnimationFrame(id);
-    cb();
+   
   }
 
   function init(canvasId){
@@ -103,11 +109,12 @@ define( ['resources','game/raf', 'game/QuadTree'], function(){
     then = now;
     
     // Fill the path
-   // ctx.fillStyle = "black";
-    //ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#33337a";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = 'white';
     ctx.font = "30px 'Press Start 2P'";
-    ctx.fillText("LOADING ...", 10, 50);
+    ctx.fillText("LOADING ... ", 10, 80);
+    ctx.fillText(currentFiles + '/'+ totalFiles, 10, 160);
 
 
     update(dt/1000.0);

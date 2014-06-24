@@ -1,4 +1,4 @@
-define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers/prototypes','controllers/prototype_play','controllers/main', 'controllers/difficulty'], function(angular, BombTouchApp){
+define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers/prototypes','controllers/prototype_play','controllers/topMenu','controllers/main', 'controllers/difficulty'], function(angular, BombTouchApp){
     
   BombTouchApp.config(['$routeProvider', function($routeProvider) {
     
@@ -27,6 +27,11 @@ define(['angular', 'app', 'controllers/home', 'controllers/badges', 'controllers
     $routeProvider.when('/difficulty', {
       templateUrl: 'views/difficulty.html',
       controller: 'DifficultyCtrl'
+    }); 
+
+    $routeProvider.when('/levels', {
+      templateUrl: 'views/levels.html',
+      controller: 'LevelsCtrl'
     });
 
     $routeProvider.when('/prototypes', {

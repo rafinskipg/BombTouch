@@ -1,4 +1,4 @@
-define( ['game/loader','game/raf'], function(Loader){
+define( ['game/loader/loader','raf'], function(Loader){
 
   function Scene(assets, canvasId,endCallback, opts){
     this.canvasId = canvasId;
@@ -16,6 +16,10 @@ define( ['game/loader','game/raf'], function(Loader){
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight ;
     this.paused = false;
+
+    this.shaking = false;
+    this.offSetX = 0;
+    this.offSetY = 0;
 
     this.scenespeed = 1.0;
     this.bgspeed = 1.0;
@@ -62,8 +66,13 @@ define( ['game/loader','game/raf'], function(Loader){
       //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       //this.ctx.save();
       this.updateBackground(realtimeDt * this.bgspeed);
+
       //this.ctx.scale(0.8,0.8);
+      if(this.shaking){
+        this.updateShaking(realtimeDt * this.scenespeed);
+      }
       this.render();
+      
       //this.ctx.restore();
       this.rafID = requestAnimationFrame(this.mainLoop.bind(this));  
     }else{
@@ -83,18 +92,45 @@ define( ['game/loader','game/raf'], function(Loader){
   }
 
   Scene.prototype.renderEntity = function(entity) {
+    
+    if(window.DEBUGGER){
+      this.ctx.beginPath();
+      this.ctx.rect((this.offSetX + entity.getX()),this.offSetY + entity.getY(), 5, 7);
+      this.ctx.fillStyle = 'green';
+      this.ctx.fill();
+      
+      this.ctx.beginPath();
+      this.ctx.rect((this.offSetX + entity.getShootOrigin()[0]),this.offSetY + entity.getShootOrigin()[1], 15, 7);
+      this.ctx.fillStyle = 'purple';
+      this.ctx.fill();
+    }
+
     this.ctx.save();
-    this.ctx.translate(Math.round(entity.getX()), Math.round(entity.getY()));
+    this.ctx.translate(Math.round(this.offSetX + entity.getX()), Math.round(this.offSetY + entity.getY()));
     entity.render(this.ctx);
     this.ctx.restore();
 
     if(entity.life){
       this.ctx.save();
-      this.ctx.translate(Math.round(entity.getHitBoxLeftPadding()), Math.round(entity.getY() + entity.getHeight()));
+      this.ctx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
       entity.drawLife(this.ctx);
       this.ctx.restore();
     }
 
+  }
+
+  Scene.prototype.renderTexts = function(list) {
+    for(var i=0; i<list.length; i++) {
+      this.renderText(list[i]);
+    }
+  }
+  Scene.prototype.renderText = function (entity){
+    this.ctx.save();
+    this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
+    this.ctx.fillStyle = entity.color;
+    this.ctx.font = "bold 16px Arial";
+    this.ctx.fillText(entity.text, 0, 0);
+    this.ctx.restore();
   }
 
   Scene.prototype.drawFrames = function(frames){
@@ -102,8 +138,37 @@ define( ['game/loader','game/raf'], function(Loader){
     this.ctx.font = "bold 16px Arial";
     this.ctx.fillText(frames, 100, 100);
   }
+  Scene.prototype.updateShaking = function(dt){
+    this.shakeTime -= dt;
 
+    if(this.shakeTime <= 0){
+      this.shaking = false;
+      this.offSetX = 0;
+      this.offSetY = 0;
+      return;
+    }
 
+    this.offSetX += this.offSetDir * 30*dt;
+    this.offSetY+=  this.offSetDir * 30*dt;
+
+    if(this.offSetX < 0){
+      this.offSetDir  = 1;
+      this.bounces++;
+    }else if(this.offSetX > 5){
+      this.bounces++;
+      this.offSetDir = -1;
+    }
+
+    
+  }
+  Scene.prototype.screenShake = function(time){
+    this.shaking = true;
+    this.offSetX = 5;
+    this.offSetY = 5;
+    this.offSetDir = -1;
+    this.bounces = 0;
+    this.shakeTime = time;
+  }
   //ABSTRACT
   //-createEntities
   //-update

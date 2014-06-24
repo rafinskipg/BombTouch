@@ -1,61 +1,53 @@
 <div class="container-full game page">
   <div class="" >
-      <i class="top_tab_trigger fa fa-ellipsis-v" ng-click="showMenu()"></i>
-      
-      <div id="top_menu" class="top_menu row" ng-show="menuVisible == true">
+      <div ng-controller="TopMenuCtrl">
+        <i class="top_tab_trigger fa fa-ellipsis-v" ng-click="showMenu()"></i>
         
-        <div class="col-xs-6 col-md-3">
-          <div id="pause" class="topControl" ng-click="pause()" ng-show="paused == false"> <i class="fa fa-spoon"></i> Pause</div>
-          <div id="resume" ng-click="resume()"  class="topControl"  ng-show="paused"><i class="fa fa-space-shuttle"></i>Resume </div>
-        
-          <div id="score"  class="topControl" ><span class="glyphicon glyphicon-star"></span>{{puntos}} <span class="points">points</span></div>
+        <div id="top_menu" class="top_menu row" ng-show="menuVisible == true">
+          
+          <div class="col-xs-6 col-md-3">
+            <div id="pause" class="topControl" ng-click="pause()" ng-show="paused == false"> <i class="fa fa-spoon"></i> Pause</div>
+            <div id="resume" ng-click="resume()"  class="topControl"  ng-show="paused"><i class="fa fa-space-shuttle"></i>Resume </div>
+          
+            <div id="score"  class="topControl" ><span class="glyphicon glyphicon-star"></span>{{puntos}} <span class="points">points</span></div>
 
-          <div class="topControl" ng-click="setSoundInGame()">
-            <span ng-show="getSound() == true" class="glyphicon glyphicon-volume-off"></span>
-            <span ng-show="getSound() == false" class="glyphicon glyphicon-volume-up"></span>
-          </div>
-        </div>
-        
-        <div ng-controller="MusicController">
-          <div  class="nowplaying hidden-sm hidden-xs col-md-6 text-center">
-            <i class="fa fa-music"></i> Now playing... <i class="fa fa-hand-o-right"></i> {{ songName }}
-          </div>
-          <div class="musicControls" ng-show="getSound() == true">
-            <div class="col-xs-2 col-md-1" ng-click="prevSong()">
-              <div class="topControl">
-                <span class="glyphicon glyphicon-backward"></span></div>
-              </div>
-            <div class="col-xs-2 col-md-1" ng-click="pauseSong()" ng-show="musicPlaying">
-              <div class="topControl">
-                <span class="glyphicon glyphicon-pause"></span></div>
-              </div>
-            <div class="col-xs-2 col-md-1" ng-click="playSong()" ng-show="!musicPlaying">
-              <div class="topControl">
-                <span class="glyphicon glyphicon-play"></span></div>
-              </div>
-            <div class="col-xs-2 col-md-1" ng-click="nextSong()">
-              <div class="topControl">
-                <span class="glyphicon glyphicon-forward"></span></div>
-              </div>
-          </div>
-          <div class="col-xs-12">
-            <div class="row">
-              <div class="col-xs-12">
-                <i class="fa fa-times-circle top_tab_trigger closeMenu" ng-click="hideMenu()"></i> 
-              </div>
+            <div class="topControl" ng-click="toggleSound()">
+              <span ng-show="getSound() == true" class="glyphicon glyphicon-volume-off"></span>
+              <span ng-show="getSound() == false" class="glyphicon glyphicon-volume-up"></span>
             </div>
           </div>
-        </div>
-        
-        
-        <!--<div class="col-xs-4">
-          <div class="progress progress-striped active">
-            <div class="progress-bar"  role="progressbar" aria-valuenow="{{power}}" aria-valuemin="0" aria-valuemax="100" style="width: {{power}}%">
-              <span class="">{{power}}% of CAT POWER</span>
+          
+          <div ng-controller="MusicController">
+            <div  class="nowplaying hidden-sm hidden-xs col-md-6 text-center">
+              <i class="fa fa-music"></i> Now playing... <i class="fa fa-hand-o-right"></i> {{ songName }}
             </div>
-          </div>
-        </div>-->
-       
+            <div class="musicControls" ng-show="getSound() == true">
+              <div class="col-xs-2 col-md-1" ng-click="prevSong()">
+                <div class="topControl">
+                  <span class="glyphicon glyphicon-backward"></span></div>
+                </div>
+              <div class="col-xs-2 col-md-1" ng-click="pauseSong()" ng-show="musicPlaying">
+                <div class="topControl">
+                  <span class="glyphicon glyphicon-pause"></span></div>
+                </div>
+              <div class="col-xs-2 col-md-1" ng-click="playSong()" ng-show="!musicPlaying">
+                <div class="topControl">
+                  <span class="glyphicon glyphicon-play"></span></div>
+                </div>
+              <div class="col-xs-2 col-md-1" ng-click="nextSong()">
+                <div class="topControl">
+                  <span class="glyphicon glyphicon-forward"></span></div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+              <div class="row">
+                <div class="col-xs-12">
+                  <i class="fa fa-times-circle top_tab_trigger closeMenu" ng-click="hideMenu()"></i> 
+                </div>
+              </div>
+            </div>
+          </div>       
+        </div>
       </div>
 
       <div id="message" ng-show="message" class="{{messsagesType}}">
