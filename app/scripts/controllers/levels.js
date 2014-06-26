@@ -62,8 +62,13 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         })
 
         $scope.setLevel = function(level){
-          settingsSrv.setLevel(level);
-          $location.path('/main');
+          if(level.cristals_amount == level.cristals_used){
+            settingsSrv.setLevel(level.number);
+            $location.path('/main');  
+          }else{
+            alert('No! Warf!! Not done! Warf!');
+          }
+          
         }
         
         $scope.goHome  = function(){
