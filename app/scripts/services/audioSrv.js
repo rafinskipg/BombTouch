@@ -9,7 +9,8 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         name :'In Game Concept - Rob Tyler',
         song: new Howl({
           urls: ['sounds/songs/CoolDog_InGameConcept01.m4a'],
-          volume: 0.5
+          volume: 0.5,
+          loop: true
         })
       }
        /* {

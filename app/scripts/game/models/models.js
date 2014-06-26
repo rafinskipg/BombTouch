@@ -14,6 +14,69 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     };
   }
 
+  function SpaceParticle(options){
+    this.pos = options.pos;
+    this.speed = options.speed
+    this.color = options.color  || 'white';
+    this.size = options.size;
+    this.color = options.color;
+
+    this.drawCircle = function(ctx) {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+
+      ctx.arc(
+          this.pos[0],
+          this.pos[1],
+          this.size,
+          0,
+          Math.PI*2,
+          false
+      );
+
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    this.drawSquare = function(ctx) {
+      ctx.fillStyle = this.color;
+
+      ctx.fillRect(
+          this.pos[0],
+          this.pos[1],
+          this.size,
+          this.size
+      );
+    }
+
+    this.draw = function(ctx){
+      var radgrad = ctx.createRadialGradient( 
+          this.pos[0] + this.size/2,
+          this.pos[1]+ this.size/2,
+          0,
+          this.pos[0] + this.size/2,
+          this.pos[1] +this.size/2,
+          this.size/2);
+      
+      radgrad.addColorStop(0, 'rgba(224, 224, 224, 1)');
+      radgrad.addColorStop(0.2, 'rgba(224, 224, 224, 0.83)');
+      radgrad.addColorStop(1, 'rgba(224, 224, 224,0)');
+
+      // draw shape
+      ctx.fillStyle = radgrad;
+      ctx.fillRect(
+          this.pos[0] ,
+          this.pos[1] ,
+          this.size,
+          this.size
+      );
+    }
+  }
+
+  SpaceParticle.prototype.update = function(dt){
+    this.pos[0] -= this.speed[0] * dt;
+  }
+
   function Message(text, sender, duration){
     this.text = text;
     this.sender = sender;
@@ -376,7 +439,8 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     Message: Message,
     Entity: RenderableEntity,
     Scene: Scene,
-    RenderableText: RenderableText
+    RenderableText: RenderableText,
+    SpaceParticle: SpaceParticle
   };
 
 });

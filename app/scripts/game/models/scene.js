@@ -128,14 +128,14 @@ define( ['game/loader/loader','raf'], function(Loader){
     this.ctx.save();
     this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
     this.ctx.fillStyle = entity.color;
-    this.ctx.font = "bold 16px Arial";
+    this.ctx.font = "bold 12px 'Press Start 2P'";
     this.ctx.fillText(entity.text, 0, 0);
     this.ctx.restore();
   }
 
   Scene.prototype.drawFrames = function(frames){
     this.ctx.fillStyle = "blue";
-    this.ctx.font = "bold 16px Arial";
+    this.ctx.font = "bold 12px 'Press Start 2P'";
     this.ctx.fillText(frames, 100, 100);
   }
   Scene.prototype.updateShaking = function(dt){
