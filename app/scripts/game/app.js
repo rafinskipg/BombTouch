@@ -440,6 +440,7 @@ return BombTouchApp.
   function pause(){
     STATE.paused = true;
     SCENARIO.pause();
+    audioSrv.pauseSong();
   }
 
   function isPaused(){

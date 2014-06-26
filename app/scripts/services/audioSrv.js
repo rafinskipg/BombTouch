@@ -5,8 +5,14 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     var currentSong = 0;
     var suscribers = [];
     var songs = [
-
-        {
+      {
+        name :'In Game Concept - Rob Tyler',
+        song: new Howl({
+          urls: ['sounds/songs/CoolDog_InGameConcept01.m4a'],
+          volume: 0.5
+        })
+      }
+       /* {
           name :'Broken Reality',
           song: new Howl({
             urls: ['sounds/songs/broken_reality.mp3'],
@@ -54,7 +60,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
             urls: ['sounds/songs/shannon_and_the_clams_tired_of_being_bad_rockabilly.mp3'],
             volume: 0.5
           })
-        }
+        }*/
       ];
     
     function getSongs(){
@@ -66,19 +72,26 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     }
 
     function playSong(){
-      console.log('playing ' +currentSong)
-      songs[currentSong].song.play().on('end', function(){
-        songs[currentSong].song.off('end');
-        currentSong++;
-        playSong();
-      });
-      notifyChangeSong(songs[currentSong].name);
+      stopSounds();
+      if(songs.length > 0){
+        songs[currentSong].song.play().on('end', function(){
+          songs[currentSong].song.off('end');
+          currentSong++;
+          playSong();
+        });
+        notifyChangeSong(songs[currentSong].name);  
+      }
+      
     }
     function stopSong(){
-      songs[currentSong].song.stop().off('end');
+      if(songs.length > 0){
+        songs[currentSong].song.stop().off('end');  
+      }
     }
     function pauseSong(){
-      songs[currentSong].song.pause();
+      if(songs.length > 0){
+        songs[currentSong].song.pause();  
+      }
     }
     function nextSong(){
       currentSong++;

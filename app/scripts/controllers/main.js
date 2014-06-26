@@ -9,7 +9,12 @@ define(['angular', 'app'], function(angular, BombTouchApp){
 
         $scope.start = function(){
           gameSrv.play('canvas');
-        } 
+        }
+
+        $scope.exit = function(){
+          gameSrv.exit();
+          $location.path("/");
+        }
 
         function showMessage(message){
           $scope.message = message.text;
@@ -48,6 +53,7 @@ define(['angular', 'app'], function(angular, BombTouchApp){
           showMessages(opts.messages,opts.timeoutMessage);
         }, 'main_messages');
 
+        
         $scope.start();
 
       }]);

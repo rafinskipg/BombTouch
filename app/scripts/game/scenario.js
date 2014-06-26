@@ -6,7 +6,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
 
   var backgroundEntities =
   [
-    'nebula',
+    /*'nebula',
     'nebula2',
     'nebula3',
     'asteroids',
@@ -15,7 +15,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     'blackhole',
     'galaxy',
     'galaxy2',
-    'dust'
+    'dust'*/
   ];
 
   var Scenario = function(canvasId, endCallback, scenespeed, bgspeed){
@@ -26,9 +26,9 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
       BGx : 0
     });
     this.scene.backgrounds = [];
-    this.scene.backgrounds.push('images/backgrounds/galaxy.png');
+    /*this.scene.backgrounds.push('images/backgrounds/galaxy.png');
     this.scene.backgrounds.push('images/backgrounds/dust.png');
-    this.scene.backgrounds.push('images/backgrounds/thing.png');
+    this.scene.backgrounds.push('images/backgrounds/thing.png');*/
 
   };
   
@@ -45,14 +45,19 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     this.scene.updateBackground = (function(dt){ 
       this.BGx -= dt;
       this.ctx.drawImage(resources.get('images/backgrounds/background.png'), this.offSetX + this.BGx, this.offSetY + 0,this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(resources.get(this.backgrounds[0]), this.offSetX +  this.BGx,  this.offSetY + 0,640, 400);
+      
       this.ctx.drawImage(resources.get('images/backgrounds/background.png'),this.offSetX +  this.BGx + this.canvas.width, this.offSetY + 0,this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(resources.get(this.backgrounds[1]), this.offSetX +  this.BGx + this.canvas.width,this.offSetY +  0,640, 400);
+      if(this.backgrounds.length > 0){
+        this.ctx.drawImage(resources.get(this.backgrounds[0]), this.offSetX +  this.BGx,  this.offSetY + 0,640, 400);
+        this.ctx.drawImage(resources.get(this.backgrounds[1]), this.offSetX +  this.BGx + this.canvas.width,this.offSetY +  0,640, 400);
+      }
       
       // If the image scrolled off the screen, reset
       if (this.BGx < -this.canvas.width){
         this.BGx =0;
-        this.backgrounds.push(this.backgrounds.shift());
+        if(this.backgrounds.length > 0){
+          this.backgrounds.push(this.backgrounds.shift());  
+        }
       }
 
     }).bind(this.scene);
@@ -115,8 +120,10 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
   }
 
   Scenario.prototype.addBackground = function(){
-    var index = petra.random(0, backgroundEntities.length);
-    this.addItem(backgroundEntities[index]);
+    if(backgroundEntities.length > 0){
+      var index = petra.random(0, backgroundEntities.length);
+      this.addItem(backgroundEntities[index]);  
+    }
   }
 
   Scenario.prototype.addItem = function(item){

@@ -1,7 +1,7 @@
 define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 'game/levels/level_1', 'maingame','services/settings'], function(angular, BombTouchApp, sceneIntro, jokeLevel, level_1){
     'use strict';
   return BombTouchApp.
-    factory('gameSrv', ['settingsSrv', 'brainSrv', function( settingsSrv, brainSrv) {
+    factory('gameSrv', ['settingsSrv', 'brainSrv', 'audioSrv', function( settingsSrv, brainSrv, audioSrv) {
 
     /* This service acts as a manager, getting all the suscriptions and using them in each level **/
 
@@ -60,6 +60,13 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
           times: times
         });
       });
+
+      suscribeGameStart(function(){
+        if(settingsSrv.getSound()){
+          audioSrv.playSong();
+        }
+      }, 'gameSrv');
+
     }
 
     function play(canvasId){
@@ -78,10 +85,15 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
       game.resume();
     }
 
+    function exit(){
+      game.pause();
+    }
+
     return {
         play: play,
         pause: pause,
         resume: resume,
+        exit: exit,
         suscribePoints: suscribePoints,
         suscribeGameOver: suscribeGameOver,
         suscribeMessages: suscribeMessages,
