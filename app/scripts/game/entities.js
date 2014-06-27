@@ -62,19 +62,20 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0], true];
   var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0], true];
   var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 1, [0], true];
-  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [75,50], 1, [0], true];
+  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50,75], 1, [0], true];
+  var level1_droneSpriteDefinition = {
+    normal: {
+      standby :['images/enemies/level_1.png', [0,125], [50, 50], 1, [0],true],
+      aiming :['images/enemies/level_1.png', [0,125], [50, 50], 1, [0],true]
+    }
+  }
+  var level1_battleStationSprite  = ['images/enemies/level_1.png', [0,175], [100, 100], 1, [0], true];
   
   var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0], true];
   var level1_worm_bodySprite  = ['images/enemies/level_1.png', [50,150], [50, 50], 1, [0], true];
   var level1_worm_tailSprite  = ['images/enemies/level_1.png', [100,150], [50, 50], 1, [0], true];
-  var level1_battleStationSprite  = ['images/enemies/level_1.png', [0,200], [100, 100], 1, [0], true];
   var level1_junkMutantSprite  = ['images/enemies/level_1.png', [0,300], [100, 100], 1, [0],true];
-  var level1_droneSpriteDefinition = {
-    normal: {
-      standby :['images/enemies/level_1.png', [0,100], [50, 50], 1, [0],true],
-      aiming :['images/enemies/level_1.png', [0,100], [50, 50], 1, [0],true]
-    }
-  }
+ 
   //Bosses
   var bossSpriteDefinition ={
     normal: {
@@ -466,7 +467,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       angle: 1,
       life: 100,
       totalLife: 100,
-      resize: [75,50],
+      resize: [50,75],
       damage: 20,
       actions : [{name: 'enemyShoot', delay: 1.5}]
     },
@@ -492,6 +493,17 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
           sprite:  level1_droneSpriteDefinition.normal.aiming
         }
       ],
+    },
+    'ratship' : {
+      sprite: level1_battleStationSprite,
+      speed: [20,20],
+      points: 150,
+      angle: 1,
+      life: 1000,
+      totalLife: 1000,
+      resize: [100,100],
+      damage: 20,
+      actions : [{name: 'enemyShoot', delay: 2.5}]
     }
   }
 

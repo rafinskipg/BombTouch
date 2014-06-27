@@ -106,12 +106,12 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
           }
         }else if(allEnemiesFromGroupAreOut(CURRENT_STAGE-1, CURRENT_GROUP)){
           TIME_SINCE_LAST_GROUP_OUT+=dt;
-          if(TIME_SINCE_LAST_GROUP_OUT >= levelStructure.time_between_groups){
+          if(TIME_SINCE_LAST_GROUP_OUT >= getTimeoutBetweenGroups(CURRENT_STAGE-1)){
             changeGroup();
           }
         }else{
           TIME_SINCE_LAST_ENEMY_OUT+=dt;
-          if(TIME_SINCE_LAST_ENEMY_OUT >= levelStructure.time_between_enemies){
+          if(TIME_SINCE_LAST_ENEMY_OUT >= getTimeoutBetweenEntities(CURRENT_STAGE - 1)){
             ALLOW_ENEMY_OUT = true;
           }
         }
@@ -158,18 +158,39 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
 
   function getTotalsOfCurrentStage(stage){
     var totalsOfStage = 0;
-    levelStructure.stages[stage].map(function(group){
+    levelStructure.stages[stage].groups.map(function(group){
       totalsOfStage +=group.length || 0;
     });
     return totalsOfStage;
   }
+
+  function getTimeoutBetweenEntities(stage){
+    var timeout = levelStructure.stages[stage].time_between_enemies ? levelStructure.stages[stage].time_between_enemies :   levelStructure.time_between_enemies;
+    var positioningMethod  = getCurrentPositioningMethod(stage);
+    if(positioningMethod == 'vshape'){
+      if(CURRENT_ENEMY % 2 == 0){
+        timeout = 0;
+      }
+    }
+    return timeout;
+  }
+
+  function getTimeoutBetweenGroups(stage){
+    var timeout = levelStructure.stages[stage].time_between_groups ? levelStructure.stages[stage].time_between_groups :   levelStructure.time_between_groups;
+    return timeout;
+  }
+
   function allEnemiesFromStageAreOut(stage){
     return(INFORMATION.stages[stage].total >= getTotalsOfCurrentStage(stage));
   }
+
   function allEnemiesFromGroupAreOut(stage, group){
-    var currGroup = levelStructure.stages[stage][group];
-    return(CURRENT_ENEMY >= currGroup.length);
+    var currGroup = levelStructure.stages[stage].groups[group];
+    var enemiesInCurrentGroup =  currGroup.length;
+
+    return(CURRENT_ENEMY >= enemiesInCurrentGroup);
   }
+
   function shouldAddEnemy(){
     if(CURRENT_STAGE <= MAX_STAGE && !BOSS_OUT){
       return ALLOW_ENEMY_OUT;
@@ -193,11 +214,33 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       return (number == 3);
     }
   }
+
+  function getCurrentPositioningMethod(stage){
+    return levelStructure.stages[stage].positioningMethod ? levelStructure.stages[stage].positioningMethod : 'random';
+  }
+
+  function calculatePositionByMethod(method, width, height){
+    var pos;
+    if(method == 'random'){
+      pos = [width, Math.random() * (height - 39)]
+    }else if(method == 'vshape'){
+      if(CURRENT_ENEMY %2 == 0){
+        pos = [width, height /2 + 40 * CURRENT_ENEMY]
+      }else{
+        pos = [width, height /2 - 80 * CURRENT_ENEMY]
+      }
+    }
+    return pos;
+  }
   //ENEMY
-  function createEnemy(pos){
+  function createEnemy(screenWidth, screenHeight){
+
+    var positioningMethod = getCurrentPositioningMethod(CURRENT_STAGE -1 );
+    var pos = calculatePositionByMethod(positioningMethod, screenWidth, screenHeight);
+
     enemyAdded();
     TIME_SINCE_LAST_ENEMY_OUT = 0;
-    var enemyID = levelStructure.stages[CURRENT_STAGE-1][CURRENT_GROUP][CURRENT_ENEMY];
+    var enemyID = levelStructure.stages[CURRENT_STAGE-1].groups[CURRENT_GROUP][CURRENT_ENEMY];
     CURRENT_ENEMY++;
     var enemy =  EL.getEnemy(pos,enemyID, levelStructure.setOfEntities);
     enemy.stage = CURRENT_STAGE;

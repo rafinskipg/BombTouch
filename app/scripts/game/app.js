@@ -372,7 +372,7 @@ return BombTouchApp.
     });*/
       
     LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
-      enemies.push(createFunction([canvas.width, Math.random() * (canvas.height - 39)]));
+      enemies.push(createFunction(canvas.width, canvas.height));
     }, 'brainSrv');
 
     LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
