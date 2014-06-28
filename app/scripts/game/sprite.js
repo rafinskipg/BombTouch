@@ -30,6 +30,9 @@
         reset: function(){
             this._index = 0;
         },
+        setEndCallback: function(cb){
+            this.endCb = cb;
+        },
         render: function(ctx,angle, translation, centerOfRotation) {
             var frame;
 
@@ -43,6 +46,11 @@
                 
                 if(this.once && idx >= max) {
                     this.done = true;
+                    return;
+                }else if(idx >= max && this.endCb){
+                    console.log(idx, max)
+                    this.reset();
+                    this.endCb();
                     return;
                 }
             }

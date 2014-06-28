@@ -7,7 +7,7 @@ var stageStructure = {
   stages : [
 
     {
-      groups: [['junk4'],['junk2','junk1'],['junk2','junk3','junk1'],
+      groups: [['rat'],['junk2','junk1'],['junk2','junk3','junk1'],
         ['junk2','junk3','junk1'],['rat','junk4','junk3'],
         ['junk2','junk3','junk1'],['junk4','junk2','junk3']
       ]
@@ -28,8 +28,9 @@ var stageStructure = {
       time_between_groups: 5,
       groups: [
       ['ratship', 'ratship', 'ratship'],
+      ['junk2','junk3','junk1'],
       ['ratship', 'ratship', 'ratship'],
-      ['ratship', 'ratship', 'ratship', 'ratship','ratship','ratship'],
+      ['junk4']
       ]
     }
     

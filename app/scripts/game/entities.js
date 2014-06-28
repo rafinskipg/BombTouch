@@ -62,7 +62,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0], true];
   var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0], true];
   var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 1, [0], true];
-  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50,75], 1, [0], true];
+  var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50,50], 4, [0,1], true];
+  var level1_ratSpriteShooting  = ['images/enemies/level_1.png', [100,50], [50,50], 4, [0,1,2,1,0], true];
   var level1_droneSpriteDefinition = {
     normal: {
       standby :['images/enemies/level_1.png', [0,125], [50, 50], 1, [0],true],
@@ -465,10 +466,28 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       speed: [65,65],
       points: 50,
       angle: 1,
+      shootOrigin: [5,25],
       life: 100,
       totalLife: 100,
-      resize: [50,75],
+      resize: [70,70],
       damage: 20,
+      animations:[
+        {
+          name: 'shootnormal',
+          sprite:  level1_ratSpriteShooting,
+          resetAfterEnd: true
+        },
+        {
+          name: 'shootdamaged',
+          sprite:  level1_ratSpriteShooting,
+          resetAfterEnd: true
+        },
+        {
+          name: 'shootverydamaged',
+          sprite:  level1_ratSpriteShooting,
+          resetAfterEnd: true
+        }
+      ],
       actions : [{name: 'enemyShoot', delay: 1.5}]
     },
     'drone': {

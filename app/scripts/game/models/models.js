@@ -199,6 +199,11 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
       var self = this;
       opts.animations.map(function(anim){ 
         self.animations[anim.name] = Sprite.construct(anim.sprite);
+        if(anim.resetAfterEnd){
+          self.animations[anim.name].setEndCallback(function(){
+            this.setDefaultAnimation();
+          }.bind(self));
+        }
         if(opts.resize){
           self.animations[anim.name].resize(opts.resize[0], opts.resize[1]);
         }
