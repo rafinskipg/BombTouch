@@ -971,7 +971,7 @@ return BombTouchApp.
           entity.pos = [player.pos[0] + 300, player.pos[1] + petra.random(-30, 30)];
           times = 1;
         }else if(index == 13){
-            entity.setDefaultAnimation();
+          entity.setDefaultAnimation();
         }
       }, true);
 
@@ -1499,25 +1499,52 @@ return BombTouchApp.
 
   function getEntitiesToRender() {
     var entitiesToRender = [
-      bullets,
-      enemyBullets,
-      neutralBullets,
-      bosses,
-      miscelanea_back,
-      enemies,
-      explosions,
-      specials,
-      bonuses,
-      miscelanea_front
+      {
+        entities: bullets
+      },
+      {
+        entities: enemyBullets
+      },
+      {
+        entities: neutralBullets
+      },
+      {
+        entities: bosses
+      },
+      {
+        entities: miscelanea_back,
+        background: true
+      },
+      {
+        entities: enemies
+      },
+      {
+        entities: explosions
+      },
+      {
+        entities: specials
+      },
+      {
+        entities: bonuses
+      },
+      {
+        entities: miscelanea_front
+      }
       ];
 
    if(!isGameOver()) {
-      entitiesToRender.push([player]);
+      entitiesToRender.push({
+        entities:[player]
+      });
       if(player.hasBonus){
-        entitiesToRender.push(bonusWeapons);
+        entitiesToRender.push({
+          entities: bonusWeapons
+        });
       }
     }else{
-      entitiesToRender.push(graves);
+      entitiesToRender.push({
+        entities: graves
+      });
     }
 
     return entitiesToRender;

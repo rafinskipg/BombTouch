@@ -72,14 +72,11 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       return currentSong;
     }
 
-    function playSong(){
+    function playSong(name){
+
       stopSounds();
       if(songs.length > 0){
-        songs[currentSong].song.play().on('end', function(){
-          songs[currentSong].song.off('end');
-          currentSong++;
-          playSong();
-        });
+        songs[currentSong].song.play();
         notifyChangeSong(songs[currentSong].name);  
       }
       

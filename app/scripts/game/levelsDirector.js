@@ -292,9 +292,10 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
 
   //Ambient
   function createAmbientEntity(){
-    var max = levelStructure.ambient_entities.length - 1;
+    var max = levelStructure.ambient_entities.length;
     var entity_name = levelStructure.ambient_entities[petra.random(0, max)];
     if(entity_name){
+      console.log(entity_name)
       var entity = EL.getBackgroundEntity(entity_name, {pos: [MAX_WIDTH,  Math.random() * (MAX_HEIGHT - 39)]});  
     }
     return entity;

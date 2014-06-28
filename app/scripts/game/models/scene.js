@@ -39,14 +39,14 @@ define( ['game/loader/loader','raf'], function(Loader){
 
   Scene.prototype.start = function(){
     this.init();
-    this.then = Date.now();
+    this.then = now();
     this.mainLoop();
   }
 
   Scene.prototype.pause = function(){
     if(this.paused){
       this.paused = false;
-      this.then = Date.now();
+      this.then = now();
       this.mainLoop();
     }else{
       this.paused = true;
@@ -55,9 +55,9 @@ define( ['game/loader/loader','raf'], function(Loader){
   }
 
   Scene.prototype.mainLoop = function(){
-    var now = Date.now();
-    var dt = (now - this.then);
-    this.then = now;
+    var current = now();
+    var dt = (current - this.then);
+    this.then = current;
     //frames = (1000/ (dt * 60)) * 60;
     var realtimeDt = dt / 1000.0;
     
@@ -161,6 +161,12 @@ define( ['game/loader/loader','raf'], function(Loader){
 
     
   }
+
+  Scene.prototype.darkenLayer = function(){
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+    this.ctx.fillRect(0,0,this.canvas.width, this.canvas.height);
+  }
+
   Scene.prototype.screenShake = function(time){
     this.shaking = true;
     this.offSetX = 5;

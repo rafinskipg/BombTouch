@@ -7,6 +7,7 @@ define( ['resources','raf', 'quad_tree'], function(){
   var totalFiles = 0;
   var gravity = 0.5; 
   var id ;
+  var current = 0;
 
   function load(elements, cb){
     if(!previouslyLoaded){
@@ -42,7 +43,7 @@ define( ['resources','raf', 'quad_tree'], function(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight ;
     
-    now = 0; then = Date.now();
+    current = 0; then = now();
 
     createParticles();
   }
@@ -104,9 +105,9 @@ define( ['resources','raf', 'quad_tree'], function(){
   }
 
   function mainLoop(){
-    var now = Date.now();
-    var dt = (now - then);
-    then = now;
+    var current = now();
+    var dt = (current - then);
+    then = current;
     
     // Fill the path
     ctx.fillStyle = "#33337a";

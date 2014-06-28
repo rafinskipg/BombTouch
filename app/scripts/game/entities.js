@@ -58,10 +58,16 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,0,0,0,0,1,2,3,4,5,6,7,8,9,9,9], true];
   var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7], true];
   //Level1
-  var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 1, [0], true];
-  var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 1, [0], true];
-  var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 1, [0], true];
-  var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 1, [0], true];
+  var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 0, [0], true];
+  var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 0, [0], true];
+  var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 0, [0], true];
+  var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 0, [0], true];
+  var level1_tireSprite  = ['images/enemies/level_1.png', [200, 0], [50, 50], 10, [0,1,2,4,5,6,7], true];
+  var level1_ship1Sprite  = ['images/enemies/level_1.png', [500, 50], [100, 75], 0, [0], true];
+  var level1_ship2Sprite  = ['images/enemies/level_1.png', [375, 50], [100, 100], 0, [0], true];
+  var level1_ship3Sprite  = ['images/enemies/level_1.png', [475, 150], [125, 75], 0, [0], true];
+  
+
   var level1_ratSprite  = ['images/enemies/level_1.png', [0,50], [50,50], 4, [0,1], true];
   var level1_ratSpriteShooting  = ['images/enemies/level_1.png', [100,50], [50,50], 4, [0,1,2,1,0], true];
   var level1_droneSpriteDefinition = {
@@ -469,7 +475,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       shootOrigin: [5,25],
       life: 100,
       totalLife: 100,
-      resize: [70,70],
+      resize: [40,40],
       damage: 20,
       animations:[
         {
@@ -562,7 +568,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       resize: [50,50]
     }, 'junk3' : {
       sprite: level1_junk3Sprite,
-      speed: [65,65],
+      speed: [40,40],
       angle: 1,
       resize: [50,50]
     },'junk4' : {
@@ -570,6 +576,26 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       speed: [65,65],
       angle: 1,
       resize: [50,50]
+    },'tire' : {
+      sprite: level1_tireSprite,
+      speed: [80,80],
+      angle: 1,
+      resize: [50,50]
+    },'ship1' : {
+      sprite: level1_ship1Sprite,
+      speed: [80,80],
+      resize:[200,150],
+      angle: 1
+    },'ship2' : {
+      sprite: level1_ship2Sprite,
+      speed: [80,80],
+      resize:[200,200],
+      angle: 1
+    },'ship3' : {
+      sprite: level1_ship3Sprite,
+      speed: [80,80],
+      resize:[125,75],
+      angle: 1
     },
     'nebula': {
       speed: [10,10],

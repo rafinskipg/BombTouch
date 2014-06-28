@@ -33,7 +33,7 @@
         setEndCallback: function(cb){
             this.endCb = cb;
         },
-        render: function(ctx,angle, translation, centerOfRotation) {
+        render: function(ctx,angle, translation, centerOfRotation, transparency) {
             var frame;
 
             if(this.speed > 0) {
@@ -87,7 +87,9 @@
                 //origY  -= centerOfRotation[1];   
             }
 
-         
+            if(transparency){
+                ctx.globalAlpha = transparency;
+            }
 
             ctx.drawImage(resources.get(this.url),
                         Math.round(x),  Math.round(y),

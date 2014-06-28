@@ -172,6 +172,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.points = opts.points || 0;
 
     this.sprite = Sprite.construct(opts.sprite);
+    this.transparency = opts.transparency ? opts.transparency :  null;
     this.animations = {};
 
     this.bulletShotFireName = opts.bulletShotFireName || 'bossShootFire';
@@ -235,9 +236,9 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     }
 
     if(this.enabledAnimation == 'default'){
-      this.sprite.render(ctx, this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation());
+      this.sprite.render(ctx, this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation(), this.transparency);
     }else{
-      this.animations[this.enabledAnimation].render(ctx,this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation());
+      this.animations[this.enabledAnimation].render(ctx,this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation(), this.transparency);
     }
   }
   RenderableEntity.prototype.getCenterOfRotation = function(){

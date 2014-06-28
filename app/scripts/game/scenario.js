@@ -77,7 +77,16 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     this.scene.render = (function(){
       var listOfEntitiesArrays = fnEntities();
       for(var i = 0; i < listOfEntitiesArrays.length; i++){
-        this.renderEntities(listOfEntitiesArrays[i]);
+        if(listOfEntitiesArrays[i].background){
+          this.renderEntities(listOfEntitiesArrays[i].entities);
+        }
+      }
+      this.darkenLayer();
+
+      for(var i = 0; i < listOfEntitiesArrays.length; i++){
+        if(!listOfEntitiesArrays[i].background){
+          this.renderEntities(listOfEntitiesArrays[i].entities);
+        }
       }
 
       var listOfTextEntitiesArrays = fnTextEntities();
