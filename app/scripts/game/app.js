@@ -52,6 +52,7 @@ return BombTouchApp.
     neutralBullets,
     graves,
     pointsToRender,
+    inGameDialogs,
     player;
 
   function setDefaultStateForEntities(){
@@ -65,6 +66,7 @@ return BombTouchApp.
     bonusWeapons = [];
     bosses = [];
     pointsToRender = [];
+    inGameDialogs = [];
     enemyBullets = [];
     neutralBullets =[];
     graves = [];
@@ -476,6 +478,10 @@ return BombTouchApp.
     }
   }
 
+  function createDialog(message, entity){
+    inGameDialogs.push(new models.Dialog(message, entity));
+  }
+
   function shoot(){
     if(!isGameOver() &&
       TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
@@ -691,7 +697,7 @@ return BombTouchApp.
     bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
     playSound(SOUNDS.yeah);
     var message = new models.Message(MESSAGES.wow, names.bonus_image_name, 1500);
-    showMessages([message]);
+    createDialog(message, bonusWeapons[0]);
   }
   function doubleWeaponBonusObtain(entity){
     entity.bonuses.doubleShoot = 10;
@@ -709,6 +715,7 @@ return BombTouchApp.
     updateSpecials(dt);
     updateExplosions(dt);
     updatePointsToRender(dt);
+    updateDialogs(dt);
     updateMiscelanea_front(dt);
     updateMiscelanea_back(dt);
     updateBonuses(dt);
@@ -896,14 +903,15 @@ return BombTouchApp.
     }
   }
 
-  function entityStepsInTime(time, dt){
+  function entityStepsInTime(actionName,time, dt){
+    actionName +='stepsInTime';
     return function(fn){
       return function(entity){
-        if(!entity.lastStep || (entity.lastStep + dt) >time){
-          entity.lastStep= dt;
+        if(!entity[actionName] || (entity[actionName] + dt) >time){
+          entity[actionName]= dt;
           return fn(entity);
         }else{
-          entity.lastStep +=dt;
+          entity[actionName] +=dt;
           return entity;
         }
       }
@@ -911,11 +919,25 @@ return BombTouchApp.
   }
 
   function shootThrottled(time, dt, shootType){
-    return entityStepsInTime(time,dt)(function(entity){
+    return entityStepsInTime('shoot',time,dt)(function(entity){
       if(shootType == 'blueShoot'){
         blueShoot(entity, entity.angle);
       }else{
         enemyShoot(entity, entity.angle);
+      }
+      
+      return entity;
+    });
+  }
+
+  function showMessageThrottled(time, dt){
+    return entityStepsInTime('showMessageCounter',time,dt)(function(entity){
+      
+      if(entity.messages){
+        var max = entity.messages.length;
+        var text = entity.messages[petra.random(0, max)];
+        var message = new models.Message(text, entity.name, 800);
+        createDialog(message, entity);
       }
       
       return entity;
@@ -927,7 +949,7 @@ return BombTouchApp.
       if(!entity.actions || !entity.actions.length > 0){
         return entity;
       }
-      return entityStepsInTime(entity.actions[entity.actions.length - 1 ].delay,dt)(function(entity){
+      return entityStepsInTime('actionsCounter', entity.actions[entity.actions.length - 1 ].delay,dt)(function(entity){
         var action = entity.actions.pop()
         if(keep){
           entity.actions.unshift(action);
@@ -982,7 +1004,7 @@ return BombTouchApp.
       playSound(SOUNDS[chosenPhrase]);
       
       var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
-      showMessages([message]);
+      createDialog(message, entity);
     }else if(action == 'launchEnemy'){
       var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], 'enemy'+Math.ceil(Math.random() *5 ), 'joke');
       enemies.push(enemy);
@@ -1120,6 +1142,7 @@ return BombTouchApp.
     enemies = hu.compact(
       enemies.map(updateEntity(dt))
       .map(updateEntity(dt))
+      .map(showMessageThrottled(3, dt))
       .map(playActionThrottled(dt, true))
       .map(petra.removeIfOutsideScreenleft));
   }
@@ -1157,6 +1180,26 @@ return BombTouchApp.
     return function(entity){
       entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       return entity;
+    }
+  }
+
+  function updateDialogs(dt){
+    inGameDialogs = hu.compact(
+      inGameDialogs
+      .map(updateTimeCounter(dt))
+      .map(function(item){
+        return updatePositionFromRelativeEntity(item.entity)(item);
+      })
+      .map(function(item){
+        return removeIfTimeCounterGreaterThan(item.duration/1000)(item);
+      })
+      );
+  }
+
+  function updatePositionFromRelativeEntity(entity){
+    return function(item){
+      item.pos = entity.pos;
+      return item;
     }
   }
 
@@ -1370,7 +1413,7 @@ return BombTouchApp.
     }));
 
     var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? names.main_character_super_damaged : names.main_character_damaged))
-    showMessages([messageOuch]);
+    createDialog(messageOuch, player);
   }
 
   function killEnemy(enemy){
@@ -1551,7 +1594,13 @@ return BombTouchApp.
   };
 
   function getTextEntitiesToRender(){
-    return [pointsToRender];
+    return [{
+      entities: pointsToRender,
+      type: 'basic'
+    },{
+      entities: inGameDialogs,
+      type: 'dialog'
+    }];
   }
 
   

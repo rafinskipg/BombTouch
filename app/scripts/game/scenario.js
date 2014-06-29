@@ -91,7 +91,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
 
       var listOfTextEntitiesArrays = fnTextEntities();
       for(var i = 0; i < listOfTextEntitiesArrays.length; i++){
-        this.renderTexts(listOfTextEntitiesArrays[i]);
+        this.renderTexts(listOfTextEntitiesArrays[i].entities, listOfTextEntitiesArrays[i].type);
       }
       this.renderParticles();
     }).bind(this.scene);

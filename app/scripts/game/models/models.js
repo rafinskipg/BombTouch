@@ -77,12 +77,6 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.pos[0] -= this.speed[0] * dt;
   }
 
-  function Message(text, sender, duration){
-    this.text = text;
-    this.sender = sender;
-    this.duration = duration || 2000;
-  }
-
   function SquareHitBox(opts){
     this.pos = opts.pos;
     this.size = opts.size;
@@ -160,6 +154,24 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.font = opts.font || '16px';
   }
 
+
+  function Dialog(message, sender){
+    this.text = message.text;
+    this.color = 'black';
+    this.background = 'white';
+    this.entity = sender;
+    this.timeAlive = 0;
+    this.font = '8px';
+    this.pos = sender.pos;
+    this.duration = message.duration;
+  }
+
+  function Message(text, sender, duration){
+    this.text = text;
+    this.sender = sender;
+    this.duration =  duration || 2000;
+  }
+
   /*RenderableEntity*/
   function RenderableEntity(opts){
 
@@ -188,6 +200,8 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.renderTranslated = opts.renderTranslated || null;
     this.centerOfRotation = opts.centerOfRotation || null;
     this.rotateSprite = opts.rotateSprite ? opts.rotateSprite : null;
+
+    this.messages = opts.messages || null;
 
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
@@ -442,6 +456,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   return  {
+    Dialog: Dialog,
     Message: Message,
     Entity: RenderableEntity,
     Scene: Scene,

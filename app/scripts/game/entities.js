@@ -473,6 +473,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       points: 50,
       angle: 1,
       shootOrigin: [5,25],
+      messages: ['Tsttck', 'Rattattaaa', 'Rat is clever'],
       life: 100,
       totalLife: 100,
       resize: [40,40],
@@ -504,6 +505,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 300,
       totalLife: 300,
       resize: [50,50],
+      messages: ['Beep beep', 'Drone search', 'Drone destroy'],
       shootOrigin: [-30,20],
       hitbox: {
         pos: [5,5],
@@ -526,6 +528,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       angle: 1,
       life: 1000,
       totalLife: 1000,
+      messages: ['alpha bravo rat', 'v formation', 'clearing area'],
       resize: [100,100],
       damage: 20,
       actions : [{name: 'enemyShoot', delay: 2.5}]

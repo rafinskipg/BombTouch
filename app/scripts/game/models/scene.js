@@ -119,18 +119,73 @@ define( ['game/loader/loader','raf'], function(Loader){
 
   }
 
-  Scene.prototype.renderTexts = function(list) {
+  Scene.prototype.renderTexts = function(list, type) {
     for(var i=0; i<list.length; i++) {
-      this.renderText(list[i]);
+      this.renderText(list[i],type);
     }
   }
-  Scene.prototype.renderText = function (entity){
-    this.ctx.save();
-    this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-    this.ctx.fillStyle = entity.color;
-    this.ctx.font = "bold 12px 'Press Start 2P'";
-    this.ctx.fillText(entity.text, 0, 0);
-    this.ctx.restore();
+  Scene.prototype.renderText = function (entity, type){
+    if(type == 'dialog'){
+      this.ctx.font = "bold "+entity.font+" 'Press Start 2P'";
+      var textWidth = this.ctx.measureText(entity.text).width + 20;
+      var textHeight = 30;
+
+      this.ctx.save();
+      this.ctx.translate(Math.round(entity.pos[0] - textWidth), Math.round(entity.pos[1] - textHeight));
+      this.ctx.fillStyle = entity.background;
+      this.ctx.globalAlpha = 0.6;
+      this.roundRect(0,0, textWidth, textHeight, 5, true);
+      this.ctx.fillStyle = entity.color;
+     
+      this.ctx.fillText(entity.text, 15, 15);
+      this.ctx.restore();  
+    }else{
+      this.ctx.save();
+      this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
+      this.ctx.fillStyle = entity.color;
+      this.ctx.font = "bold "+entity.font+" 'Press Start 2P'";
+      this.ctx.fillText(entity.text, 0, 0);
+      this.ctx.restore();  
+    }
+    
+  }
+
+  /**
+ * Draws a rounded rectangle using the current state of the canvas. 
+ * If you omit the last three params, it will draw a rectangle 
+ * outline with a 5 pixel border radius 
+ * @param {Number} x The top left x coordinate
+ * @param {Number} y The top left y coordinate 
+ * @param {Number} width The width of the rectangle 
+ * @param {Number} height The height of the rectangle
+ * @param {Number} radius The corner radius. Defaults to 5;
+ * @param {Boolean} fill Whether to fill the rectangle. Defaults to false.
+ * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true.
+ */
+  Scene.prototype.roundRect = function(x,y, width, height, radius, fill, stroke){
+    if (typeof stroke == "undefined" ) {
+      stroke = true;
+    }
+    if (typeof radius === "undefined") {
+      radius = 5;
+    }
+    this.ctx.beginPath();
+    this.ctx.moveTo(x + radius, y);
+    this.ctx.lineTo(x + width - radius, y);
+    this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    this.ctx.lineTo(x + width, y + height - radius);
+    this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    this.ctx.lineTo(x + radius, y + height);
+    this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    this.ctx.lineTo(x, y + radius);
+    this.ctx.quadraticCurveTo(x, y, x + radius, y);
+    this.ctx.closePath();
+    if (stroke) {
+      this.ctx.stroke();
+    }
+    if (fill) {
+      this.ctx.fill();
+    }        
   }
 
   Scene.prototype.drawFrames = function(frames){
