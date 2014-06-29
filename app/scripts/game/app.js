@@ -1095,19 +1095,25 @@ return BombTouchApp.
 
     if(player.shooting){
       if(player.moving == 'down'){
+        SCENARIO.moveDown();
         player.setAnimation('shootMoveDown');
       }else if(player.moving == 'up'){
         player.setAnimation('shootMoveUp');
+        SCENARIO.moveUp();
       }else{
         player.setAnimation('shoot');
+        SCENARIO.stopMove();
       }
     }else{
       if(player.moving == 'down'){
         player.setAnimation('moveDown');
+        SCENARIO.moveDown();
       }else if(player.moving == 'up'){
         player.setAnimation('moveUp');
+        SCENARIO.moveUp();
       }else {
         player.setDefaultAnimation();
+        SCENARIO.stopMove();
       }
     }
 

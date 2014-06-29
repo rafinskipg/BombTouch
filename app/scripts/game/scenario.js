@@ -35,26 +35,47 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
       )
     }.bind(this.scene);
 
-    this.scene.normalParallaxUpdate = function(dt, parallaxItems,canvasWidth){
+    this.scene.normalParallaxUpdate = function(dt, parallaxItems,canvasWidth, moving,speed){
         return parallaxItems.map(function(parallax){
           if(parallax.index >= canvasWidth ){
             parallax.index = 0;
             var element = parallax.images.shift();
             parallax.images.push(element);
           }
-          parallax.index += dt;
+          parallax.index += dt * speed ;
+          if(moving && moving == 'down'){
+            parallax.yIndex -= dt * speed;
+            if(parallax.yIndex < -parallax.maxYIndex){
+              parallax.yIndex = -parallax.maxYIndex;
+            }
+
+          }else if(moving && moving == 'up'){
+             parallax.yIndex += dt * speed;
+            if(parallax.yIndex > parallax.maxYIndex){
+              parallax.yIndex = parallax.maxYIndex;
+            }
+          }
           return parallax;
         })
       }
     
     this.scene.updateParallax = function(dt){
       var canvasWidth = this.canvas.width;
+      var moveBackLayer, moveFrontLayer;
+      if(self.moving  && self.moving == 'down'){
+        moveBackLayer = 'up';
+        moveFrontLayer = 'down';
+      }else if(self.moving && self.moving == 'up'){
+        moveBackLayer = 'down';
+        moveFrontLayer = 'up';
+      }
+
       if(self.parallaxLayersBack && self.parallaxLayersBack.length > 0){
-        self.parallaxLayersBack = this.normalParallaxUpdate(dt,self.parallaxLayersBack,canvasWidth);
+        self.parallaxLayersBack = this.normalParallaxUpdate(dt,self.parallaxLayersBack,canvasWidth, moveBackLayer , 0.3);
       }
 
       if(self.parallaxLayersFront && self.parallaxLayersFront.length > 0){
-        self.parallaxLayersFront = this.normalParallaxUpdate(dt, self.parallaxLayersFront,canvasWidth);
+        self.parallaxLayersFront = this.normalParallaxUpdate(dt, self.parallaxLayersFront,canvasWidth, moveFrontLayer, 0.8);
       }
 
     }.bind(this.scene);
@@ -168,7 +189,6 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     this.parallaxLayersFront = parallaxLayersFront;
   }
 
-
   /**
    * Generates 2 elements, with top and bot positions, Comoposed by 2 images that will rotate on the screen
    * Every one of this images is composed by several images randomly picked from the arraOfImageNames
@@ -184,16 +204,29 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     parallaxLayers.push({ 
       index: 0, 
       pos: [xOffset,-parallaxHeight / 2],
-      images: [parallax1_top, parallax2_top]
+      images: [parallax1_top, parallax2_top],
+      yIndex : 0,
+      maxYIndex: parallaxHeight/2 - 20
     });
     parallaxLayers.push({ 
       index: 0, 
       pos: [xOffset,canvasHeight - parallaxHeight / 2],
-      images: [parallax1_bot, parallax2_bot]
+      images: [parallax1_bot, parallax2_bot],
+      yIndex : 0,
+      maxYIndex: parallaxHeight/2 - 20
     });
 
   }
 
+  Scenario.prototype.moveDown = function(){
+    this.moving = 'down';
+  }
+  Scenario.prototype.moveUp = function(){
+    this.moving = 'up';
+  }
+  Scenario.prototype.stopMove = function(){
+    this.moving = null;
+  }
   function updateEntity(dt){
     return function(entity){
       entity.update(dt);

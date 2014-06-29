@@ -39,14 +39,14 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
   Scene.prototype.start = function(){
     this.init();
-    this.then = now();
+    this.then = Date.now();
     this.mainLoop();
   }
 
   Scene.prototype.pause = function(){
     if(this.paused){
       this.paused = false;
-      this.then = now();
+      this.then = Date.now();
       this.mainLoop();
     }else{
       this.paused = true;
@@ -55,7 +55,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
 
   Scene.prototype.mainLoop = function(){
-    var current = now();
+    var current = Date.now();
     var dt = (current - this.then);
     this.then = current;
     //frames = (1000/ (dt * 60)) * 60;
@@ -221,6 +221,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
       reachedWidth += image.width;
       generatedParallax.push(image);
     }
+    console.log(reachedWidth, this.canvas.width);
 
     return generatedParallax;
   }
@@ -253,7 +254,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
    for(var i = 0; i < parallaxLayers.length; i++){
       for(var j = 0; j< parallaxLayers[i].patterns.length; j++){
         var posX = parallaxLayers[i].pos[0] + j * this.canvas.width - parallaxLayers[i].index;
-        var posY = parallaxLayers[i].pos[1];
+        var posY = parallaxLayers[i].pos[1] + parallaxLayers[i].yIndex;
         this.drawParallax(parallaxLayers[i].patterns[j], [posX, posY], 100);
       } 
     }
