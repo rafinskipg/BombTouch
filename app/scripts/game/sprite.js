@@ -48,7 +48,6 @@
                     this.done = true;
                     return;
                 }else if(idx >= max && this.endCb){
-                    console.log(idx, max)
                     this.reset();
                     this.endCb();
                     return;

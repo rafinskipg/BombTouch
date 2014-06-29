@@ -3,6 +3,9 @@ var stageStructure = {
   time_between_groups: 2,
   time_between_enemies:2,
   time_between_stages: 5,
+  parallax: [
+    ['images/backgrounds/parallax_1_junk.png', 'images/backgrounds/parallax_1_junk2.png', 'images/backgrounds/parallax_1_junk3.png', 'images/backgrounds/parallax_1_junk4.png']
+  ],
   ambient_entities: ['tire', 'junk2', 'junk3', 'junk4','junk1','ship1', 'ship2','ship3'],
   stages : [
 

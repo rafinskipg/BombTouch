@@ -57,7 +57,7 @@ define(['angular', 'app', 'maingame','petra'], function(angular, BombTouchApp , 
         $scope.scores = scores.map(function(score){
           return {
             score: score,
-            revealOptions: posibleEntrances[petra.random(0,posibleEntrances.length)],
+            revealOptions: petra.getRandomElementFromArray(posibleEntrances),
             icon: getIcon(score)
           }
         });

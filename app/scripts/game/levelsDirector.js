@@ -292,10 +292,8 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
 
   //Ambient
   function createAmbientEntity(){
-    var max = levelStructure.ambient_entities.length;
-    var entity_name = levelStructure.ambient_entities[petra.random(0, max)];
+    var entity_name = petra.getRandomElementFromArray(levelStructure.ambient_entities);
     if(entity_name){
-      console.log(entity_name)
       var entity = EL.getBackgroundEntity(entity_name, {pos: [MAX_WIDTH,  Math.random() * (MAX_HEIGHT - 39)]});  
     }
     return entity;
@@ -357,6 +355,10 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     });
   }
 
+  function getParallaxLayers(){
+    return levelStructure.parallax ? levelStructure.parallax : [];
+  }
+
   var LEVELS_DIRECTOR = {
       init: init,
       getMaxStage: getMaxStage,
@@ -374,7 +376,8 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       pickedDogeBonus: pickedDogeBonus,
       suscribeStageUp: suscribeStageUp,
       isFinalStage: isFinalStage,
-      getLevelsInfo: getLevelsInfo
+      getLevelsInfo: getLevelsInfo,
+      getParallaxLayers: getParallaxLayers
   }
 
   return  LEVELS_DIRECTOR;

@@ -408,6 +408,8 @@ return BombTouchApp.
       showMessages([message]);
     }, 'brainSrv')
 
+    SCENARIO.setParallaxLayers(LEVELS_DIRECTOR.getParallaxLayers());
+
   }
 
   /****************************

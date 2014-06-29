@@ -1,4 +1,4 @@
-define( ['game/loader/loader','raf'], function(Loader){
+define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
   function Scene(assets, canvasId,endCallback, opts){
     this.canvasId = canvasId;
@@ -187,6 +187,68 @@ define( ['game/loader/loader','raf'], function(Loader){
       this.ctx.fill();
     }        
   }
+
+  // make the image repeat by copying
+  // a mirrored version in x, y, x+y.
+  //   returns a new Canvas  X2,X2 its size.
+  Scene.prototype.makeRepeat = function(img) {
+      var tmpCv = document.createElement('canvas');
+      tmpCv.width = img.width * 2;
+      tmpCv.height = img.height * 2;
+      var tmpCtx = tmpCv.getContext('2d');
+      tmpCtx.drawImage(img, 0, 0);
+      tmpCtx.save();
+      tmpCtx.translate(2 * img.width, 0);
+      tmpCtx.scale(-1, 1);
+      tmpCtx.drawImage(img, 0, 0);
+      tmpCtx.translate(0, 2 * img.height);
+      tmpCtx.scale(1, -1);
+      tmpCtx.drawImage(img, 0, 0);
+      tmpCtx.restore();
+      tmpCtx.save();
+      tmpCtx.translate(0, 2 * img.height);
+      tmpCtx.scale(1, -1);
+      tmpCtx.drawImage(img, 0, 0);
+      tmpCtx.restore();
+      return tmpCv;
+  }
+  Scene.prototype.makeParallax = function(images){
+    var maxWidth = this.canvas.width;
+    var reachedWidth = 0;
+    var generatedParallax = [];
+    while(reachedWidth < maxWidth){
+      var image = petra.getRandomElementFromArray(images);
+      reachedWidth += image.width;
+      generatedParallax.push(image);
+    }
+
+    return generatedParallax;
+  }
+
+  Scene.prototype.generateParallaxPattern = function(images, height){
+    var tmpCv = document.createElement('canvas');
+    tmpCv.width = this.canvas.width ;
+    tmpCv.height = height;
+    var tmpCtx = tmpCv.getContext('2d');
+    var currWidthIndex = 0;
+
+    for(var i = 0; i < images.length; i++){
+      tmpCtx.drawImage(images[i], currWidthIndex, 0, images[i].width, images[i].height);
+      currWidthIndex+= images[i].width;
+    }
+    return tmpCv;
+  }
+
+  Scene.prototype.drawParallax = function(pattern, pos, height){
+    this.ctx.save();
+    var pat = this.ctx.createPattern(pattern,"repeat-x");
+    this.ctx.translate(pos[0], pos[1])
+    this.ctx.rect(0,0,this.canvas.width,height);
+    this.ctx.fillStyle=pat;
+    this.ctx.fill();
+    this.ctx.restore();
+  }
+
 
   Scene.prototype.drawFrames = function(frames){
     this.ctx.fillStyle = "blue";

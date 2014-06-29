@@ -6,7 +6,7 @@ define( ['hu'], function(hu){
 
     }
 
-    Petra.random = function(min, max){
+    Petra.random = function (min, max){
       return Math.floor(Math.random()*max)+min;
     }
     Petra.randomFloat = function(min, max){
@@ -14,6 +14,11 @@ define( ['hu'], function(hu){
     }
     Petra.flipCoin = function(){
       return Math.floor( Math.random() * 2 ) == 1
+    }
+
+    Petra.getRandomElementFromArray = function(arr){
+      var max = arr.length;
+      return arr[Petra.random(0, max)];
     }
 
     Petra.passProbabilities = function(probabilitieNumber){
