@@ -394,7 +394,9 @@ return BombTouchApp.
     }, 'brainSrv');
 
     LEVELS_DIRECTOR.suscribeAmbientEntities(function(entity){
-      miscelanea_back.push(entity);
+      if(entity){
+        miscelanea_back.push(entity);  
+      }
     }, 'brainSrv');
 
     LEVELS_DIRECTOR.suscribeMessages(function(opts){

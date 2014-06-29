@@ -35,10 +35,8 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
       )
     }.bind(this.scene);
 
-    this.scene.updateParallax = function(dt){
-      var canvasWidth = this.canvas.width;
-      if(self.parallaxLayers && self.parallaxLayers.length > 0){
-        self.parallaxLayers = self.parallaxLayers.map(function(parallax){
+    this.scene.normalParallaxUpdate = function(dt, parallaxItems,canvasWidth){
+        return parallaxItems.map(function(parallax){
           if(parallax.index >= canvasWidth ){
             parallax.index = 0;
             var element = parallax.images.shift();
@@ -48,6 +46,17 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
           return parallax;
         })
       }
+    
+    this.scene.updateParallax = function(dt){
+      var canvasWidth = this.canvas.width;
+      if(self.parallaxLayersBack && self.parallaxLayersBack.length > 0){
+        self.parallaxLayersBack = this.normalParallaxUpdate(dt,self.parallaxLayersBack,canvasWidth);
+      }
+
+      if(self.parallaxLayersFront && self.parallaxLayersFront.length > 0){
+        self.parallaxLayersFront = this.normalParallaxUpdate(dt, self.parallaxLayersFront,canvasWidth);
+      }
+
     }.bind(this.scene);
 
     this.scene.renderParticles = function(){
@@ -103,17 +112,14 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
         }
       }
 
-      if(self.parallaxLayers && self.parallaxLayers.length > 0){
-        for(var i = 0; i < self.parallaxLayers.length; i++){
-          for(var j = 0; j< self.parallaxLayers[i].patterns.length; j++){
-            var posX = self.parallaxLayers[i].pos[0] + j * this.canvas.width - self.parallaxLayers[i].index;
-            var posY = self.parallaxLayers[i].pos[1];
-            this.drawParallax(self.parallaxLayers[i].patterns[j], [posX, posY], 100);
-          } 
-        }
+      if(self.parallaxLayersBack && self.parallaxLayersBack.length > 0){
+        this.renderParallaxLayers(self.parallaxLayersBack);
       }
       this.darkenLayer();
 
+      if(self.parallaxLayersFront && self.parallaxLayersFront.length > 0){
+        this.renderParallaxLayers(self.parallaxLayersFront);
+      }
       for(var i = 0; i < listOfEntitiesArrays.length; i++){
         if(!listOfEntitiesArrays[i].background){
           this.renderEntities(listOfEntitiesArrays[i].entities);
@@ -136,18 +142,30 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     var canvasWidth = this.scene.canvas.width;
     var canvasHeight = this.scene.canvas.height;
     var self = this;
-    var parallaxLayers = [];
+    var parallaxLayersBack = [];
+    var parallaxLayersFront = [];
     if(this.temporalLayersData && this.temporalLayersData[0]){
-      this.createParallaxBotTop(this.temporalLayersData[0], parallaxLayers, canvasHeight, 100);
+      this.createParallaxBotTop(this.temporalLayersData[0], parallaxLayersBack, canvasHeight, 100,0);
     }
-    parallaxLayers.map(function(layer){
+    parallaxLayersBack.map(function(layer){
       layer.patterns = [];
       layer.images.map(function(imageList){
         layer.patterns.push(self.scene.generateParallaxPattern(imageList, 100));
       })
       return layer;
     })
-    this.parallaxLayers = parallaxLayers;
+    if(this.temporalLayersData && this.temporalLayersData[1]){
+      this.createParallaxBotTop(this.temporalLayersData[1], parallaxLayersFront, canvasHeight, 60, -150);
+    }
+    parallaxLayersFront.map(function(layer){
+      layer.patterns = [];
+      layer.images.map(function(imageList){
+        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 60));
+      })
+      return layer;
+    })
+    this.parallaxLayersBack = parallaxLayersBack;
+    this.parallaxLayersFront = parallaxLayersFront;
   }
 
 
@@ -155,7 +173,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
    * Generates 2 elements, with top and bot positions, Comoposed by 2 images that will rotate on the screen
    * Every one of this images is composed by several images randomly picked from the arraOfImageNames
    */
-  Scenario.prototype.createParallaxBotTop = function(arrOfImageNames, parallaxLayers, canvasHeight, parallaxHeight){
+  Scenario.prototype.createParallaxBotTop = function(arrOfImageNames, parallaxLayers, canvasHeight, parallaxHeight, xOffset){
     var images = arrOfImageNames.map(function(name){
       return resources.get(name);
     });
@@ -165,12 +183,12 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     var parallax2_bot = this.scene.makeParallax(images);
     parallaxLayers.push({ 
       index: 0, 
-      pos: [0,-parallaxHeight / 2],
+      pos: [xOffset,-parallaxHeight / 2],
       images: [parallax1_top, parallax2_top]
     });
     parallaxLayers.push({ 
       index: 0, 
-      pos: [0,canvasHeight - parallaxHeight / 2],
+      pos: [xOffset,canvasHeight - parallaxHeight / 2],
       images: [parallax1_bot, parallax2_bot]
     });
 

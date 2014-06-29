@@ -233,7 +233,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     var currWidthIndex = 0;
 
     for(var i = 0; i < images.length; i++){
-      tmpCtx.drawImage(images[i], currWidthIndex, 0, images[i].width, images[i].height);
+      tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, images[i].width, height);
       currWidthIndex+= images[i].width;
     }
     return tmpCv;
@@ -242,11 +242,21 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   Scene.prototype.drawParallax = function(pattern, pos, height){
     this.ctx.save();
     var pat = this.ctx.createPattern(pattern,"repeat-x");
-    this.ctx.translate(pos[0], pos[1])
+    this.ctx.translate(pos[0]+this.offSetX , pos[1] +this.offSetY)
     this.ctx.rect(0,0,this.canvas.width,height);
     this.ctx.fillStyle=pat;
     this.ctx.fill();
     this.ctx.restore();
+  }
+
+  Scene.prototype.renderParallaxLayers = function(parallaxLayers){
+   for(var i = 0; i < parallaxLayers.length; i++){
+      for(var j = 0; j< parallaxLayers[i].patterns.length; j++){
+        var posX = parallaxLayers[i].pos[0] + j * this.canvas.width - parallaxLayers[i].index;
+        var posY = parallaxLayers[i].pos[1];
+        this.drawParallax(parallaxLayers[i].patterns[j], [posX, posY], 100);
+      } 
+    }
   }
 
 

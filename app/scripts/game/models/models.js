@@ -151,7 +151,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.pos = opts.pos;
     this.speed = opts.speed || [30,30];
     this.timeAlive = 0;
-    this.font = opts.font || '16px';
+    this.font = opts.font || '12px';
   }
 
 
