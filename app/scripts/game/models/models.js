@@ -345,20 +345,26 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
 
   RenderableEntity.prototype.drawLife = function(ctx){
     var hitBoxWidth = this.getHitBox().width;
+
+    var lifeSize = 80;
     var chunkLifeValue = 10;
     var chunks = 0;
+    var minChunkSize = 5;
+    var maxChunksPerBar = lifeSize/minChunkSize;
+    var lifePerBar = maxChunksPerBar * chunkLifeValue;
 
+    /** Chunks of life */
     chunks = Math.round(this.totalLife / chunkLifeValue);
+    var chunksPerBar = chunks < maxChunksPerBar ? chunks : maxChunksPerBar;
     var aliveChunks = Math.round(this.life / chunkLifeValue);
-    var diff = this.totalLife / chunkLifeValue - chunks;
 
     //Todo change 100 by hitBoxWidth
-    var lifeSize = 80;
     var chunkSize = lifeSize / chunks;
-
+    chunkSize = chunkSize > minChunkSize ? chunkSize :  minChunkSize;
     //Draw red squares
+    
     ctx.beginPath();
-    for(var i = 0; i < chunks; i ++){
+    for(var i = 0; i < chunksPerBar; i ++){
       ctx.rect(lifeSize - (i+1) * chunkSize +1 , 0, chunkSize, 10);
     }
     ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
@@ -366,13 +372,39 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     ctx.stroke();
 
     //Draw green squares
+    var index = 0;
+    var barNumber = 0;
+    var color = 'rgba(0, 255, 0, 0.68)';
+
     ctx.beginPath();
     for(var i = 0; i < aliveChunks; i++){
-      ctx.rect(i * chunkSize +1 , 0, chunkSize, 10);
+      if(i  % chunksPerBar  == 0 && i != 0){
+        index = 0;
+        barNumber++;
+        color = fillAndRenew(ctx, barNumber, color);
+      }
+      ctx.rect(index * chunkSize+1 , 0, chunkSize, 10);
+      index++;
     }
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
+    fillColor(ctx, color);
+
+  }
+  function fillColor(ctx, color){
+    ctx.fillStyle = color;
     ctx.fill();
     ctx.stroke();
+  }
+  function fillAndRenew(ctx, barNumber, color){
+    fillColor(ctx,color);
+    ctx.beginPath();
+    
+    if(barNumber == 1){
+      return 'blue';
+    }else if(barNumber > 2 &&  barNumber < 5 ){
+      return 'pink';
+    }else{
+      return '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+    }
   }
 
   RenderableEntity.prototype.resetAnimation = function(animation){
