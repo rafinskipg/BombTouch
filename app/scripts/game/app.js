@@ -525,7 +525,7 @@ return BombTouchApp.
   }
 
   function blueShoot(entity){
-    bullets.push(EL.getEntity('bluebullet', {pos: [entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2],damage: 200}));
+    bullets.push(EL.getEntity('bluebullet', {pos: [entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2],damage: entity.damage}));
     playSound(SOUNDS.shoot);
   }
 
@@ -696,8 +696,9 @@ return BombTouchApp.
     LEVELS_DIRECTOR.pickedDogeBonus();
     entity.hasBonus = true;
     addPoints(200, entity.pos);
-    entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
-    entity.damage = entity.baseDamage + 50;
+    entity.life += 200;
+    entity.totalLife += 200;
+  
     bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
     playSound(SOUNDS.yeah);
     var message = new models.Message(MESSAGES.wow, names.bonus_image_name, 1500);

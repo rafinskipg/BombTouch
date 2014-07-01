@@ -230,7 +230,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
 
     this.enabledAnimation = 'default';
     this.hitbox = opts.hitbox || null;
-    this.lifeBox = opts.lifeBox || null;
+    
   }
 
   RenderableEntity.prototype.render = function(ctx){
@@ -345,25 +345,34 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
 
   RenderableEntity.prototype.drawLife = function(ctx){
     var hitBoxWidth = this.getHitBox().width;
+    var chunkLifeValue = 10;
+    var chunks = 0;
 
-    var lifeTotal = (hitBoxWidth - 5 ) * (this.life/ this.totalLife);
+    chunks = Math.round(this.totalLife / chunkLifeValue);
+    var aliveChunks = Math.round(this.life / chunkLifeValue);
+    var diff = this.totalLife / chunkLifeValue - chunks;
+
+    //Todo change 100 by hitBoxWidth
+    var lifeSize = 80;
+    var chunkSize = lifeSize / chunks;
+
+    //Draw red squares
     ctx.beginPath();
-    ctx.rect(5, 0, hitBoxWidth - 5, 7);
+    for(var i = 0; i < chunks; i ++){
+      ctx.rect(lifeSize - (i+1) * chunkSize +1 , 0, chunkSize, 10);
+    }
     ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
     ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black'; 
     ctx.stroke();
 
+    //Draw green squares
     ctx.beginPath();
-    ctx.rect( (hitBoxWidth - lifeTotal -5), 0, lifeTotal, 7);
+    for(var i = 0; i < aliveChunks; i++){
+      ctx.rect(i * chunkSize +1 , 0, chunkSize, 10);
+    }
     ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
     ctx.fill();
     ctx.stroke();
-
-    if(this.lifeBox){
-      this.lifeBox.render(ctx, this.rotateSprite, this.renderTranslated);
-    }
   }
 
   RenderableEntity.prototype.resetAnimation = function(animation){

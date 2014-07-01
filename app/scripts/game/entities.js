@@ -58,10 +58,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var dramaticSpriteSchema = ['images/newsprites.png', [5,600], [85,73], 6, [0,0,0,0,0,1,2,3,4,5,6,7,8,9,9,9], true];
   var level5SpriteSchema = ['images/newsprites.png', [282, 50], [50, 42], 14, [0,1,2,3,4,5,6,7], true];
   //Level1
-  var level1_junk1Sprite  = ['images/enemies/level_1.png', [0, 0], [50, 50], 0, [0], true];
-  var level1_junk2Sprite  = ['images/enemies/level_1.png', [50, 0], [50, 50], 0, [0], true];
-  var level1_junk3Sprite  = ['images/enemies/level_1.png', [100, 0], [50, 50], 0, [0], true];
-  var level1_junk4Sprite  = ['images/enemies/level_1.png', [150, 0], [50, 50], 0, [0], true];
+  var level1_junk1Sprite  = ['images/backgrounds/parallax_1_sprited.png', [0, 0], [50, 50], 0, [0], true];
+  var level1_junk2Sprite  = ['images/backgrounds/parallax_1_sprited.png', [50, 0], [50, 50], 0, [0], true];
+  var level1_junk3Sprite  = ['images/backgrounds/parallax_1_sprited.png', [100, 0], [50, 50], 0, [0], true];
+  var level1_junk4Sprite  = ['images/backgrounds/parallax_1_sprited.png', [150, 0], [50, 50], 0, [0], true];
+
   var level1_tireSprite  = ['images/enemies/level_1.png', [200, 0], [50, 50], 10, [0,1,2,4,5,6,7], true];
   var level1_ship1Sprite  = ['images/enemies/level_1.png', [500, 50], [100, 75], 0, [0], true];
   var level1_ship2Sprite  = ['images/enemies/level_1.png', [375, 50], [100, 100], 0, [0], true];
@@ -225,8 +226,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     },
     'cooldog' : {
       sprite: coolDogSpriteSchema,
-      damage: 80,
-      baseDamage: 80,
+      damage: 30,
+      baseDamage: 30,
       bulletName : 'blueray',
       critChance: 0.05,
       hitbox: {
@@ -236,8 +237,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       shootOrigin : [80, 40],
       speed: [200,200],
       angle: 0,
-      life: 1000,
-      totalLife: 1000,
+      life: 100,
+      totalLife: 100,
       hitArea: [80,56],
       resize: [80,80],
       isSuperSaiyan: false, 
@@ -266,6 +267,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
 
     'bonusWeapon':{
       sprite: bonusWeaponSpriteSchema,
+      damage: 20,
       speed: [20,20]
     },
     'boss':{
@@ -326,7 +328,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
           sprite: bossSpriteDefinition.verydamaged.teleport
         }
       ],
-      damage: 400,
+      damage: 60,
       //resize:[40,75]
       hitbox: {
         pos: [0,0],
@@ -386,7 +388,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 100,
       totalLife: 100,
       resize: [90,60],
-      damage: 100
+      damage: 10
     },
     'enemy2' : {
       sprite: dolanSpriteSchema,
@@ -396,7 +398,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 200,
       totalLife: 200,
       resize: [50,50],
-      damage: 120
+      damage: 10
     },
     'enemy3' : {
       sprite: flappySpriteSchema,
@@ -406,7 +408,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 300,
       totalLife: 300,
       resize: [50,50],
-      damage: 140
+      damage: 30
     },
     'enemy4' : {
       sprite: dramaticSpriteSchema,
@@ -416,7 +418,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 400,
       totalLife: 400,
       resize: [50,45],
-      damage: 160
+      damage: 20
     },
     'enemy5' : {
       sprite: level5SpriteSchema,
@@ -425,7 +427,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       angle: 1,
       life: 500,
       totalLife: 500,
-      damage: 180
+      damage: 10
     }
   };
 
@@ -679,12 +681,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     //Scale
     var size = entity.getSize();
     entity.resizeByFactor(0.8);
-    
-    if(entityDefinition.totalLife){
-      var lifeBoxOpts = JSON.parse(JSON.stringify(entities['life']));
-      lifeBoxOpts.resize =  [entity.getHitBox().width, 15];
-      entity.lifeBox =  new Models.Entity(lifeBoxOpts);
-    }
+
     return entity;
   }
 

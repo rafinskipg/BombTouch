@@ -112,7 +112,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
     if(entity.life){
       this.ctx.save();
-      this.ctx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
+      this.ctx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()- 30), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
       entity.drawLife(this.ctx);
       this.ctx.restore();
     }
