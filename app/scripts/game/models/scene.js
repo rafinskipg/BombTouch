@@ -10,11 +10,19 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     canvas.className = 'visible';
 
     this.ctx = this.canvas.getContext("2d");
+
+    this.canvasFake = document.createElement('canvas');
+    this.bufferCtx = this.canvasFake.getContext('2d');
+    
     this.ctx.webkitImageSmoothingEnabled = false;
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.imageSmoothingEnabled = false;
+
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight ;
+    this.canvasFake.width = this.canvas.width;
+    this.canvasFake.height = this.canvas.height;
+    
     this.paused = false;
 
     this.shaking = false;
@@ -72,6 +80,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
         this.updateShaking(realtimeDt * this.scenespeed);
       }
       this.render();
+      this.ctx.drawImage(this.canvasFake, 0,0);
       
       //this.ctx.restore();
       this.rafID = requestAnimationFrame(this.mainLoop.bind(this));  
@@ -83,6 +92,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
   Scene.prototype.updateBackground = function(){
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.bufferCtx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
   Scene.prototype.renderEntities = function(list) {
@@ -94,27 +104,27 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   Scene.prototype.renderEntity = function(entity) {
     
     if(window.DEBUGGER){
-      this.ctx.beginPath();
-      this.ctx.rect((this.offSetX + entity.getX()),this.offSetY + entity.getY(), 5, 7);
-      this.ctx.fillStyle = 'green';
-      this.ctx.fill();
+      this.bufferCtx.beginPath();
+      this.bufferCtx.rect((this.offSetX + entity.getX()),this.offSetY + entity.getY(), 5, 7);
+      this.bufferCtx.fillStyle = 'green';
+      this.bufferCtx.fill();
       
-      this.ctx.beginPath();
-      this.ctx.rect((this.offSetX + entity.getShootOrigin()[0]),this.offSetY + entity.getShootOrigin()[1], 15, 7);
-      this.ctx.fillStyle = 'purple';
-      this.ctx.fill();
+      this.bufferCtx.beginPath();
+      this.bufferCtx.rect((this.offSetX + entity.getShootOrigin()[0]),this.offSetY + entity.getShootOrigin()[1], 15, 7);
+      this.bufferCtx.fillStyle = 'purple';
+      this.bufferCtx.fill();
     }
 
-    this.ctx.save();
-    this.ctx.translate(Math.round(this.offSetX + entity.getX()), Math.round(this.offSetY + entity.getY()));
-    entity.render(this.ctx);
-    this.ctx.restore();
+    this.bufferCtx.save();
+    this.bufferCtx.translate(Math.round(this.offSetX + entity.getX()), Math.round(this.offSetY + entity.getY()));
+    entity.render(this.bufferCtx);
+    this.bufferCtx.restore();
 
     if(entity.life){
-      this.ctx.save();
-      this.ctx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()- 30), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
-      entity.drawLife(this.ctx);
-      this.ctx.restore();
+      this.bufferCtx.save();
+      this.bufferCtx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()- 30), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
+      entity.drawLife(this.bufferCtx);
+      this.bufferCtx.restore();
     }
 
   }
@@ -126,26 +136,26 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
   Scene.prototype.renderText = function (entity, type){
     if(type == 'dialog'){
-      this.ctx.font = "bold "+entity.font+" 'Press Start 2P'";
+      this.bufferCtx.font = "bold "+entity.font+" 'Press Start 2P'";
       var textWidth = this.ctx.measureText(entity.text).width + 20;
       var textHeight = 30;
 
-      this.ctx.save();
-      this.ctx.translate(Math.round(entity.pos[0] - textWidth), Math.round(entity.pos[1] - textHeight));
-      this.ctx.fillStyle = entity.background;
-      this.ctx.globalAlpha = 0.6;
+      this.bufferCtx.save();
+      this.bufferCtx.translate(Math.round(entity.pos[0] - textWidth), Math.round(entity.pos[1] - textHeight));
+      this.bufferCtx.fillStyle = entity.background;
+      this.bufferCtx.globalAlpha = 0.6;
       this.roundRect(0,0, textWidth, textHeight, 5, true);
-      this.ctx.fillStyle = entity.color;
+      this.bufferCtx.fillStyle = entity.color;
      
-      this.ctx.fillText(entity.text, 15, 15);
-      this.ctx.restore();  
+      this.bufferCtx.fillText(entity.text, 15, 15);
+      this.bufferCtx.restore();  
     }else{
-      this.ctx.save();
-      this.ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-      this.ctx.fillStyle = entity.color;
-      this.ctx.font = "bold "+entity.font+" 'Press Start 2P'";
-      this.ctx.fillText(entity.text, 0, 0);
-      this.ctx.restore();  
+      this.bufferCtx.save();
+      this.bufferCtx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
+      this.bufferCtx.fillStyle = entity.color;
+      this.bufferCtx.font = "bold "+entity.font+" 'Press Start 2P'";
+      this.bufferCtx.fillText(entity.text, 0, 0);
+      this.bufferCtx.restore();  
     }
     
   }
@@ -169,22 +179,22 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     if (typeof radius === "undefined") {
       radius = 5;
     }
-    this.ctx.beginPath();
-    this.ctx.moveTo(x + radius, y);
-    this.ctx.lineTo(x + width - radius, y);
-    this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    this.ctx.lineTo(x + width, y + height - radius);
-    this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    this.ctx.lineTo(x + radius, y + height);
-    this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    this.ctx.lineTo(x, y + radius);
-    this.ctx.quadraticCurveTo(x, y, x + radius, y);
-    this.ctx.closePath();
+    this.bufferCtx.beginPath();
+    this.bufferCtx.moveTo(x + radius, y);
+    this.bufferCtx.lineTo(x + width - radius, y);
+    this.bufferCtx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    this.bufferCtx.lineTo(x + width, y + height - radius);
+    this.bufferCtx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    this.bufferCtx.lineTo(x + radius, y + height);
+    this.bufferCtx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    this.bufferCtx.lineTo(x, y + radius);
+    this.bufferCtx.quadraticCurveTo(x, y, x + radius, y);
+    this.bufferCtx.closePath();
     if (stroke) {
-      this.ctx.stroke();
+      this.bufferCtx.stroke();
     }
     if (fill) {
-      this.ctx.fill();
+      this.bufferCtx.fill();
     }        
   }
 
@@ -241,13 +251,13 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
 
   Scene.prototype.drawParallax = function(pattern, pos, height){
-    this.ctx.save();
-    var pat = this.ctx.createPattern(pattern,"repeat-x");
-    this.ctx.translate(pos[0]+this.offSetX , pos[1] +this.offSetY)
-    this.ctx.rect(0,0,this.canvas.width,height);
-    this.ctx.fillStyle=pat;
-    this.ctx.fill();
-    this.ctx.restore();
+    this.bufferCtx.save();
+    var pat = this.bufferCtx.createPattern(pattern,"repeat-x");
+    this.bufferCtx.translate(pos[0]+this.offSetX , pos[1] +this.offSetY)
+    this.bufferCtx.rect(0,0,this.canvas.width,height);
+    this.bufferCtx.fillStyle=pat;
+    this.bufferCtx.fill();
+    this.bufferCtx.restore();
   }
 
   Scene.prototype.renderParallaxLayers = function(parallaxLayers){
@@ -262,9 +272,9 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
 
   Scene.prototype.drawFrames = function(frames){
-    this.ctx.fillStyle = "blue";
-    this.ctx.font = "bold 12px 'Press Start 2P'";
-    this.ctx.fillText(frames, 100, 100);
+    this.bufferCtx.fillStyle = "blue";
+    this.bufferCtx.font = "bold 12px 'Press Start 2P'";
+    this.bufferCtx.fillText(frames, 100, 100);
   }
   Scene.prototype.updateShaking = function(dt){
     this.shakeTime -= dt;
@@ -291,8 +301,8 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
 
   Scene.prototype.darkenLayer = function(){
-    this.ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-    this.ctx.fillRect(0,0,this.canvas.width, this.canvas.height);
+    this.bufferCtx.fillStyle = "rgba(0, 0, 0, 0.4)";
+    this.bufferCtx.fillRect(0,0,this.canvas.width, this.canvas.height);
   }
 
   Scene.prototype.screenShake = function(time){

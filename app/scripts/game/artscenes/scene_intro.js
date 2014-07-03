@@ -47,22 +47,22 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
     }
 
     scene.render = (function(){
-      this.ctx.fillStyle = "#33337a";
-      this.ctx.fillRect(0,0,canvas.width,canvas.height);
-      this.ctx.fillStyle = 'white';
-      this.ctx.font = "18px 'Press Start 2P'";
+      this.bufferCtx.fillStyle = "#33337a";
+      this.bufferCtx.fillRect(0,0,canvas.width,canvas.height);
+      this.bufferCtx.fillStyle = 'white';
+      this.bufferCtx.font = "18px 'Press Start 2P'";
 
       if(this.currentText){
         for(var i = 0; i < this.currentText.length ; i++){
           b = i+1;
           var y = (80 * b) + b* 10;
-          this.ctx.fillText(this.currentText[i], 40, y);    
+          this.bufferCtx.fillText(this.currentText[i], 40, y);    
         }
         
       }
 
-      this.ctx.font = "10px 'Press Start 2P'";
-      this.ctx.fillText('Touch screen to skip the awesome story', 15,15)
+      this.bufferCtx.font = "10px 'Press Start 2P'";
+      this.bufferCtx.fillText('Touch screen to skip the awesome story', 15,15)
 
       this.renderEntities([this.dog]);
     }).bind(scene);

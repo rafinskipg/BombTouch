@@ -82,15 +82,15 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
 
     this.scene.renderParticles = function(){
       var self = this;
-      console
+
       this.particles.map(function(particle){
-        particle.draw(self.ctx);
+        particle.draw(self.bufferCtx);
       })
     }.bind(this.scene);
 
     this.scene.updateBackground = (function(dt){ 
-      this.ctx.fillStyle = '#02022B';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.bufferCtx.fillStyle = '#02022B';
+      this.bufferCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       this.updateParticles(dt);
       this.updateParallax(dt);
 
