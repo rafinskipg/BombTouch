@@ -137,7 +137,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   Scene.prototype.renderText = function (entity, type){
     if(type == 'dialog'){
       this.bufferCtx.font = "bold "+entity.font+" 'Press Start 2P'";
-      var textWidth = this.ctx.measureText(entity.text).width + 20;
+      var textWidth = this.bufferCtx.measureText(entity.text).width + 20;
       var textHeight = 30;
 
       this.bufferCtx.save();
