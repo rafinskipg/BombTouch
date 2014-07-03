@@ -48,8 +48,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 10, [0,1,2,3]];
-  var blueraySpriteSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 15, [0,1,2,3,4,5]];
-  var lifeSpriteSchema = ['images/weapons/bullets.png', [0, 10], [55, 10], 1, [0]];
+  var greenBulletSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 15, [0,1,2,3,4,5]];
+  var redBulletSchema = ['images/weapons/bullets.png', [0, 10],  [10, 10], 15, [0,1,2,3,4,5]];
 
   //Enemies
   var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1], true];
@@ -216,8 +216,17 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       speed: [400,400],
       angle: 0,
       resize: [20,20]
-    },'blueray' : {
-      sprite: blueraySpriteSchema,
+    },
+    'greenBullet' : {
+      sprite: greenBulletSchema,
+      damage: 50,
+      speed: [500,500],
+      angle: 0,
+      resize: [10,10],
+      renderTranslated: [0, 0]
+    },
+    'redBullet' : {
+      sprite: redBulletSchema,
       damage: 50,
       speed: [500,500],
       angle: 0,
@@ -228,7 +237,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       sprite: coolDogSpriteSchema,
       damage: 30,
       baseDamage: 30,
-      bulletName : 'blueray',
+      bulletName : 'greenBullet',
       critChance: 0.05,
       hitbox: {
         pos: [25,30],
@@ -268,6 +277,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     'bonusWeapon':{
       sprite: bonusWeaponSpriteSchema,
       damage: 20,
+      bulletName: 'bluebullet',
       speed: [20,20]
     },
     'boss':{
@@ -372,15 +382,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       resize: [50,50],
       renderTranslated: [10, 15],
       speed: [0,0]
-    },
-    'life':{
-      sprite: lifeSpriteSchema,
-      speed:[0,0]
     }
   };
 
   var joke_entities = {
-        'enemy1' : {
+    'enemy1' : {
       sprite: tacnyanSpriteSchema,
       speed: [45,45],
       points: 100,
@@ -471,11 +477,12 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     },
     'rat' : {
       sprite: level1_ratSprite,
-      speed: [65,65],
+      speed: [45,45],
       points: 50,
       angle: 1,
       shootOrigin: [5,25],
-      messages: ['Tsttck', 'Rattattaaa', 'Rat is clever'],
+      bulletName: 'redBullet',
+      messages: ['Tsttck', 'Rattattaaa', 'Rat is clever', 'You smell like dog', 'Rat army! RAT!', 'dammit, george'],
       life: 100,
       totalLife: 100,
       resize: [40,40],
@@ -497,7 +504,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
           resetAfterEnd: true
         }
       ],
-      actions : [{name: 'enemyShoot', delay: 1.5}]
+      actions : [{name: 'enemyShoot', delay: 2.5}]
     },
     'drone': {
       sprite: level1_droneSpriteDefinition.normal.standby,
@@ -505,15 +512,16 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       points: 50,
       angle: 1,
       life: 300,
+      bulletName: 'redBullet',
       totalLife: 300,
       resize: [50,50],
-      messages: ['Beep beep', 'Drone search', 'Drone destroy'],
+      messages: ['Beep beep', 'Drone search', 'Drone destroy', 'Aiming, beep'],
       shootOrigin: [-30,20],
       hitbox: {
         pos: [5,5],
         size: [40,40]
       },
-      bulletName: 'blueray',
+      bulletName: 'greenBullet',
       damage: 20,
       actions : [{name: 'aim', delay: 1.5}, {name : 'neutralShoot', delay: 0.2}],
       animations: [
@@ -529,6 +537,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       points: 150,
       angle: 1,
       life: 1000,
+      bulletName: 'redBullet',
       totalLife: 1000,
       messages: ['alpha bravo rat', 'v formation', 'clearing area'],
       resize: [100,100],

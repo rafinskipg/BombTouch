@@ -97,7 +97,7 @@ return BombTouchApp.
       }),
       shoot: new Howl({
         urls: ['sounds/laser5.wav'],
-        volume: 0.1
+        volume: 0.05
       }),
       yeah: new Howl({
         urls: ['sounds/oh_yeah_wav_cut.wav']
@@ -524,8 +524,8 @@ return BombTouchApp.
     }
   }
 
-  function blueShoot(entity){
-    bullets.push(EL.getEntity('bluebullet', {pos: [entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2],damage: entity.damage}));
+  function allyShoot(entity){
+    bullets.push(EL.getEntity(entity.bulletName, {pos: [entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2],damage: entity.damage}));
     playSound(SOUNDS.shoot);
   }
 
@@ -925,8 +925,8 @@ return BombTouchApp.
 
   function shootThrottled(time, dt, shootType){
     return entityStepsInTime('shoot',time,dt)(function(entity){
-      if(shootType == 'blueShoot'){
-        blueShoot(entity, entity.angle);
+      if(shootType == 'ally'){
+        allyShoot(entity, entity.angle);
       }else{
         enemyShoot(entity, entity.angle);
       }
@@ -1231,7 +1231,7 @@ return BombTouchApp.
   function updateBonusWeapons(dt){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
-      .map(shootThrottled(0.5, dt, 'blueShoot'))
+      .map(shootThrottled(0.5, dt, 'ally'))
       .map(removeBonusIfTImeGreaterThan(15)));
   }
 
