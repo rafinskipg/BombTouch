@@ -48,8 +48,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var bottomBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var topBulletSpriteSchema = ['images/newsprites.png', [80, 5], [10, 10], 5, [0,1,2,3]];
   var blueBulletSpriteSchema = ['images/newsprites.png', [125, 3], [10, 10], 10, [0,1,2,3]];
-  var greenBulletSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 15, [0,1,2,3,4,5]];
-  var redBulletSchema = ['images/weapons/bullets.png', [0, 10],  [10, 10], 15, [0,1,2,3,4,5]];
+  var greenBulletSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 0, [0]];
+  var redBulletSchema = ['images/weapons/bullets.png', [0, 10],  [10, 10], 0, [0]];
 
   //Enemies
   var tacnyanSpriteSchema = ['images/enemies/tacnyan.png', [0,0], [255,152], 5, [0,1,2,1], true];
@@ -146,6 +146,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
  // var bonusSpriteSchema = ['images/weapons/bonus.png', [50,50], [100,50], 1, [0]];
   var bonusSpriteSchema = ['images/weapons/bonus.png', [100,0], [50,50], 12, [0,1,2,3,4,5,6,7,8]];
   var doubleShootBonusSpriteSchema = ['images/weapons/bonus.png', [100,150], [50,50], 8, [0,1,2,3,4,5]];
+  var rapidShotBonusSpriteSchema = ['images/weapons/bonus.png', [100,200], [50,50], 8, [0,1,2,3,4,5]];
+  var shotGunBonusSpriteSchema = ['images/weapons/bonus.png', [100,250], [50,50], 8, [0,1,2,3,4,5]];
   var bonusWeaponSpriteSchema = ['images/bonusWeapon.png', [0,0], [40,40], 1, [0]];
   var greenGemSpriteSheet =['images/weapons/bonus.png', [0,200], [50,50], 1, [0]];
   //Var Space invaders version
@@ -564,6 +566,16 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     'doubleShootBonus': {
       speed: [200,200],
       sprite: doubleShootBonusSpriteSchema,
+      angle : 1
+    }, 
+    'rapidShotBonus': {
+      speed: [200,200],
+      sprite: rapidShotBonusSpriteSchema,
+      angle : 1
+    }, 
+    'shotGunBonus': {
+      speed: [200,200],
+      sprite: shotGunBonusSpriteSchema,
       angle : 1
     }
   }

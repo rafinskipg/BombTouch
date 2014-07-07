@@ -361,6 +361,10 @@ return BombTouchApp.
         bonus.obtain = dogeBonusObtain;  
       }else if(bonus.name == 'doubleShootBonus'){
         bonus.obtain = doubleWeaponBonusObtain;
+      }else if(bonus.name == 'shotGunBonus'){
+        bonus.obtain = shotGunBonusObtain;
+      }else if(bonus.name == 'rapidShotBonus'){
+        bonus.obtain = rapidShotBonusObtain;
       } else if(bonus.name == 'greenGem'){
         bonus.obtain = greenGemBonusObtain;
       }
@@ -627,7 +631,15 @@ return BombTouchApp.
   }
   function doubleWeaponBonusObtain(entity){
     player.weapon = new Weapons.DoubleShoot();
-    entity.bonuses.doubleShoot = 10;
+    entity.bonuses.weapon = 10;
+  }
+  function shotGunBonusObtain(entity){
+    player.weapon = new Weapons.ShotGun();
+    entity.bonuses.weapon = 10;
+  }
+  function rapidShotBonusObtain(entity){
+    player.weapon = new Weapons.RapidFire();
+    entity.bonuses.weapon = 10;
   }
   function greenGemBonusObtain(entity, bonus){
     addPoints(bonus.points, bonus.pos);
@@ -1040,9 +1052,9 @@ return BombTouchApp.
       }
     }
 
-    if(player.bonuses.doubleShoot){
-      player.bonuses.doubleShoot -= dt;
-      if(player.bonuses.doubleShoot <= 0){
+    if(player.bonuses.weapon){
+      player.bonuses.weapon -= dt;
+      if(player.bonuses.weapon <= 0){
         player.weapon = new Weapons.Pistol();
       }
     }
