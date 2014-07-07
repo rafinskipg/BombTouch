@@ -6,7 +6,6 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
     /* This service acts as a manager, getting all the suscriptions and using them in each level **/
 
     var suscribersPoints = {};
-    var suscribersMessages = {};
     var suscribersGameOver = {};
     var suscribersGameStart = {};
     var game;
@@ -25,9 +24,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
     function suscribeGameOver(fn, name){
       suscribe(fn,name,suscribersGameOver);
     }
-    function suscribeMessages(fn, name){
-      suscribe(fn,name,suscribersMessages);
-    }
+    
     function suscribeGameStart(fn, name){
       suscribe(fn,name,suscribersGameStart);
     }
@@ -44,13 +41,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
 
     function reset(){
       game = new brainSrv();
-      game.suscribeMessages(function(messages,timeoutMessage,type){
-        notify(suscribersMessages, {
-          messages: messages,
-          tiemoutMessage: timeoutMessage, 
-          type: type
-        })
-      });
+      
       game.suscribePoints(function(points){
         notify(suscribersPoints, points);
       });
@@ -96,7 +87,6 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
         exit: exit,
         suscribePoints: suscribePoints,
         suscribeGameOver: suscribeGameOver,
-        suscribeMessages: suscribeMessages,
         suscribeGameStart: suscribeGameStart,
       };
   }]);
