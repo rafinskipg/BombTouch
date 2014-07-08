@@ -1,4 +1,4 @@
-define(['angular', 'app'], function(angular, BombTouchApp ){
+define(['angular', 'app', 'controllers/levels'], function(angular, BombTouchApp ){
     'use strict';
     return BombTouchApp.controller('DifficultyCtrl',
       ['$scope', 'settingsSrv', '$location',
@@ -29,7 +29,7 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
 
         $scope.setDifficulty = function(difficulty){
           settingsSrv.setDifficulty(difficulty.speed);
-          $location.path('/main');
+          $location.path('/levels');
         }
         
         $scope.goHome  = function(){

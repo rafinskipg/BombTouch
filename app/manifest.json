@@ -1,5 +1,5 @@
 {
-  "name": "simple",
+  "name": "The Cool Dog Adventures",
   "version": "0.0.0.1",
   "app": {
     "launch":{
@@ -7,6 +7,6 @@
     }
   },
   "icons": {
-    "128": "images/icons/icon_128.png"
+    "128": "images/icons/icon_128_2.png"
   }
 }

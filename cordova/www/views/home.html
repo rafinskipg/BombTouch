@@ -2,15 +2,21 @@
   <header>
       <div class="row">
           <div class="col-xs-12 text-center" id="logo">
-            <img src="images/gifs/doggy.gif">
-          </div>
-          <div class="col-xs-12 intro-text">
+            <!--<img src="images/gifs/doggy.gif"/>-->
+            <img src="images/hud/home_title.png">
+            <span class="shadow">
+          </span></div>
+
+          <div class="col-xs-12 home_header hidden">
             <h1>The adventures of Cool Dog</h1>
             <p>Now presenting: <b>A dog, lost in the space, found on it's mind</b></p>
             <p class="score">Your best score is <span class="badge">{{bestScore}}<span class="glyphicon glyphicon-star"></span></span></p>
          </div>
+
+         <div class="planet text-center"><img src="images/planet.png"></div>
       </div>
   </header>
+
   <div class="controls row">
     <div class="col-xs-12">
       <ul class="menu">
@@ -26,15 +32,64 @@
         <li ng-click="badges()">
           <a href="">Badges <span class="glyphicon glyphicon-heart-empty"></span></a>
         </li>
+         <li ng-show="false" ng-click="prototypes()">
+          <a href="">Try prototypes <span class="glyphicon glyphicon-send"></span></a>
+        </li>
       </ul>
     </div>
-    <div class="col-xs-12 donation">
-      <h4>Rule number 6: Give something back</h4>
-      <p>We are giving 50% of the benefits back to the people who needs it more, the rest are for developing a new game</p>
-      <p>Thank you!<span class="donationBag"></span></p>
-      <b>@rafinskipg</b>
-    </div>
+    <div class="col-xs-12 about">
+      <div class="content">
+        <div class="row">
+        <div class="col-xs-12">
+          <div class="tutorial">
+            <span>Alpha version - Squeezy marmalade</span>
+            <span>Works on Chrome - For now </span>
+            <h3>Tutorial:</h3>
+            <div> Use: W A S D for moving / space for shooting. In mobile, use your finger, wow. Such help.</div>
+          </div>
+         
+          <h3>About:</h3>
+          <img class="team" src="/images/hud/team.png">
 
+          <div class="roles">
+            <div class="role">
+              Crafted with <i class="fa fa-html5"></i> and original idea by rafinskipg
+            </div>
+            <div class="role">
+              Music by Rob Tyler
+            </div>
+            <div class="role">
+              Arts by Marek Jeroqui
+            </div>
+            <div class="role">
+              Game design by Jorge Thomson
+            </div>
+          </div>
+          
+          <div>
+            <i class="fa fa-github-alt"></i> VenturaStudios
+          </div>
+          <div>
+            <i class="fa fa-money"></i> helping other people
+          </div>
+          <div>
+            <i class="fa fa-facebook"></i> <a href="https://www.facebook.com/thecooldogadventures">Our facebook page for updates</a>
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+    </div>
+    
+     <script type="text/javascript"><!--
+        mopub_ad_unit = "67c96299d264413abdef4f2df2413456";
+        mopub_ad_width = 320; // optional
+        mopub_ad_height = 480; // optional
+        mopub_keywords = "custom keywords"; // optional
+        //-->
+    </script>
+    <script src="http://ads.mopub.com/js/client/mopub.js"></script> 
     
   </div>
 

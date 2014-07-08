@@ -1,18 +1,10 @@
-define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resources','sprite','input','game/raf'], function(models, hu, EL, LEVELS_DIRECTOR){
+define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector', 'game/models/weapons','resources','sprite','input','raf', 'quad_tree'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR, Weapons){
 
-  var throttle = function(lambda, ms){
-    var allow = true;
-    return function(){
-      if(allow){
-        allow = false,
-        lambda();
+return BombTouchApp.
+    factory('brainSrv', ['audioSrv','settingsSrv', function(audioSrv, settingsSrv) {
+  
+  var CURRENT_STAGE, QUAD;
 
-        setTimeout(function(){
-          allow = true;
-        },ms);
-      }
-    }
-  }
   /****************************
   ****************************
     GAME Variables
@@ -20,7 +12,6 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   ****************************/
   function getDefaultState(){
     var options =  {
-      sound_enabled: true,
       iteration: 1,
       win: false,
       died: false,
@@ -30,8 +21,8 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       game_over: false,
       paused: false,
       post_game_completed : false,
-      background_speed: 0.3,
-      game_speed: 1.0
+      background_speed: 50,
+      gemsPicked: 0
     };
     return options;
   }
@@ -41,34 +32,53 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function getDefaultTimers(){
     return {
       lastFire :0,
-      lastTime: Date.now(),
       gameTime: 0,
-      realSeconds:0,
       shootSpriteTime: 0
     };
   }
 
   var TIMERS = getDefaultTimers();
 
-  var frames = 0;
+  var bullets,
+    enemies,
+    explosions,
+    miscelanea_front,
+    miscelanea_back,
+    specials,
+    bonuses,
+    bonusWeapons,
+    bosses,
+    enemyBullets,
+    neutralBullets,
+    graves,
+    pointsToRender,
+    inGameDialogs,
+    player;
 
-  var bullets = [],
-    enemies = [],
-    explosions = [],
-    specials = [],
-    bonuses = [],
-    bonusWeapons = [],
-    bosses = [],
-    enemyBullets = [],
-    graves = [],
+  function setDefaultStateForEntities(){
+    bullets = [];
+    enemies = [];
+    explosions = [];
+    miscelanea_front = [];
+    miscelanea_back =  [];
+    specials = [];
+    bonuses = [];
+    bonusWeapons = [];
+    bosses = [];
+    pointsToRender = [];
+    inGameDialogs = [];
+    enemyBullets = [];
+    neutralBullets =[];
+    graves = [];
     player = {};
+  }
 
-  var canvas, ctx, power = 0;
+  var canvas, power = 0;
+  var SCENARIO;
   var terrainPattern;
 
   //Suscribe to events of the game
   var notifyGameEnd = [];
-  var notifyLevelUp = [];
   var notifyPoints = [];
   var notifyMessages = [];
   var notifyPower = [];
@@ -87,23 +97,13 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       }),
       shoot: new Howl({
         urls: ['sounds/laser5.wav'],
-        volume: 0.1
-      }),
-      ambient: new Howl({
-       //urls: ['sounds/April_Kisses.mp3'],
-        urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
-        volume: 0.5,
-        loop: true
+        volume: 0.05
       }),
       yeah: new Howl({
         urls: ['sounds/oh_yeah_wav_cut.wav']
       }),
       levelup: new Howl({
         urls: ['sounds/upmid.wav']
-      }),
-      rick: new Howl({
-        urls: ['sounds/rickcut2.wav'],
-        volume: 0.5
       }),
       killer: new Howl({
         urls: ['sounds/killer.mp3'],
@@ -116,9 +116,6 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       power: new Howl({
         urls: ['sounds/power.mp3'],
         volume: 0.2
-      }),
-      ouch:  new Howl({
-        urls: ['sounds/ohmy.wav']
       }),
       explosions: [
         new Howl({
@@ -157,86 +154,67 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       sunmass: 'The Sun loses up to a billion kilograms a second due to solar winds'
     },
     personal: {
-
+      stories: ['Somebody told me once that we are made of stories...',
+        'All my life I believed somehow that i was going to find peace',
+        'and peace found me suddenly, when I was just living my life.',
+        'Now a dark entity has come to break the walls of peace and serenity',
+        'to you, who shall not pass, i say "If you want war, you will find defeat"',
+        'Aeons have passed since I left my world in order to finish this war',
+        'And today, i\'m close to my victory',
+        'let your story end']
     }
   };
+  
+  var names = {
+    main_character_name :'cooldog',
+    main_enemy_name :'boss_1',
+    main_character_super_damaged :'cooldogdamaged',
+    main_character_damaged :'cooldogdamaged',
+    main_character_super_name :'cooldog',
+    bonus_image_name :'dog'
+  }
 
-  var main_character_name = 'cooldog';
-  var main_enemy_name = 'creeper';
-  var main_character_super_damaged = 'cooldogdamaged';
-  var main_character_damaged = 'cooldogdamaged';
-  var main_character_super_name = 'cooldog';
-  var bonus_image_name = 'dog';
-  //var main_character_super_name = 'supercooldog';
-
-  var time_between_bullets = 0.300;
   /****************************
   ****************************
     GAME Initialization
   ****************************
   ****************************/
-
-  // The main game loop
+  var rafID ;
+  
   var main = function() {
-    var now = Date.now();
-    var dt = (now - TIMERS.lastTime);
-
-    frames = (1000/ (dt * 60)) * 60;
-    
-    TIMERS.realSeconds += dt;
-    var realtimeDt = (now - TIMERS.lastTime) / 1000.0;
-    dt = STATE.game_speed * realtimeDt;
-
-    if(!isGameOver() && !isPaused()){
-      update(dt,realtimeDt);
-      render();
-      TIMERS.lastTime = now;
-      requestAnimFrame(main);
+    SCENARIO.update = function(dt,realtimeDt){
+      if(!isGameOver() && !isPaused()){
+        update(dt,realtimeDt);
+      }
     }
   };
 
   var postGame = function(){
-    var now = Date.now();
-    var dt = (now - TIMERS.lastTime) / 1000.0;
-    if(!STATE.post_game_completed){
-      updateGraves(dt);
-      updateExplosions(dt);
-      render();
-      TIMERS.lastTime = now;
-      requestAnimFrame(postGame);
+    SCENARIO.update = function(dt){
+      if(!STATE.post_game_completed){
+        updateGraves(dt);
+        updateExplosions(dt);
+      }
     }
   };
 
-  function start() {
+  function start(LEVEL_STRUCTURE) {
     preloadSounds();
-    LEVELS_DIRECTOR.init(5,1,20);
+    //TODO , here send levels director the stage 0, at "continue game" send the current Stag, increment the current stag
 
-    initCanvas();
-    toMouseListeners();
+    //LEVELS_DIRECTOR.init(5,1,20);
+    canvas = document.getElementById("canvas");
     reset();
+    toMouseListeners();
+    LEVELS_DIRECTOR.init(names, 1,true,canvas,LEVEL_STRUCTURE);
     suscribeToEvents();
-    playSound(SOUNDS.ambient);
-
-    showInitialDialogs();
     main();
   };
 
   function restart(){
     reset();
-    playSound(SOUNDS.ambient);
     main();
   }
-
-  function initCanvas(){
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    //Seems to work
-    ctx.webkitImageSmoothingEnabled = false;
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 43;
-  };
 
   function toMouseListeners(){
     canvas.addEventListener('touchmove', function(ev){
@@ -246,7 +224,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       touchInputs = {
         pos: {
           x : x ,
-          y : y - player.sprite.getSize()[1]/2
+          y : y - player.getHeight()/2
         }
       }
 
@@ -260,7 +238,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       touchInputs = {
         pos: {
           x : x ,
-          y : y - player.sprite.getSize()[1]/2
+          y : y - player.getHeight()/2
         }
       }
        
@@ -347,76 +325,68 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   }
 
   function reset() {
-    var newState = getDefaultState();
-    newState.sound_enabled = STATE.sound_enabled === false ? false: true;
-    newState.game_speed = STATE.game_speed ? STATE.game_speed: newState.game_speed;
-    
-    STATE = newState;
+    STATE = getDefaultState();
+    STATE.game_speed = settingsSrv.getDifficulty();
+    SCENARIO = new Scenario("canvas", endGame, STATE.game_speed, STATE.background_speed);
+    SCENARIO.setRenderEntities(getEntitiesToRender, getTextEntitiesToRender);
+    SCENARIO.init();
+    setDefaultStateForEntities();
+    player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
+    player.weapon = new Weapons.ShotGun();
 
-    bullets = [];
-    enemies = [];
-    explosions = [];
-    specials = [];
-    bonuses = [];
-    bonusWeapons = [];
-    bosses = [];
-    enemyBullets = [];
-    graves = [];
-    player = EL.getEntity(main_character_name, [50, canvas.height / 2]);
-
+    player.bonuses = {};
     TIMERS = getDefaultTimers();
+
+    var bounds = {
+      x:0,
+      y:0,
+      width:canvas.width,
+      height:canvas.height
+    }
+    QUAD = new QuadTree(bounds);
   };
 
-  function suscribeToEvents(){
+  function suscribeToEvents(){     
+    LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
+      enemies.push(createFunction(canvas.width, canvas.height));
+    }, 'brainSrv');
 
-    /*suscribeMaxPower(function(bool){
-      if(bool){
-        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, player);
-        player.sprite = superPlayerOptions.sprite;
-        player.speed = superPlayerOptions.speed;
-        player.damage = superPlayerOptions.damage;
-        player.isSuperSaiyan = true;
-        showMessages([MESSAGES.saiyan], [main_character_super_name]);
-      }else{
-        console.log('ey')
-        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, player);
-        player.sprite = normalPlayerOptions.sprite;
-        player.speed = normalPlayerOptions.speed;
-        player.isSuperSaiyan = false;
-        player.damage = normalPlayerOptions.damage;
+    LEVELS_DIRECTOR.suscribeAddBoss(function(createFunction){
+      bosses.push(createFunction([canvas.width, canvas.height/2]));
+      STATE.background_speed = 1.6;
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeAddBonus(function(bonus){
+      if(bonus.name == 'dogeBonus'){
+        bonus.obtain = dogeBonusObtain;  
+      }else if(bonus.name == 'doubleShootBonus'){
+        bonus.obtain = doubleWeaponBonusObtain;
+      }else if(bonus.name == 'shotGunBonus'){
+        bonus.obtain = shotGunBonusObtain;
+      }else if(bonus.name == 'rapidShotBonus'){
+        bonus.obtain = rapidShotBonusObtain;
+      } else if(bonus.name == 'greenGem'){
+        bonus.obtain = greenGemBonusObtain;
       }
-    });*/
+      bonuses.push(bonus);
+    }, 'brainSrv');
 
-    LEVELS_DIRECTOR.suscribeLevelUp(function(){
+    LEVELS_DIRECTOR.suscribeAmbientEntities(function(entity){
+      if(entity){
+        miscelanea_back.push(entity);  
+      }
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeMessages(function(opts){
+      showMessages(opts.messages, opts.timeout, opts.type);
+    }, 'brainSrv');
+
+    LEVELS_DIRECTOR.suscribeStageUp(function(stage){
+      CURRENT_STAGE = stage;
       SOUNDS['levelup'].play();
-      var message = new models.Message(MESSAGES.levelup, bonus_image_name);
-      showMessages([message]);
-    })
-    notifyLevelUp.map(function(fn){
-      LEVELS_DIRECTOR.suscribeLevelUp(fn);
-    });
-  }
+    }, 'brainSrv')
 
-  function showInitialDialogs(){
-
-    var messageHero1 = new models.Message('I see the humanity...', main_character_name,3000);
-    var messageHero2 = new models.Message('... i felt them', main_character_name,3000);
-    var messageHero3 = new models.Message('...', main_character_name);
-    var messageHero4 = new models.Message('You have to recover your wisdom', main_character_name);
-    var messageHero5 = new models.Message('... if you want to survive', main_character_name);
-    var messageEnemy1 = new models.Message('I won\' allow you ' , main_enemy_name);
-    var messageHero6 = new models.Message('...wat', main_character_name);
-
-    showMessages([ 
-      messageHero1,
-      messageHero2,
-      messageHero3,
-      messageHero4,
-      messageHero5,
-      messageEnemy1,
-      messageHero6
-       ],0);
-    
+    SCENARIO.setParallaxLayers(LEVELS_DIRECTOR.getParallaxLayers());
   }
 
   /****************************
@@ -427,8 +397,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   
   function endGame() {
     STATE.game_over = true;
-    stopAmbientSound();
-    graves.push(EL.getEntity('grave', player.pos));
+    graves.push(EL.getEntity('grave', {pos: player.pos}));
     addExplosion(player.pos);
     if(!STATE.win){
       postGame();  
@@ -451,7 +420,8 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function pause(){
     STATE.paused = true;
-    pauseAmbientSound();
+    SCENARIO.pause();
+    audioSrv.pauseSong();
   }
 
   function isPaused(){
@@ -460,14 +430,13 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   
   function resume(){
     STATE.paused = false;
-    playSound(SOUNDS.ambient);
-    TIMERS.lastTime = Date.now();
+    SCENARIO.pause();
     main();
   }
 
   function playSound(sound){
-    if(!isPaused() && STATE.sound_enabled){
-      sound.play();
+    if(!isPaused() && settingsSrv.getSound() == true){
+      audioSrv.playSound(sound);
     }
   }
 
@@ -479,47 +448,41 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     SOUNDS.ambient.stop();
   }
 
-  function showMessages(messages,timeoutBetweenMessages){
-    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 0;
-    for(var i = 0; i < notifyMessages.length; i++){
-      //Clone the item, cause we dont want to send a referenced object ;)
-      var messagesClone = messages.map(function(item){ return item });
-      notifyMessages[i](messagesClone,timeoutBetweenMessages);
-    }
+  function createDialog(message, entity){
+    inGameDialogs.push(new models.Dialog(message, entity));
   }
 
   function shoot(){
     if(!isGameOver() &&
-      TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
+      TIMERS.gameTime - TIMERS.lastFire > player.weapon.options.shootDelay) {
       
       if(TIMERS.shootSpriteTime === 0){
-        changePlayerSpriteToShooting(true);
+        player.shooting = true;
       }
       TIMERS.shootSpriteTime = 0.5;
-      
 
-      var x = player.pos[0] + player.sprite.getSize()[0] / 2;
-      var y = player.pos[1] + player.sprite.getSize()[1] / 2;
+      var isCriticalStrike = petra.passProbabilities(player.critChance);
+      if(isCriticalStrike){
+        pointsToRender.push(new models.RenderableText({
+          text: 'critical strike!!',
+          color: 'rgba(69, 187, 111, 0.49)',
+          timeAlive: 0, 
+          speed: [50,50],
+          pos: player.pos
+        }));
+      }
 
-      bullets.push(EL.getEntity('bulletBlue', [player.pos[0] + player.sprite.getSize()[0] - 10,y -5], { damage: player.damage }));
-      //bullets.push(EL.getEntity(player.topBullet, [x,player.pos[1]], { damage: player.damage/2 }));
-      //bullets.push(EL.getEntity(player.bottomBullet, [x,player.pos[1] + player.sprite.getSize()[1]], { damage: player.damage/2 }));
-    
+      var bulletpos = player.getShootOrigin();
+      player.weapon.shoot(bullets, bulletpos, isCriticalStrike);
+
+      addShootFire(bulletpos);
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
     }
   }
 
-  function blueShoot(pos){
-    bullets.push(EL.getEntity('bulletBlue', pos, {damage: 200}));
-    playSound(SOUNDS.shoot);
-  }
-
-  function enemyShoot(pos, damage){
-    var bullet = EL.getEntity('bullet', pos, { damage: damage });
-    bullet.dir = 'left';
-    bullet.speed = 300;
-    enemyBullets.push(bullet);
+  function allyShoot(entity){
+    bullets.push(EL.getEntity(entity.bulletName, {pos: [entity.getX() + entity.getWidth(), entity.getY() + entity.getHeight()/2],damage: entity.damage}));
     playSound(SOUNDS.shoot);
   }
 
@@ -527,50 +490,35 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     var randomPos = parseInt(Math.random() * array.length)
     return array[randomPos];
   }
-  var createRick = throttle(function(){
-    var possibleRickSizes = [
-      [70,110],
-      [140,220],
-      [35,65]
-    ];
-    var opts  = {
-      size : randomFromArray(possibleRickSizes)
-    }
-     specials.push(EL.getEntity('rick', [0, Math.random()* (canvas.height -39)], opts));
-  }, 300);
-  
-  var createRicks = function(ammount){
-    return function(){
-      createRick();
 
-      if(specials.length < ammount){
-        requestAnimFrame(createRicks(ammount))
-      }  
-    }
-  }
-
-  function megaShootUntrottled(){
-    console.log(STATE.power)
-    if(STATE.power == STATE.max_power){
-      setPower(0);
-      playSound(SOUNDS.rick);
-      createRicks(9)();
-    }
-  }
-
-  var megaShoot = throttle(megaShootUntrottled, 1000);
-
-  function addExplosion(pos){
-    explosions.push(EL.getEntity('explosion',pos));
+  function addExplosion(pos, size){
+    explosions.push(EL.getEntity('explosion',{pos: pos, resize: size}));
     var number = parseInt(Math.random()*SOUNDS.explosions.length);
     playSound(SOUNDS.explosions[number]);
   }
 
-  function addPoints(pts){
+  function addBulletCasing(pos,speed, angle){
+    miscelanea_front.push(EL.getEntity('bulletcasing', {pos: pos, speed: speed, angle: angle, rotateSprite: angle}));
+  }
+  function addSpark(pos,speed, angle){
+    miscelanea_front.push(EL.getEntity('spark', {pos: pos, speed: speed, angle: angle}));
+  }
+  function addShootFire(pos,speed, angle){
+    miscelanea_front.push(EL.getEntity('shootfire', {pos: pos, speed: speed, angle: angle}));
+  }
+
+  function addPoints(pts, pos){
     STATE.points += pts;
     for(var i = 0; i<notifyPoints.length; i++){
       notifyPoints[i](STATE.points);
     }
+    pointsToRender.push(new models.RenderableText({
+      text: pts,
+      color: 'rgba(39, 214, 46, 0.61)',
+      timeAlive: 0, 
+      speed: [50,50],
+      pos: petra.sumIntegerToArray(pos, 30)
+    }));
   }
     
   function addPower(pow){
@@ -601,24 +549,25 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   }
 
   function handleInput(dt) {
+    player.dir = null;
     if(input.isDown('DOWN') || input.isDown('s')) {
-      movePlayer('down', dt);
+      player.dir = 'down';
     }
 
     if(input.isDown('UP') || input.isDown('w')) {
-      movePlayer('up', dt);
+      player.dir = 'up';
     }
 
     if(input.isDown('LEFT') || input.isDown('a')) {
-      movePlayer('left', dt);
+      player.dir = 'left';
     }
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
-      movePlayer('right', dt);
+      player.dir = 'right';
     } 
 
     if(input.isDown('f')) {
-      megaShoot();
+      //megaShoot();
     }
 
     if(input.isDown('SPACE') ){
@@ -634,126 +583,121 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function update(dt,realtimeDt) {
     TIMERS.gameTime += dt;
-    updateLevelsDirector(dt,realtimeDt);
+    LEVELS_DIRECTOR.update(dt,realtimeDt);
     handleInput(dt);
+    //updateTree();
+    
     updateEntities(dt);
     checkCollisions();
     checkGameEndConditions();
   };
 
-  function updateLevelsDirector(dt,realtimeDt){
-    LEVELS_DIRECTOR.update(dt,realtimeDt);
+  function updateTree(){
+    QUAD.clear();
+    insertTree(enemies,'enemy')
+    insertTree(bosses,'boss')
+    insertTree(bullets,'bullets')
+    insertTree(enemyBullets,'enemyBullets')
+    insertTree(neutralBullets,'neutralBullets')
+    insertTree(bonuses, 'bonuses');
+    insertTree([player], 'player')
+  }
 
-    if(LEVELS_DIRECTOR.shouldAddEnemy() == true ){
-      enemies.push(LEVELS_DIRECTOR.createEnemy([canvas.width, Math.random() * (canvas.height - 39)]));
-    }
-    
-    if(LEVELS_DIRECTOR.shouldAddBoss() == true ){
-      bosses.push(LEVELS_DIRECTOR.createBoss([canvas.width, canvas.height/2]));
-      STATE.background_speed = 1.6;
-    }
-
-    if(LEVELS_DIRECTOR.shouldAddBonus()){
-      bonuses.push(LEVELS_DIRECTOR.createBonus([canvas.width, Math.random() * (canvas.height - 39)]));
+  function insertTree(arr, name){
+    for(var i = 0; i < arr.length; i++){
+      var size = arr[i].getSize();
+      QUAD.insert({
+        x: arr[i].getX(),
+        y: arr[i].getY(),
+        width: size[0],
+        height: size[1],
+        type: name,
+        indexOriginalObject: i
+      })
     }
   }
 
-  function updateEntities(dt,realtimeDt) {
+  function dogeBonusObtain(entity){
+    LEVELS_DIRECTOR.pickedDogeBonus();
+    entity.hasBonus = true;
+    addPoints(200, entity.pos);
+    entity.life += 200;
+    entity.totalLife += 200;
+  
+    bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
+    playSound(SOUNDS.yeah);
+    var message = new models.Message(MESSAGES.wow, names.bonus_image_name, 1500);
+    createDialog(message, bonusWeapons[0]);
+  }
+  function doubleWeaponBonusObtain(entity){
+    player.weapon = new Weapons.DoubleShoot();
+    entity.bonuses.weapon = 10;
+  }
+  function shotGunBonusObtain(entity){
+    player.weapon = new Weapons.ShotGun();
+    entity.bonuses.weapon = 10;
+  }
+  function rapidShotBonusObtain(entity){
+    player.weapon = new Weapons.RapidFire();
+    entity.bonuses.weapon = 10;
+  }
+  function greenGemBonusObtain(entity, bonus){
+    addPoints(bonus.points, bonus.pos);
+    STATE.gemsPicked++;
+  }
+
+  function updateEntities(dt) {
     updatePlayer(dt);
     updateBosses(dt);
     updateBullets(dt);
     updateEnemies(dt);
     updateSpecials(dt);
     updateExplosions(dt);
+    updatePointsToRender(dt);
+    updateDialogs(dt);
+    updateMiscelanea_front(dt);
+    updateMiscelanea_back(dt);
     updateBonuses(dt);
     updateBonusWeapons(dt);   
     updateEnemyBullets(dt);
+    updateNeutralBullets(dt);
   }
   /* Helpers */
   function entityInFrontOfPlayer(entity){
-    entity.pos = [player.pos[0]+ player.sprite.getSize()[0],player.pos[1]- player.sprite.getSize()[1]/2];
+    entity.pos = [player.pos[0]+ player.getWidth(),player.pos[1]- player.getHeight()/2];
     return entity;
   }
 
-  function updateSprite(dt){
-    return function(entity){
-      entity.sprite.update(dt);
-      return entity;
-    };
+  function isOutsideScreen(pos, size){
+    return(pos[1] + size[1] < 0 || pos[1] - size[1] > canvas.height ||
+       pos[0] + size[0] >= canvas.width || pos[0] + size[0] < 0);
   }
 
-  function moveLeft(pos, speed, dt){
-    return [pos[0] - speed * dt, pos[1]];
-  }
-  function moveRight(pos, speed, dt){
-    return [pos[0] + speed * dt, pos[1]];
-  }
-  function moveDown(pos, speed, dt){
-    return [pos[0], pos[1] + speed * dt];
-  }
-  function moveUp(pos, speed, dt){
-    return [pos[0], pos[1] - speed * dt];
-  }
-  function calculateNextDirection(entity, dt){
-    var pos = [entity.pos[0], entity.pos[1]];
-    if(entity.dir == 'up') {
-      pos = moveUp(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'down'){
-      pos = moveDown(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'left'){
-      pos = moveLeft(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'right'){
-      pos = moveRight(entity.pos, entity.speed, dt);
-    }else if(entity.dir == 'upleft'){
-      pos[1] = entity.pos[1] - entity.speed * dt;
-      pos[0] = entity.pos[0] - entity.speed * dt;
-    }else if(entity.dir == 'upright'){
-      pos[1] = entity.pos[1] - entity.speed * dt;
-      pos[0] = entity.pos[0] + entity.speed * dt;
-    }else if(entity.dir == 'downleft'){
-      pos[1] = entity.pos[1] + entity.speed * dt;
-      pos[0] = entity.pos[0] - entity.speed * dt;
-    }else if(entity.dir == 'downright'){
-      pos[1] = entity.pos[1] + entity.speed * dt;
-      pos[0] = entity.pos[0] + entity.speed * dt;
-    }else {
-      pos[0] = entity.pos[0] - entity.speed * dt;
+  function checkCanvasLimits(pos,size){
+    if(pos[1] <= 0){
+      return 0;
+    } else if(pos[1] + size[1] >= canvas.height ){
+      return 1;
+    } else if(pos[0] + size[0] >= canvas.width) {
+      return 1/2;
+    } else if(pos[0] <= 0){
+      return 3/2;
+    }else{
+      return null;
     }
-    return pos;
-  }
-  function moveToDirection(dt){
-    return function(entity){
-      var newPos = calculateNextDirection(entity, dt);
-      entity.pos = newPos;
-      return entity;
-    }  
-  }
-
-  function isOutsideScreen(pos, sprite){
-    return(pos[1] + sprite.getSize()[1] < 0 || pos[1] - sprite.getSize()[1] > canvas.height ||
-       pos[0] + sprite.getSize()[0] >= canvas.width || pos[0] + sprite.getSize()[0] < 0);
-  }
-
-  function isOnTheScreenEdges(pos,sprite){
-    return(pos[1] <= 0 || pos[1] + sprite.getSize()[1] >= canvas.height ||
-       pos[0] + sprite.getSize()[0] >= canvas.width);
   }
 
   function removeIfOutsideScreen(entity){
-    if(!isOutsideScreen(entity.pos ,entity.sprite)){
+    if(!isOutsideScreen(entity.pos ,entity.getSize())){
       return entity;
     }
   }
-  function removeIfOutsideScreenleft(entity){
-    if(! (entity.pos[0] + entity.sprite.getSize()[0] < 0) ) {
+ 
+  function removeIfOutsideScreenAndNoBouncesLeft(entity){
+    if(entity.bounces > 0 ){
       return entity;
     }
-  }
-  function removeIfOutsideScreenAndNoDirectionsAvailable(entity){
-    if(entity.dirs.length > 0 ){
-      return entity;
-    }
-    if(!isOutsideScreen(entity.pos, entity.sprite)){
+    if(!isOutsideScreen(entity.pos, entity.getSize())){
       return entity;
     }
   }
@@ -773,18 +717,19 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function updateEntitiesAndRemoveIfDone(entities, dt){
     return hu.compact(
-      entities.map(updateSprite(dt))
+      entities.map(updateEntity(dt))
+        .map(petra.moveByAngle(dt))
         .map(removeIfDone)
     ); 
   }
 
   function changeDirectionIfAvailable(dt){
     return function(entity){
-      var nextDirection = calculateNextDirection(entity,dt);
-      if(isOnTheScreenEdges(nextDirection, entity.sprite)){
-        if(entity.dirs && entity.dirs.length > 0){
-          entity.dir = entity.dirs.pop();  
-        }
+      var nextPosition = petra.calculateNextPositionByAngle(entity,dt);
+      var reflectionAngle = checkCanvasLimits(nextPosition, entity.getSize());
+      if(reflectionAngle != null){
+        entity.bounces -= 1;
+        entity.angle = petra.calculateBounceAngle(entity.angle, reflectionAngle * Math.PI);
       }
       return entity;
     }
@@ -795,19 +740,19 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     //TODO We are changing around / by player cause the reference is getting lost
     
     return function(entity){ 
-      var radius = player.sprite.getSize()[1] > player.sprite.getSize()[0] ? player.sprite.getSize()[1] : player.sprite.getSize()[0];
-      var velocityPerSeconds = ((3600/60)*2* Math.PI) / 360; 
+      var radius = player.getHeight() > player.getWidth() ? player.getHeight() : player.getWidth();
+     
       //TODO: This may cause the dogge to move from the center of the circle, the Phi calculus agains a game time
       //it should be against something between 0 and 10 ? 
-      var phi = velocityPerSeconds * TIMERS.gameTime;
+      var phi =  TIMERS.gameTime;
       //We add 1000 to ensure the calculus is allways done for positive values
       ////It gets a weird behaviour with negative values on the x axis
-      var angleInRadians = Math.atan(entity.pos[0]+1000, entity.pos[1]) + phi;
-      var xC = radius * Math.cos(angleInRadians)+phi;
-      var yC = radius * Math.sin(angleInRadians)+phi;
+      var angleInRadians = Math.atan(entity.getX()+1000, entity.getY()) + phi;
+      var xC = radius * Math.cos(angleInRadians);
+      var yC = radius * Math.sin(angleInRadians);
 
-      xC = xC + player.pos[0];
-      yC = yC + player.pos[1];
+      xC = xC + player.getX();
+      yC = yC + player.getY();
       entity.pos =[xC,yC]
       return entity;
     }
@@ -838,7 +783,6 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     return function(entity){
       var returned = removeIfTimeCounterGreaterThan(time)(entity);
       if(!returned){
-        player.bullet = 'bullet';
         player.damage = player.baseDamage;
       }else{
         return returned;
@@ -870,17 +814,17 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       margin = 0;
     }
     return function(entity){
-      if(entity.pos[0] + entity.sprite.getSize()[0] + margin >= canvas.width) {
-        entity.pos = moveLeft(entity.pos, entity.speed, dt);
+      if(entity.getX() + entity.getWidth() + margin >= canvas.width) {
+        entity.pos = petra.moveLeft(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[1] > canvas.height){
-        entity.pos = moveUp(entity.pos, entity.speed, dt);
+      if(entity.getY() > canvas.height){
+        entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[0] + entity.sprite.getSize()[0] < 0){
-        entity.pos = moveRight(entity.pos, entity.speed, dt);
+      if(entity.getX() + entity.getWidth() < 0){
+        entity.pos = petra.moveRight(entity.pos, entity.speed, dt);
       }
-      if(entity.pos[1]  + entity.sprite.getSize()[1] < 0){
-        entity.pos = moveDown(entity.pos, entity.speed, dt);
+      if(entity.getY()  + entity.getHeight() < 0){
+        entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
       return entity;
     }
@@ -891,58 +835,143 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
       margin = 0;
     }
     return function(entity){
-      if(!isOutsideScreen([entity.pos[0] + margin, entity.pos[1]], entity.sprite)){
+      if(!isOutsideScreen([entity.getX() + margin, entity.getY()], entity.getSize())){
         entity.readyForAction = true;
       }
       return entity;
     }
   }
 
-  function entityStepsInTime(time, dt){
+  function entityStepsInTime(actionName,time, dt){
+    actionName +='stepsInTime';
     return function(fn){
       return function(entity){
-        if(!entity.lastStep || (entity.lastStep + dt) >time){
-          entity.lastStep= dt;
+        if(!entity[actionName] || (entity[actionName] + dt) >time){
+          entity[actionName]= dt;
           return fn(entity);
         }else{
-          entity.lastStep +=dt;
+          entity[actionName] +=dt;
           return entity;
         }
       }
     }
   }
 
-  function shootThrottled(time, dt){
-    return entityStepsInTime(time,dt)(function(entity){
-      blueShoot([entity.pos[0] + entity.sprite.getSize()[0], entity.pos[1] + entity.sprite.getSize()[1]/2]);
+  function shootThrottled(time, dt, shootType){
+    return entityStepsInTime('shoot',time,dt)(function(entity){
+      if(shootType == 'ally'){
+        allyShoot(entity, entity.angle);
+      }else{
+        enemyShoot(entity, entity.angle);
+      }
+      
       return entity;
     });
   }
-  function playActionThrottled(time, dt){
-    return entityStepsInTime(time,dt)(function(entity){
-      playAction(entity.actions.pop(), entity);
+
+  function showMessageThrottled(time, dt){
+    return entityStepsInTime('showMessageCounter',time,dt)(function(entity){
+      
+      if(entity.messages){
+        var max = entity.messages.length;
+        var text = entity.messages[petra.random(0, max)];
+        var message = new models.Message(text, entity.name, 800);
+        createDialog(message, entity);
+      }
+      
       return entity;
     });
+  }
+
+  function playActionThrottled( dt, keep){
+    return function(entity){
+      if(!entity.actions || !entity.actions.length > 0){
+        return entity;
+      }
+      return entityStepsInTime('actionsCounter', entity.actions[entity.actions.length - 1 ].delay,dt)(function(entity){
+        var action = entity.actions.pop()
+        if(keep){
+          entity.actions.unshift(action);
+        }
+        playAction(action.name, entity);
+        return entity;
+      }.bind(this))(entity);
+    }
   }
   function playAction(action, entity){
+    var lifePercent = entity.life / entity.totalLife;
+    var life = 'normal';
+    
+    if(lifePercent < 0.7 && lifePercent > 0.4 ){
+      life = 'damaged';
+    }else if(lifePercent < 0.4){
+      life = 'verydamaged';
+    }
+    
     if(action =='enemyShoot'){
-      console.log(entity.damage);
-      enemyShoot(entity.pos, entity.damage);
+      entity.setAnimation('shoot'+life);
+      enemyShoot(entity,  entity.getBulletAngle() );
+    }else if(action =='neutralShoot'){
+      entity.setAnimation('shoot'+life);
+      neutralShoot(entity,  entity.getBulletAngle() );
+    }else if(action == 'aim'){
+      //TODO, get near entity
+      entity.setAnimation('aiming');
+      entity.aimingAt = player;
+    }else if(action =='doubleShoot'){
+      entity.setAnimation('shoot'+life);
+      enemyShoot(entity,0.6 *Math.PI );
+      enemyShoot(entity,0.8 *Math.PI);
+      enemyShoot(entity,1.0 *Math.PI);
+      enemyShoot(entity,1.2 *Math.PI);
+      enemyShoot(entity,1.4 *Math.PI);
+    }else if(action =='teleport'){
+      entity.setAnimation('teleport'+life, function(frame,index){
+        var times = 0;
+        if(frame == 6 && times < 1){
+          entity.pos = [player.pos[0] + 300, player.pos[1] + petra.random(-30, 30)];
+          times = 1;
+        }else if(index == 13){
+          entity.setDefaultAnimation();
+        }
+      }, true);
+
     }else if(action == 'talk'){
       var phrases = ['killer', 'power','grunt'];
       var chosenPhrase = phrases[parseInt(Math.random() * phrases.length, 10)];
-      
+      entity.setAnimation('talk'+life);
       playSound(SOUNDS[chosenPhrase]);
       
-      var message = new models.Message(MESSAGES[chosenPhrase], main_enemy_name, 1500);
-      showMessages([message]);
+      var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
+      createDialog(message, entity);
     }else if(action == 'launchEnemy'){
-      enemies.push(EL.getEnemy(entity.pos, Math.ceil(Math.random() *5 )));
+      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], 'enemy'+Math.ceil(Math.random() *5 ), 'joke');
+      enemies.push(enemy);
+      miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
+      miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
+      entity.setAnimation('standby'+life);
     };
   }
 
+  function enemyShoot(entity, angle){
+    var shootOrigin = entity.getShootOrigin();
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
+    bullet.speed = [300,300];
+    enemyBullets.push(bullet);      
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
+    playSound(SOUNDS.shoot);
+  } 
+  function neutralShoot(entity, angle){
+    var shootOrigin = entity.getShootOrigin();
+    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle, rotateSprite: angle });
+    bullet.speed = [300,300];
+    neutralBullets.push(bullet);      
+    miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
+    playSound(SOUNDS.shoot);
+  }
+
   function getBossActions(){
-    var bossTemp = EL.getBoss(canvas.width, canvas.height);
+    var bossTemp = EL.getBoss([canvas.width, canvas.height]);
     return bossTemp.actions;
   }
 
@@ -955,111 +984,206 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
   function moveToPlayerVertically(dt){
     return function(entity){
-      if(player.pos[1] < entity.pos[1]){
-        entity.pos = moveUp(entity.pos, entity.speed, dt);
+      if(player.getY() < entity.getY() - 40){
+        entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
-      if(player.pos[1] > entity.pos[1]){
-        entity.pos = moveDown(entity.pos, entity.speed, dt);
+      if(player.getY() > entity.getY() - 40){
+        entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 
       return entity;
     }
   }
 
-  function changePlayerSpriteToShooting(shooting){
-    if(shooting){
-      player.sprite = EL.getEntity(main_character_name+'shooting', player.pos, player).sprite;
-    }else{
-      player.sprite = EL.getEntity(main_character_name, player.pos, player).sprite;
-    }
-  }
   /* Updates */
-  function lerp3(start,end, speed, dt){
-    return start + (end - start) * 0.1; 
-  }
+  
   function updatePlayer(dt){
+    
     if(TIMERS.shootSpriteTime > 0){
       TIMERS.shootSpriteTime -= dt;
       if(TIMERS.shootSpriteTime <= 0){
         TIMERS.shootSpriteTime = 0;
-        changePlayerSpriteToShooting(false);
+        player.shooting = false;
       }
     }
 
+    var previouslyMovingDown =  player.moving == 'down';
+    player.moving = null;
+
     if(touchInputs){
-      player.pos[0] = lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
-      player.pos[1] = lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      var newPosX = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      if(newPosY > player.pos[1]){
+        player.moving = 'down';
+      }else if(newPosY < player.pos[1]){
+        player.moving = 'up';
+      }else{
+        player.moving == null;
+      }
+      player.pos[0] = newPosX;
+      player.pos[1] =newPosY;
+    }else if(player.dir){
+      player = petra.moveToDirection(dt, player.dir)(player);
+      player.moving =player.dir;
     }
 
-    player.sprite.update(dt);
+    if(player.shooting){
+      if(player.moving == 'down'){
+        SCENARIO.moveDown();
+        player.setAnimation('shootMoveDown');
+      }else if(player.moving == 'up'){
+        player.setAnimation('shootMoveUp');
+        SCENARIO.moveUp();
+      }else{
+        player.setAnimation('shoot');
+        SCENARIO.stopMove();
+      }
+    }else{
+      if(player.moving == 'down'){
+        player.setAnimation('moveDown');
+        SCENARIO.moveDown();
+      }else if(player.moving == 'up'){
+        player.setAnimation('moveUp');
+        SCENARIO.moveUp();
+      }else {
+        player.setDefaultAnimation();
+        SCENARIO.stopMove();
+      }
+    }
+
+    if(player.bonuses.weapon){
+      player.bonuses.weapon -= dt;
+      if(player.bonuses.weapon <= 0){
+        player.weapon = new Weapons.Pistol();
+      }
+    }
+
+    player.update(dt);
   }
-  function movePlayer(dir,dt){
-    player.dir = dir;
-    player = moveToDirection(dt)(player);
-  }
+
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){
     return hu.compact(
-      entities.map(updateSprite(dt))
-      .map(moveToDirection(dt))
+      entities.map(updateEntity(dt))
+      .map(petra.moveByAngle(dt))
       .map(removeIfOutsideScreen));
   }
   function updateBullets(dt){
     bullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(bullets, dt);
+    /*bullets = hu.compact(bullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   }
 
   function updateEnemyBullets(dt){
     enemyBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(enemyBullets, dt);
+    /*enemyBullets = hu.compact(enemyBullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
+  } 
+  function updateNeutralBullets(dt){
+    neutralBullets = updateEntititesAndMoveAndRemoveIfOutsideScreen(neutralBullets, dt);
+    /*neutralBullets = hu.compact(neutralBullets.map(ifCollidedAddSpark)
+          .map(removeIfCollided));*/
   }
 
   function updateEnemies(dt){
     enemies = hu.compact(
-      enemies.map(updateSprite(dt))
-      .map(moveToDirection(dt))
-      .map(removeIfOutsideScreenleft));
+      enemies.map(updateEntity(dt))
+      .map(updateEntity(dt))
+      .map(showMessageThrottled(3, dt))
+      .map(playActionThrottled(dt, true))
+      .map(petra.removeIfOutsideScreenleft));
   }
-
   
+  function updateEntity(dt){
+    return function(entity){
+      entity.update(dt);
+      return entity;
+    }
+  }
   function updateSpecials(dt){
     specials = updateEntititesAndMoveAndRemoveIfOutsideScreen(specials, dt);
   }
   
   function updateExplosions(dt){
     explosions = updateEntitiesAndRemoveIfDone(explosions, dt);        
+  } 
+  function updateMiscelanea_front(dt){
+    miscelanea_front = updateEntitiesAndRemoveIfDone(miscelanea_front, dt);        
   }
+  function updateMiscelanea_back(dt){
+    miscelanea_back = updateEntitiesAndRemoveIfDone(miscelanea_back, dt);        
+  }
+
+  function updatePointsToRender(dt){
+    pointsToRender = hu.compact(
+      pointsToRender
+      .map(updateTimeCounter(dt))
+      .map(moveUp(dt))
+      .map(removeIfTimeCounterGreaterThan(1))
+      );
+  }
+
+  function moveUp(dt){
+    return function(entity){
+      entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
+      return entity;
+    }
+  }
+
+  function updateDialogs(dt){
+    inGameDialogs = hu.compact(
+      inGameDialogs
+      .map(updateTimeCounter(dt))
+      .map(function(item){
+        return updatePositionFromRelativeEntity(item.entity)(item);
+      })
+      .map(function(item){
+        return removeIfTimeCounterGreaterThan(item.duration/1000)(item);
+      })
+      );
+  }
+
+  function updatePositionFromRelativeEntity(entity){
+    return function(item){
+      item.pos = entity.pos;
+      return item;
+    }
+  }
+
   function updateBonuses(dt){
     bonuses = hu.compact(bonuses
-      .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 10)))
+      .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt, 30)))
       .map(wrapperNotReadyForActionOnly(readyForActionIfInsideScreen(10))));
 
     bonuses = hu.compact(hu.compact(bonuses
       .map(wrapperReadyForActionOnly(changeDirectionIfAvailable(dt)))
-      .map(wrapperReadyForActionOnly(moveToDirection(dt)))
+      .map(wrapperReadyForActionOnly(petra.moveByAngle(dt)))
+      .map(updateEntity(dt))
       .map(ifCollidesApplyBonusTo(player))
-      .map(removeIfOutsideScreenAndNoDirectionsAvailable))
+      .map(removeIfOutsideScreenAndNoBouncesLeft))
       .map(removeIfCollideWith(player)));
   }
 
   function updateBonusWeapons(dt){
     bonusWeapons = hu.compact(bonusWeapons.map(moveInCircleAround(player, dt))
       .map(updateTimeCounter(dt))
-      .map(shootThrottled(0.5, dt))
+      .map(shootThrottled(0.5, dt, 'ally'))
       .map(removeBonusIfTImeGreaterThan(15)));
   }
 
   function updateBosses(dt){
     bosses = hu.compact(bosses
-      .map(updateSprite(dt))
+      .map(updateEntity(dt))
       .map(wrapperNotReadyForActionOnly(moveInsideScreen(dt,50)))
       .map(readyForActionIfInsideScreen(50))
-      .map(wrapperReadyForActionOnly(playActionThrottled(0.7,dt)))
+      .map(wrapperReadyForActionOnly(playActionThrottled(dt, false)))
       .map(resetBossActionsIfEmpty)
       .map(moveToPlayerVertically(dt)));
   }
 
   function updateGraves(dt){
     graves = hu.compact(
-      graves.map(updateSprite(dt))
+      graves.map(updateEntity(dt))
       .map(endPostGameIfDone));
   }
 
@@ -1068,37 +1192,96 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     Collision Handling
   ****************************
   ****************************/   
+      /**
+     * Helper function to determine whether there is an intersection between the two polygons described
+     * by the lists of vertices. Uses the Separating Axis Theorem
+     *
+     * @param a an array of connected points [{x:, y:}, {x:, y:},...] that form a closed polygon
+     * @param b an array of connected points [{x:, y:}, {x:, y:},...] that form a closed polygon
+     * @return true if there is any intersection between the 2 polygons, false otherwise
+     */
+    function doPolygonsIntersect (a, b) {
+        var polygons = [a, b];
+        var minA, maxA, projected, i, i1, j, minB, maxB;
+        var aPoints = a.getPoints();
+        var bPoints = b.getPoints();
+
+        for (i = 0; i < polygons.length; i++) {
+
+            // for each polygon, look at each edge of the polygon, and determine if it separates
+            // the two shapes
+            var polygon = polygons[i].getPoints();
+            for (i1 = 0; i1 < polygon.length; i1++) {
+
+                // grab 2 vertices to create an edge
+                var i2 = (i1 + 1) % polygon.length;
+                var p1 = polygon[i1];
+                var p2 = polygon[i2];
+
+                // find the line perpendicular to this edge
+                var normal = [p2[1] - p1[1],  p1[0] - p2[0]];
+
+                minA = maxA = undefined;
+                // for each vertex in the first shape, project it onto the line perpendicular to the edge
+                // and keep track of the min and max of these values
+                for (j = 0; j < aPoints.length; j++) {
+                    projected = normal[0] * aPoints[j][0] + normal[1] * aPoints[j][1];
+                    if (isUndefined(minA) || projected < minA) {
+                        minA = projected;
+                    }
+                    if (isUndefined(maxA) || projected > maxA) {
+                        maxA = projected;
+                    }
+                }
+
+                // for each vertex in the second shape, project it onto the line perpendicular to the edge
+                // and keep track of the min and max of these values
+                minB = maxB = undefined;
+                for (j = 0; j < bPoints.length; j++) {
+                    projected = normal[0] * bPoints[j][0] + normal[1] * bPoints[j][1];
+                    if (isUndefined(minB) || projected < minB) {
+                        minB = projected;
+                    }
+                    if (isUndefined(maxB) || projected > maxB) {
+                        maxB = projected;
+                    }
+                }
+
+                // if there is no overlap between the projects, the edge we are looking at separates the two
+                // polygons, and we know there is no overlap
+                if (maxA < minB || maxB < minA) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+  function isUndefined(val){
+    return typeof(val) === 'undefined';
+  }
+
   function collides(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 || b <= y2 || y > b2);
   }
 
-  function boxCollides(pos, size, pos2, size2) {
-    return collides(pos[0], pos[1],
-                    pos[0] + size[0], pos[1] + size[1],
-                    pos2[0], pos2[1],
-                    pos2[0] + size2[0], pos2[1] + size2[1]);
+  function boxCollides(hitboxA, hitboxB) {
+    return collides(hitboxA.topLeft[0], hitboxA.bottomLeft,
+                    hitboxA.topRight, hitboxA.bottomRight,
+                    hitboxB.topLeft, hitboxB.bottomLeft,
+                    hitboxB.topRight, hitboxB.bottomRight);
   }
 
   function entitiesCollide(a,b){
-    return boxCollides(a.pos, a.sprite.getSize(), b.pos, b.sprite.getSize());
+    return doPolygonsIntersect(a.getHitBox(), b.getHitBox());
+    
   }
 
   
   function ifCollidesApplyBonusTo(entity){
     return function(bonus){
       if(entitiesCollide(entity,bonus)){
-        LEVELS_DIRECTOR.pickedBonus();
-        entity.hasBonus = true;
-        entity.bullet = 'nyanbullet';
-        addPoints(200);
-        entity.life = entity.life >= entity.totalLife ? entity.totalLife : entity.life + 200;
-        entity.damage = entity.baseDamage + 50;
-        bonusWeapons = [EL.getEntity('bonusWeapon', [entity.pos[0] , entity.pos[1]])];
-        playSound(SOUNDS.yeah);
-
-        var message = new models.Message(MESSAGES.wow, bonus_image_name, 1500);
-        showMessages([message]);
-
+        bonus.obtain(entity, bonus);
       }
       return bonus;
     }
@@ -1106,7 +1289,33 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function ifCollidesApplyDamageTo(entity){
     return function(item){
       if(entitiesCollide(entity,item)){
+        pointsToRender.push(new models.RenderableText({
+          text: item.damage,
+          color: 'rgba(169, 81, 185, 0.61)',
+          timeAlive: 0, 
+          speed: [50,50],
+          pos: entity.pos
+        }));
         entity.life -= item.damage;
+      }
+      return item;
+    }
+  }
+
+  /*function ifCollidedAddSpark(entity){
+    if(entity.collision){
+      var portionofspeed = [entity.speed[0] * 0.8, entity.speed[1] * 0.8];
+      addSpark(entity.pos, entity.collision.speed,  entity.collision.angle);
+      addBulletCasing(entity.pos, [entity.speed[0] - portionofspeed[0], entity.speed[1] - portionofspeed[1]], entity.angle);
+    }
+    return entity;
+  }*/
+  function ifCollidesAddSpark(entity){
+    return function(item){
+      if(entitiesCollide(entity,item)){
+        var portionofspeed = [item.speed[0] * 0.8, item.speed[1] * 0.8];
+        addSpark(item.pos, entity.speed, entity.angle);
+        addBulletCasing(item.pos, [item.speed[0] - portionofspeed[0], item.speed[1] - portionofspeed[1]], item.angle);
       }
       return item;
     }
@@ -1120,6 +1329,12 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     }
   }
 
+  /*function removeIfCollided(entity){
+    if(!entity.collision){
+      return entity;
+    }
+  }*/
+
   function removeIfCollideWithAndPlaySound(entity){
     return function(item){
       var shouldReturnItem = removeIfCollideWith(entity)(item);
@@ -1131,34 +1346,91 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     }
   }
   function playerDamaged(damage){
-    playSound(SOUNDS.ouch);
     player.life -= damage;
+    
+    SCENARIO.screenShake();
 
-    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? main_character_super_damaged : main_character_damaged))
-    showMessages([messageOuch]);
+    pointsToRender.push(new models.RenderableText({
+      text: damage,
+      color: 'rgba(255, 0, 0, 0.61)',
+      timeAlive: 0, 
+      speed: [50,50],
+      pos: [player.getX(), player.getY()]
+    }));
+
+    var messageOuch = new models.Message(MESSAGES.ouch, (player.isSuperSaiyan ? names.main_character_super_damaged : names.main_character_damaged))
+    createDialog(messageOuch, player);
   }
 
   function killEnemy(enemy){
     LEVELS_DIRECTOR.killedEnemy(enemy);
-    addPoints(enemy.points);
+    addPoints(enemy.points, enemy.pos);
+
     addPower(enemy.points);
     playSound(SOUNDS.death);
-    addExplosion(enemy.pos);    
+    addExplosion(enemy.pos, enemy.getSize());    
   }
 
+  function  nearEntities(point, size){
+    var items = QUAD.retrieve({x:point[0], y:point[0], height:size[0], width:size[1]});
+    return items;
+  }
+
+  function getNearNearEntitiesForEnemy(enemy){
+    var items = nearEntities(enemy.pos, enemy.getSize());
+    items = hu.compact(items.map(function(item){
+      if(item.type == 'neutralBullets' || 
+        item.type == 'bullets'){
+        return item;
+      }
+    }))
+    return items;
+  }
   function collisionToEnemyGroup(enemyGroup){
       enemyGroup = hu.compact(enemyGroup.map(function(enemy){
+        /*
+        var nearEntities = getNearNearEntitiesForEnemy(enemy);
+       
 
-        bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
-          .map(removeIfCollideWith(enemy)));
+        nearEntities.map(function(entity){
+          var object;
+          console.log(entity.indexOriginalObject);
+          if(entity.type == 'bullets' ){
+            object = bullets[entity.indexOriginalObject]
+          }else if(entity.type == 'neutralBullets'){
+            object = neutralBullets[entity.indexOriginalObject]
+          }
+
+          if(entitiesCollide(object, enemy)){
+              console.log('ciolide')
+              object.collision = {
+                pos: object.pos,
+                speed: enemy.speed,
+                angle: enemy.angle
+              }
+              enemy.life -= object.damage;
+            }
           
-        specials
-          .map(ifCollidesApplyDamageTo(enemy));
+
+        })*/
 
         if(entitiesCollide(enemy, player)){
           playerDamaged(enemy.damage);
           enemy.life -= player.damage;
         }
+
+        bullets = hu.compact(bullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(ifCollidesAddSpark(enemy))
+          .map(removeIfCollideWith(enemy)));
+
+        neutralBullets = hu.compact(neutralBullets.map(ifCollidesApplyDamageTo(enemy))
+          .map(ifCollidesAddSpark(enemy))
+          .map(removeIfCollideWith(enemy)));
+          
+        specials
+          .map(ifCollidesApplyDamageTo(enemy));
+
+        
 
         if(enemy.life > 0){
           return enemy;
@@ -1177,6 +1449,9 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
 
     enemyBullets = hu.compact(enemyBullets
         .map(removeIfCollideWithAndPlaySound(player)));
+
+    neutralBullets = hu.compact(neutralBullets
+        .map(removeIfCollideWithAndPlaySound(player)));
   }
 
   function checkGameEndConditions(){
@@ -1193,15 +1468,15 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     if(player.pos[0] < 0) {
       player.pos[0] = 0;
     }
-    else if(player.pos[0] > canvas.width - player.sprite.getSize()[0]) {
-      player.pos[0] = canvas.width - player.sprite.getSize()[0];
+    else if(player.pos[0] > canvas.width - player.getWidth()) {
+      player.pos[0] = canvas.width - player.getWidth();
     }
 
     if(player.pos[1] < 0) {
       player.pos[1] = 0;
     }
-    else if(player.pos[1] > canvas.height - player.sprite.getSize()[1]) {
-      player.pos[1] = canvas.height - player.sprite.getSize()[1];
+    else if(player.pos[1] > canvas.height - player.getHeight()) {
+      player.pos[1] = canvas.height - player.getHeight();
     }
   }
 
@@ -1210,75 +1485,71 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
     Drawables
   ****************************
   ****************************/   
-  var BGx = 0;
 
-  function render() {
-    BGx -= STATE.background_speed * STATE.game_speed;
-    ctx.fillRect(BGx + canvas.width, 0, canvas.width, canvas.height);
-    ctx.drawImage(resources.get('images/background.png'), BGx, 0,canvas.width, canvas.height);
-    ctx.drawImage(resources.get('images/background.png'), BGx + canvas.width, 0,canvas.width, canvas.height);
- 
-    // If the image scrolled off the screen, reset
-    if (BGx < -canvas.width){
-      BGx =0;
-    }
-  
-    if(!isGameOver()) {
-      renderEntity(player);
+  function getEntitiesToRender() {
+    var entitiesToRender = [
+      {
+        entities: bullets
+      },
+      {
+        entities: enemyBullets
+      },
+      {
+        entities: neutralBullets
+      },
+      {
+        entities: bosses
+      },
+      {
+        entities: miscelanea_back,
+        background: true
+      },
+      {
+        entities: enemies
+      },
+      {
+        entities: explosions
+      },
+      {
+        entities: specials
+      },
+      {
+        entities: bonuses
+      },
+      {
+        entities: miscelanea_front
+      }
+      ];
+
+   if(!isGameOver()) {
+      entitiesToRender.push({
+        entities:[player]
+      });
       if(player.hasBonus){
-        renderEntities(bonusWeapons);
+        entitiesToRender.push({
+          entities: bonusWeapons
+        });
       }
     }else{
-      renderEntities(graves);
+      entitiesToRender.push({
+        entities: graves
+      });
     }
-    renderEntities(bullets);
-    renderEntities(enemyBullets);
-    renderEntities(enemies);
-    renderEntities(explosions);
-    renderEntities(specials);
-    renderEntities(bonuses);
-    renderEntities(bosses);
-    //drawFrames();
+
+    return entitiesToRender;
   };
 
-  function renderEntities(list) {
-    for(var i=0; i<list.length; i++) {
-      renderEntity(list[i]);
-    }    
+  function getTextEntitiesToRender(){
+    return [{
+      entities: pointsToRender,
+      type: 'basic'
+    },{
+      entities: inGameDialogs,
+      type: 'dialog'
+    }];
   }
 
-  function renderEntity(entity) {
-    ctx.save();
-    ctx.translate(Math.round(entity.pos[0]), Math.round(entity.pos[1]));
-    entity.sprite.render(ctx);
-    ctx.restore();
-    if(entity.life){
-      drawLife(entity);
-    }
-  }
-  function drawFrames(){
-    ctx.fillStyle = "blue";
-    ctx.font = "bold 16px Arial";
-    ctx.fillText(frames, 100, 100);
-  }
-  function drawLife(entity){
-    var lifeTotal = entity.sprite.getSize()[0] * (entity.life/ entity.totalLife);
-    var x = Math.round(entity.pos[0]);
-    var y = Math.round(entity.pos[1]);
-    ctx.beginPath();
-    ctx.rect(x, y + entity.sprite.getSize()[1], entity.sprite.getSize()[0], 7);
-    ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black'; 
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.rect(x+ (entity.sprite.getSize()[0]-lifeTotal), y + entity.sprite.getSize()[1], lifeTotal, 7);
-    ctx.fillStyle = 'rgba(0, 255, 0, 0.68)';
-    ctx.fill();
-    ctx.stroke();
-  }
+  
 
   /****************************
   ****************************
@@ -1288,36 +1559,13 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   function suscribeGameOver( fn){
     notifyGameEnd.push(fn);
   }
-  function suscribeLevelUp( fn){
-    notifyLevelUp.push(fn);
-  }
   function suscribePoints(fn){
     notifyPoints.push(fn);
-  }
-  function suscribeMessages(fn){
-    notifyMessages.push(fn);
-  }
-  function suscribePower(fn){
-    notifyPower.push(fn);
   }
   function suscribeMaxPower(fn){
     notifyMaxPower.push(fn);
   }
-  function setSound(bool){
-    STATE.sound_enabled = bool;
-  }
-  function setSoundInGame(bool){
-    if(!STATE.sound_enabled){
-      STATE.sound_enabled = bool;
-      playSound(SOUNDS.ambient);
-    }else{
-      pauseAmbientSound();
-      STATE.sound_enabled = bool;
-    }
-  }
-  function setDifficulty(speed){
-    STATE.game_speed = speed;
-  }
+
 
   /****************************
   ****************************
@@ -1327,14 +1575,7 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   var GAME = function() {
     return {
       suscribeGameOver : suscribeGameOver,
-      suscribeLevelUp : suscribeLevelUp,
       suscribePoints : suscribePoints,
-      suscribePower : suscribePower,
-      suscribeMessages: suscribeMessages,
-      megaShoot : megaShoot,
-      setSound : setSound,
-      setSoundInGame: setSoundInGame,
-      setDifficulty: setDifficulty,
       endGame : endGame,
       start : start,
       restart : restart,
@@ -1345,5 +1586,5 @@ define( [ 'game/models/models', 'hu','game/entities', 'levelsDirector','resource
   }
 
   return  GAME;
-
+  }]);
 });
