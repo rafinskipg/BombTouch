@@ -40,8 +40,8 @@ define( ['resources','raf', 'quad_tree'], function(){
     ctx.webkitImageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight ;
+    canvas.width = window.innerWidth/3;
+    canvas.height = window.innerHeight/3 ;
     
     current = 0; then = now();
 
