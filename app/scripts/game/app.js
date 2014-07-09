@@ -1155,7 +1155,17 @@ return BombTouchApp.
       .map(updateEntity(dt))
       .map(showMessageThrottled(3, dt))
       .map(playActionThrottled(dt, true))
-      .map(petra.removeIfOutsideScreenleft));
+      .map(removeEnemyIfOutsideScreen(dt)));
+  }
+
+  function removeEnemyIfOutsideScreen(dt){
+    return function(entity){
+      if(petra.isOutsideScreenLeft(entity)){
+        LEVELS_DIRECTOR.enemyLeft(entity);
+      }else{
+        return entity;
+      }
+    }
   }
   
   function updateEntity(dt){

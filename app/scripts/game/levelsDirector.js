@@ -67,6 +67,7 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       INFORMATION.stages.push({
         total: 0,
         killed: 0,
+        left: 0,
         completed: false
       });
     }
@@ -99,17 +100,18 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       TIME_SINCE_LAST_AMBIENCE_OUT +=dt;
 
       if(CURRENT_STAGE <= MAX_STAGE){
-        if(allEnemiesFromStageAreOut(CURRENT_STAGE -1 )){
+        if(allEnemiesFromStageAreOut(CURRENT_STAGE -1 ) ){
           TIME_SINCE_LAST_STAGE_OUT+=dt;
-          if(TIME_SINCE_LAST_STAGE_OUT >= levelStructure.time_between_stages){
+          if(TIME_SINCE_LAST_STAGE_OUT >= levelStructure.time_between_stages && allEnemiesFromStageAreLeftScreen(CURRENT_STAGE-1)){
+            console.log('change stage')
             changeStage();
           }
-        }else if(allEnemiesFromGroupAreOut(CURRENT_STAGE-1, CURRENT_GROUP)){
+        }else if(allEnemiesFromGroupAreOut(CURRENT_STAGE-1, CURRENT_GROUP) ){
           TIME_SINCE_LAST_GROUP_OUT+=dt;
-          if(TIME_SINCE_LAST_GROUP_OUT >= getTimeoutBetweenGroups(CURRENT_STAGE-1)){
+          if(TIME_SINCE_LAST_GROUP_OUT >= getTimeoutBetweenGroups(CURRENT_STAGE-1) && allEnemiesFromStageAreLeftScreen(CURRENT_STAGE-1)){
             changeGroup();
           }
-        }else{
+        }else {
           TIME_SINCE_LAST_ENEMY_OUT+=dt;
           if(TIME_SINCE_LAST_ENEMY_OUT >= getTimeoutBetweenEntities(CURRENT_STAGE - 1)){
             ALLOW_ENEMY_OUT = true;
@@ -184,7 +186,12 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     return(INFORMATION.stages[stage].total >= getTotalsOfCurrentStage(stage));
   }
 
+  function allEnemiesFromStageAreLeftScreen(stage){
+    return (INFORMATION.stages[stage].left + INFORMATION.stages[stage].killed) == INFORMATION.stages[stage].total;
+  }
+
   function allEnemiesFromGroupAreOut(stage, group){
+    console.log(stage, group)
     var currGroup = levelStructure.stages[stage].groups[group];
     var enemiesInCurrentGroup =  currGroup.length;
 
@@ -257,6 +264,12 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     }
     if(petra.passProbabilities(enemy.dropProbabilities)){
       notify(suscriptorsAddBonus ,createBonus(enemy.pos, enemy.dropItem, true));
+    }
+  }
+  //TODO, create a event suscription model.
+  function enemyLeft(enemy){
+    if(enemy.stage <= MAX_STAGE){
+      INFORMATION.stages[enemy.stage - 1].left += 1;  
     }
   }
   //BOSS
@@ -377,7 +390,8 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       suscribeStageUp: suscribeStageUp,
       isFinalStage: isFinalStage,
       getLevelsInfo: getLevelsInfo,
-      getParallaxLayers: getParallaxLayers
+      getParallaxLayers: getParallaxLayers,
+      enemyLeft: enemyLeft
   }
 
   return  LEVELS_DIRECTOR;
