@@ -4,7 +4,6 @@
           <div class="col-xs-12 text-center " id="logo">
             <!--<img src="images/gifs/doggy.gif"/>-->
             <img src="images/hud/home_title.png"/>
-            <span class="shadow">
           </div>
 
           <div class="col-xs-12 home_header hidden">
@@ -21,66 +20,26 @@
     <div class="col-xs-12">
       <ul class="menu">
         <li ng-click="play()">
-          <a href="">Play <span class="glyphicon glyphicon-plane"></span></a>
+          <a href="">Play <span class="fa fa-rocket icon-play"></span></a>
         </li>
         <li ng-click="setSound()">
           <a href="">Sound: <span><b class="sound">{{getSound()}}</b></a>
         </li>
         <li ng-click="highScores()">
-          <a href="">High Scores  <span class="glyphicon glyphicon-star"></span></a></li>
+          <a href="">High Scores  <span class="fa fa-star-o icon-points"></span></a></li>
         </li>
         <li ng-click="badges()">
-          <a href="">Badges <span class="glyphicon glyphicon-heart-empty"></span></a>
+          <a href="">Badges <span class="fa fa-trophy icon-badges"></span></a>
+        </li>
+        <li ng-click="about()">
+          <a href="">About <span class="fa fa-paw icon-about"></span></a>
         </li>
          <li ng-show="false" ng-click="prototypes()">
           <a href="">Try prototypes <span class="glyphicon glyphicon-send"></span></a>
         </li>
       </ul>
     </div>
-    <div class="col-xs-12 about">
-      <div class="content">
-        <div class="row">
-        <div class="col-xs-12">
-          <div class="tutorial">
-            <span>Alpha version - Squeezy marmalade</span>
-            <span>Works on Chrome - For now </span>
-            <h3>Tutorial:</h3>
-            <div> Use: W A S D for moving / space for shooting. In mobile, use your finger, wow. Such help.</div>
-          </div>
-         
-          <h3>About:</h3>
-          <img class="team" src="/images/hud/team.png">
 
-          <div class="roles">
-            <div class="role">
-              Crafted with <i class="fa fa-html5"></i> and original idea by rafinskipg
-            </div>
-            <div class="role">
-              Music by Rob Tyler
-            </div>
-            <div class="role">
-              Arts by Marek Jeroqui
-            </div>
-            <div class="role">
-              Game design by Jorge Thomson
-            </div>
-          </div>
-          
-          <div>
-            <i class="fa fa-github-alt"></i> VenturaStudios
-          </div>
-          <div>
-            <i class="fa fa-money"></i> helping other people
-          </div>
-          <div>
-            <i class="fa fa-facebook"></i> <a href="https://www.facebook.com/thecooldogadventures">Our facebook page for updates</a>
-          </div>
-        </div>
-      </div>
-
-      </div>
-
-    </div>
     
      <script type="text/javascript"><!--
         mopub_ad_unit = "67c96299d264413abdef4f2df2413456";
