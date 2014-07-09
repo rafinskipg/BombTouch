@@ -19,7 +19,11 @@ html, body {
 -moz-box-sizing: border-box;
 box-sizing: border-box;
 }
-
+pre{
+    background: transparent;
+    color: white;
+    border: none;
+}
 body {
     background: url('../images/hud/home_bg.png');
     background-size:cover;
