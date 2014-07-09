@@ -13,7 +13,7 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
     });
 
     scene.init = (function(){
-      this.dog = entities.getEntity('cooldog',{pos: [50, this.canvas.height / 2]});
+      this.dog = entities.getEntity('cooldog',{pos: [50  * window.RESIZEFACTOR, this.canvas.height / 2]});
       this.texts = [
         ["Once upon a time... "],
         ['there was a planet where ', 'all the creatures lived in peace and harmony'],
@@ -50,19 +50,19 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
       this.bufferCtx.fillStyle = "#33337a";
       this.bufferCtx.fillRect(0,0,canvas.width,canvas.height);
       this.bufferCtx.fillStyle = 'white';
-      this.bufferCtx.font = "18px 'Press Start 2P'";
+      this.bufferCtx.font = 15  * window.RESIZEFACTOR + "x 'Press Start 2P'";
 
       if(this.currentText){
         for(var i = 0; i < this.currentText.length ; i++){
           b = i+1;
-          var y = (80 * b) + b* 10;
-          this.bufferCtx.fillText(this.currentText[i], 40, y);    
+          var y = (80  * window.RESIZEFACTOR * b) + b* 10  * window.RESIZEFACTOR;
+          this.bufferCtx.fillText(this.currentText[i], 40  * window.RESIZEFACTOR, y);    
         }
         
       }
 
-      this.bufferCtx.font = "10px 'Press Start 2P'";
-      this.bufferCtx.fillText('Touch screen to skip the awesome story', 15,15)
+      this.bufferCtx.font = 10 * window.RESIZEFACTOR + "px 'Press Start 2P'";
+      this.bufferCtx.fillText('Touch screen to skip the awesome story', 15  * window.RESIZEFACTOR,15  * window.RESIZEFACTOR)
 
       this.renderEntities([this.dog]);
     }).bind(scene);

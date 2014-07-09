@@ -701,7 +701,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     var entity =  new Models.Entity(entityDefinition);
     //Scale
     var size = entity.getSize();
-    entity.resizeByFactor(0.8);
+    entity.resizeByFactor(RESIZEFACTOR);
 
     return entity;
   }

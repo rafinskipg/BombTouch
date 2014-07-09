@@ -217,10 +217,14 @@ return BombTouchApp.
   }
 
   function toMouseListeners(){
+    console.log(canvas.width, window.innerWidth);
+    var variation = canvas.width / window.innerWidth;
     canvas.addEventListener('touchmove', function(ev){
       var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
       var y = ev.targetTouches[0].pageY - canvas.offsetTop;
-      
+      x*=variation;
+      y*=variation;
+
       touchInputs = {
         pos: {
           x : x ,
@@ -234,7 +238,9 @@ return BombTouchApp.
     canvas.addEventListener('touchstart', function(ev){
       var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
       var y = ev.targetTouches[0].pageY - canvas.offsetTop;
-      
+      x*=variation;
+      y*=variation;
+
       touchInputs = {
         pos: {
           x : x ,
@@ -258,7 +264,7 @@ return BombTouchApp.
     hammertime.on("swipe", function(ev){ 
       ev.gesture.preventDefault();
       console.log(ev);
-      megaShoot(ev.gesture.deltaX, ev.gesture.deltaY);
+      //megaShoot(ev.gesture.deltaX, ev.gesture.deltaY);
       
       var signX = ev.gesture.deltaX > 0 ? 1 :  -1;
       var signY = ev.gesture.deltaY > 0 ? 1 :  -1;
@@ -467,7 +473,7 @@ return BombTouchApp.
           text: 'critical strike!!',
           color: 'rgba(69, 187, 111, 0.49)',
           timeAlive: 0, 
-          speed: [50,50],
+          speed: [50 * window.RESIZEFACTOR,50 * window.RESIZEFACTOR],
           pos: player.pos
         }));
       }
@@ -929,7 +935,7 @@ return BombTouchApp.
       entity.setAnimation('teleport'+life, function(frame,index){
         var times = 0;
         if(frame == 6 && times < 1){
-          entity.pos = [player.pos[0] + 300, player.pos[1] + petra.random(-30, 30)];
+          entity.pos = [player.pos[0] + 300 * window.RESIZEFACTOR, player.pos[1] + petra.random(-30 * window.RESIZEFACTOR, 30 * window.RESIZEFACTOR)];
           times = 1;
         }else if(index == 13){
           entity.setDefaultAnimation();
@@ -945,7 +951,7 @@ return BombTouchApp.
       var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
       createDialog(message, entity);
     }else if(action == 'launchEnemy'){
-      var enemy = EL.getEnemy([entity.getX() - 80,entity.getY()], 'enemy'+Math.ceil(Math.random() *5 ), 'joke');
+      var enemy = EL.getEnemy([entity.getX() - 80 * window.RESIZEFACTOR,entity.getY()], 'enemy'+Math.ceil(Math.random() *5  * window.RESIZEFACTOR), 'joke');
       enemies.push(enemy);
       miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
       miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
@@ -956,7 +962,7 @@ return BombTouchApp.
   function enemyShoot(entity, angle){
     var shootOrigin = entity.getShootOrigin();
     var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
-    bullet.speed = [300,300];
+    bullet.speed = [300 * window.RESIZEFACTOR,300 * window.RESIZEFACTOR];
     enemyBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
     playSound(SOUNDS.shoot);
@@ -964,7 +970,7 @@ return BombTouchApp.
   function neutralShoot(entity, angle){
     var shootOrigin = entity.getShootOrigin();
     var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle, rotateSprite: angle });
-    bullet.speed = [300,300];
+    bullet.speed = [300 * window.RESIZEFACTOR,300 * window.RESIZEFACTOR];
     neutralBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
     playSound(SOUNDS.shoot);
@@ -984,11 +990,11 @@ return BombTouchApp.
 
   function moveToPlayerVertically(dt){
     return function(entity){
-      if(player.getY() < entity.getY() - 40){
+      if(player.getY() < entity.getY() - 40 * window.RESIZEFACTOR){
         entity.pos = petra.moveUp(entity.pos, entity.speed, dt);
       }
 
-      if(player.getY() > entity.getY() - 40){
+      if(player.getY() > entity.getY() - 40 * window.RESIZEFACTOR){
         entity.pos = petra.moveDown(entity.pos, entity.speed, dt);
       }
 
@@ -1364,7 +1370,7 @@ return BombTouchApp.
       text: damage,
       color: 'rgba(255, 0, 0, 0.61)',
       timeAlive: 0, 
-      speed: [50,50],
+      speed: [50 * window.RESIZEFACTOR, 50 * window.RESIZEFACTOR],
       pos: [player.getX(), player.getY()]
     }));
 

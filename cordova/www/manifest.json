@@ -1,6 +1,6 @@
 {
-  "name": "The Cool Dog Adventures",
-  "version": "0.0.0.2",
+  "name": "The Cool Dog Adventures CORDOVA",
+  "version": "0.0.0.4",
   "app": {
     "launch":{
       "local_path": "index.html"

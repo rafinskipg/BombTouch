@@ -149,9 +149,9 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.text = opts.text;
     this.color = opts.color || white;
     this.pos = opts.pos;
-    this.speed = opts.speed || [30,30];
+    this.speed = opts.speed ? petra.multIntegerToArray(opts.speed, window.RESIZEFACTOR) : petra.multIntegerToArray([30,30], window.RESIZEFACTOR);
     this.timeAlive = 0;
-    this.font = opts.font || '12px';
+    this.font = opts.font  || 12 * window.RESIZEFACTOR + 'px';
   }
 
 
@@ -161,7 +161,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.background = 'white';
     this.entity = sender;
     this.timeAlive = 0;
-    this.font = '8px';
+    this.font = 9  * window.RESIZEFACTOR + 'px';
     this.pos = sender.pos;
     this.duration = message.duration;
   }
@@ -172,9 +172,11 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.duration =  duration || 2000;
   }
 
+  //Hack for performance
+  //var percentageOfReduction = 0.5;
   /*RenderableEntity*/
   function RenderableEntity(opts){
-
+    this.resizeFactor = window.RESIZEFACTOR;
     this.speed = opts.speed || [0,0];
     this.angle = opts.angle || 0;
     this.damage = opts.damage || 0;
@@ -206,6 +208,8 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     if(opts.resize){
       this.sprite.resize(opts.resize[0], opts.resize[1]);
     }
+
+
     if(opts.resizePercentage){
       this.sprite.resize(Math.floor(this.sprite.getSize()[0]*opts.resizePercentage),Math.floor(this.sprite.getSize()[1]*opts.resizePercentage) );
     }
@@ -276,10 +280,13 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     return this.getSprite().getSize();
   }
   RenderableEntity.prototype.resizeByFactor = function(factor){
+    this.resizeFactor = factor;
     var size = petra.multIntegerToArray(this.getSize(), factor);
+
+    this.speed = this.speed ? petra.multIntegerToArray(this.speed, factor): null;
     this.centerOfRotation = this.centerOfRotation ? petra.multIntegerToArray(this.centerOfRotation, factor) : null;
     this.shootOrigin = petra.multIntegerToArray(this.shootOrigin, factor);
-    
+    this.renderTranslated = this.renderTranslated ?  petra.multIntegerToArray(this.renderTranslated, factor) : null;
     for(var i in this.animations){
       this.animations[i].resize(size[0], size[1]);
     }
@@ -346,10 +353,10 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   RenderableEntity.prototype.drawLife = function(ctx){
     var hitBoxWidth = this.getHitBox().width;
 
-    var lifeSize = 80;
+    var lifeSize = 80 * this.resizeFactor;
     var chunkLifeValue = 10;
     var chunks = 0;
-    var minChunkSize = 5;
+    var minChunkSize = 5 * this.resizeFactor;
     var maxChunksPerBar = lifeSize/minChunkSize;
     var lifePerBar = maxChunksPerBar * chunkLifeValue;
 
@@ -365,7 +372,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     
     ctx.beginPath();
     for(var i = 0; i < chunksPerBar; i ++){
-      ctx.rect(lifeSize - (i+1) * chunkSize +1 , 0, chunkSize, 10);
+      ctx.rect(lifeSize - (i+1) * chunkSize +1 , 0, chunkSize, 10 * this.resizeFactor);
     }
     ctx.fillStyle = 'rgba(255, 10, 0, 0.68)';
     ctx.fill();
@@ -383,7 +390,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
         barNumber++;
         color = fillAndRenew(ctx, barNumber, color);
       }
-      ctx.rect(index * chunkSize+1 , 0, chunkSize, 10);
+      ctx.rect(index * chunkSize+1 , 0, chunkSize, 10 * this.resizeFactor);
       index++;
     }
     fillColor(ctx, color);

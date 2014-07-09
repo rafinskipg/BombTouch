@@ -74,14 +74,14 @@ define( ['resources','raf', 'quad_tree'], function(){
     this.x = x;
     this.y = y;
     this.vel = {};
-    this.vel.x = Math.ceil(Math.random() * 5) * 10;
-    this.vel.y = Math.ceil(Math.random() * 5) * 10;
+    this.vel.x = Math.ceil(Math.random() * 5 ) * 10  * window.RESIZEFACTOR;
+    this.vel.y = Math.ceil(Math.random() * 5) * 10  * window.RESIZEFACTOR;
     this.acc = {
       x : 0,
       y : 0
     }
 
-    this.radius = 5;
+    this.radius = 5  * window.RESIZEFACTOR;
     this.color = getRandomColor();
     this.weight = 10;
 
@@ -113,9 +113,9 @@ define( ['resources','raf', 'quad_tree'], function(){
     ctx.fillStyle = "#33337a";
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = 'white';
-    ctx.font = "30px 'Press Start 2P'";
-    ctx.fillText("LOADING ... ", 10, 80);
-    ctx.fillText(currentFiles + '/'+ totalFiles, 10, 160);
+    ctx.font = 30  * window.RESIZEFACTOR + "px 'Press Start 2P'";
+    ctx.fillText("LOADING ... ", 10  * window.RESIZEFACTOR, 80  * window.RESIZEFACTOR);
+    ctx.fillText(currentFiles + '/'+ totalFiles, 10  * window.RESIZEFACTOR, 160  * window.RESIZEFACTOR);
 
 
     update(dt/1000.0);

@@ -166,22 +166,22 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     var parallaxLayersBack = [];
     var parallaxLayersFront = [];
     if(this.temporalLayersData && this.temporalLayersData[0]){
-      this.createParallaxBotTop(this.temporalLayersData[0], parallaxLayersBack, canvasHeight, 100,0);
+      this.createParallaxBotTop(this.temporalLayersData[0], parallaxLayersBack, canvasHeight, 100 * window.RESIZEFACTOR,0);
     }
     parallaxLayersBack.map(function(layer){
       layer.patterns = [];
       layer.images.map(function(imageList){
-        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 100));
+        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 100 * window.RESIZEFACTOR));
       })
       return layer;
     })
     if(this.temporalLayersData && this.temporalLayersData[1]){
-      this.createParallaxBotTop(this.temporalLayersData[1], parallaxLayersFront, canvasHeight, 60, -150);
+      this.createParallaxBotTop(this.temporalLayersData[1], parallaxLayersFront, canvasHeight, 60 * window.RESIZEFACTOR, -150 * window.RESIZEFACTOR);
     }
     parallaxLayersFront.map(function(layer){
       layer.patterns = [];
       layer.images.map(function(imageList){
-        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 60));
+        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 60 * window.RESIZEFACTOR));
       })
       return layer;
     })
@@ -206,14 +206,14 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
       pos: [xOffset,-parallaxHeight / 2],
       images: [parallax1_top, parallax2_top],
       yIndex : 0,
-      maxYIndex: parallaxHeight/2 - 20
+      maxYIndex: parallaxHeight/2 - 20 * window.RESIZEFACTOR
     });
     parallaxLayers.push({ 
       index: 0, 
       pos: [xOffset,canvasHeight - parallaxHeight / 2],
       images: [parallax1_bot, parallax2_bot],
       yIndex : 0,
-      maxYIndex: parallaxHeight/2 - 20
+      maxYIndex: parallaxHeight/2 - 20 * window.RESIZEFACTOR
     });
 
   }

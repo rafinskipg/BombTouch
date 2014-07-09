@@ -2,6 +2,7 @@ define([
   'angular',
   'app',
   'controllers/home',
+  'controllers/about',
   'controllers/badges',
   'controllers/prototypes',
   'controllers/prototype_play',
@@ -39,6 +40,10 @@ define([
       $routeProvider.when('/levels', {
         templateUrl: 'views/levels.html',
         controller: 'LevelsCtrl'
+      });
+      $routeProvider.when('/about', {
+        templateUrl: 'views/about.html',
+        controller: 'AboutCtrl'
       });
       $routeProvider.when('/prototypes', {
         templateUrl: 'views/prototypes.html',

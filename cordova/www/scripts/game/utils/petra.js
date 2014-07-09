@@ -53,10 +53,8 @@ define( ['hu'], function(hu){
       }
     }
 
-    Petra.removeIfOutsideScreenleft = function(entity){
-      if(! (entity.pos[0] + entity.sprite.getSize()[0] < 0) ) {
-        return entity;
-      }
+    Petra.isOutsideScreenLeft = function(entity){
+      return (entity.pos[0] + entity.sprite.getSize()[0] < 0) ;
     }
     //http://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
     //http://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision

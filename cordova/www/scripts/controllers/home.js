@@ -27,6 +27,10 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
         $scope.badges = function(){
            $location.path('/badges');
         }
+
+        $scope.about = function(){
+           $location.path('/about');
+        }
         $scope.prototypes = function(){
            $location.path('/prototypes');
         }

@@ -18,8 +18,8 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.imageSmoothingEnabled = false;
 
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight ;
+    this.canvas.width = window.innerWidth/3;
+    this.canvas.height = window.innerHeight/3 ;
     this.canvasFake.width = this.canvas.width;
     this.canvasFake.height = this.canvas.height;
     
@@ -122,7 +122,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
     if(entity.life){
       this.bufferCtx.save();
-      this.bufferCtx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()- 30), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
+      this.bufferCtx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()- 30 * window.RESIZEFACTOR), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
       entity.drawLife(this.bufferCtx);
       this.bufferCtx.restore();
     }
@@ -137,8 +137,8 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   Scene.prototype.renderText = function (entity, type){
     if(type == 'dialog'){
       this.bufferCtx.font = "bold "+entity.font+" 'Press Start 2P'";
-      var textWidth = this.bufferCtx.measureText(entity.text).width + 20;
-      var textHeight = 30;
+      var textWidth = this.bufferCtx.measureText(entity.text).width + 20 * window.RESIZEFACTOR;
+      var textHeight = 30 * window.RESIZEFACTOR;
 
       this.bufferCtx.save();
       this.bufferCtx.translate(Math.round(entity.pos[0] - textWidth), Math.round(entity.pos[1] - textHeight));
@@ -147,7 +147,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
       this.roundRect(0,0, textWidth, textHeight, 5, true);
       this.bufferCtx.fillStyle = entity.color;
      
-      this.bufferCtx.fillText(entity.text, 15, 15);
+      this.bufferCtx.fillText(entity.text, 15 * window.RESIZEFACTOR , 15 * window.RESIZEFACTOR);
       this.bufferCtx.restore();  
     }else{
       this.bufferCtx.save();
