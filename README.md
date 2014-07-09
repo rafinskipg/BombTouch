@@ -209,6 +209,10 @@ cordova emulate android
 
 If you want to compile it with crosswalk, get whatever you need from [Crosswalk page](https://crosswalk-project.org/)
 
+First of all, generate the build with `grunt build` (it takes a while)
+
+Then go to the latest crosswalk arm-x86 folder you downloaded from the Crosswalk project.
+
 Compile for android
 ````
 python make_apk.py --manifest=/PATH_TO_MY_APP/manifest.json

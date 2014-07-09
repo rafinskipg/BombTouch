@@ -1,4 +1,4 @@
-define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector','resources','sprite','input','raf', 'quad_tree'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR){
+define( [ 'angular', 'app','game/models/models', 'hu','game/entities','game/scenario','petra', 'levelsDirector', 'game/models/weapons','resources','sprite','input','raf', 'quad_tree'], function(angular, BombTouchApp, models, hu, EL, Scenario, petra, LEVELS_DIRECTOR, Weapons){
 
 return BombTouchApp.
     factory('brainSrv', ['audioSrv','settingsSrv', function(audioSrv, settingsSrv) {
@@ -105,10 +105,6 @@ return BombTouchApp.
       levelup: new Howl({
         urls: ['sounds/upmid.wav']
       }),
-      rick: new Howl({
-        urls: ['sounds/rickcut2.wav'],
-        volume: 0.5
-      }),
       killer: new Howl({
         urls: ['sounds/killer.mp3'],
         volume: 0.2
@@ -120,9 +116,6 @@ return BombTouchApp.
       power: new Howl({
         urls: ['sounds/power.mp3'],
         volume: 0.2
-      }),
-      ouch:  new Howl({
-        urls: ['sounds/ohmy.wav']
       }),
       explosions: [
         new Howl({
@@ -180,9 +173,7 @@ return BombTouchApp.
     main_character_super_name :'cooldog',
     bonus_image_name :'dog'
   }
-  //var main_character_super_name = 'supercooldog';
 
-  var time_between_bullets = 0.300;
   /****************************
   ****************************
     GAME Initialization
@@ -341,6 +332,8 @@ return BombTouchApp.
     SCENARIO.init();
     setDefaultStateForEntities();
     player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
+    player.weapon = new Weapons.ShotGun();
+
     player.bonuses = {};
     TIMERS = getDefaultTimers();
 
@@ -353,26 +346,7 @@ return BombTouchApp.
     QUAD = new QuadTree(bounds);
   };
 
-  function suscribeToEvents(){
-
-    /*suscribeMaxPower(function(bool){
-      if(bool){
-        var superPlayerOptions =  EL.getEntity(main_character_super_name, player.pos, player);
-        player.sprite = superPlayerOptions.sprite;
-        player.speed = superPlayerOptions.speed;
-        player.damage = superPlayerOptions.damage;
-        player.isSuperSaiyan = true;
-        showMessages([MESSAGES.saiyan], [main_character_super_name]);
-      }else{
-        console.log('ey')
-        var normalPlayerOptions =  EL.getEntity(main_character_name, player.pos, player);
-        player.sprite = normalPlayerOptions.sprite;
-        player.speed = normalPlayerOptions.speed;
-        player.isSuperSaiyan = false;
-        player.damage = normalPlayerOptions.damage;
-      }
-    });*/
-      
+  function suscribeToEvents(){     
     LEVELS_DIRECTOR.suscribeAddEnemy(function(createFunction){
       enemies.push(createFunction(canvas.width, canvas.height));
     }, 'brainSrv');
@@ -387,6 +361,10 @@ return BombTouchApp.
         bonus.obtain = dogeBonusObtain;  
       }else if(bonus.name == 'doubleShootBonus'){
         bonus.obtain = doubleWeaponBonusObtain;
+      }else if(bonus.name == 'shotGunBonus'){
+        bonus.obtain = shotGunBonusObtain;
+      }else if(bonus.name == 'rapidShotBonus'){
+        bonus.obtain = rapidShotBonusObtain;
       } else if(bonus.name == 'greenGem'){
         bonus.obtain = greenGemBonusObtain;
       }
@@ -406,12 +384,9 @@ return BombTouchApp.
     LEVELS_DIRECTOR.suscribeStageUp(function(stage){
       CURRENT_STAGE = stage;
       SOUNDS['levelup'].play();
-      var message = new models.Message(MESSAGES.levelup, names.bonus_image_name);
-      showMessages([message]);
     }, 'brainSrv')
 
     SCENARIO.setParallaxLayers(LEVELS_DIRECTOR.getParallaxLayers());
-
   }
 
   /****************************
@@ -473,22 +448,13 @@ return BombTouchApp.
     SOUNDS.ambient.stop();
   }
 
-  function showMessages(messages,timeoutBetweenMessages, type){
-    timeoutBetweenMessages = timeoutBetweenMessages ? timeoutBetweenMessages : 0;
-    for(var i = 0; i < notifyMessages.length; i++){
-      //Clone the item, cause we dont want to send a referenced object ;)
-      var messagesClone = messages.map(function(item){ return item });
-      notifyMessages[i](messagesClone,timeoutBetweenMessages,type);
-    }
-  }
-
   function createDialog(message, entity){
     inGameDialogs.push(new models.Dialog(message, entity));
   }
 
   function shoot(){
     if(!isGameOver() &&
-      TIMERS.gameTime - TIMERS.lastFire > time_between_bullets) {
+      TIMERS.gameTime - TIMERS.lastFire > player.weapon.options.shootDelay) {
       
       if(TIMERS.shootSpriteTime === 0){
         player.shooting = true;
@@ -498,26 +464,17 @@ return BombTouchApp.
       var isCriticalStrike = petra.passProbabilities(player.critChance);
       if(isCriticalStrike){
         pointsToRender.push(new models.RenderableText({
-          text: 'CRITICAL STRIKE!!',
+          text: 'critical strike!!',
           color: 'rgba(69, 187, 111, 0.49)',
           timeAlive: 0, 
           speed: [50,50],
           pos: player.pos
         }));
       }
-      var damage = isCriticalStrike ? player.damage * 2 : player.damage;
 
-      //var y = player.pos[1] + player.getHeight() / 2;
-      //var bulletpos = [player.getX() + player.getWidth() - 10,y -5];
       var bulletpos = player.getShootOrigin();
+      player.weapon.shoot(bullets, bulletpos, isCriticalStrike);
 
-      if(player.bonuses.doubleShoot > 0){
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 0.2*Math.PI,  rotateSprite: 0.2 *Math.PI}));  
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: 1.8*Math.PI, rotateSprite: 1.8*Math.PI }));  
-      }else{
-        bullets.push(EL.getEntity(player.bulletName, {pos: bulletpos, damage: damage, angle: player.angle}));  
-      }
-      
       addShootFire(bulletpos);
       playSound(SOUNDS.shoot);
       TIMERS.lastFire = TIMERS.gameTime ;
@@ -533,38 +490,6 @@ return BombTouchApp.
     var randomPos = parseInt(Math.random() * array.length)
     return array[randomPos];
   }
-  var createRick = petra.throttle(function(){
-    var possibleRickSizes = [
-      [70,110],
-      [140,220],
-      [35,65]
-    ];
-    var opts  = {
-      size : randomFromArray(possibleRickSizes),
-      pos:  [0, Math.random()* (canvas.height -39)]
-    }
-     specials.push(EL.getEntity('rick', opts));
-  }, 300);
-  
-  var createRicks = function(ammount){
-    return function(){
-      createRick();
-
-      if(specials.length < ammount){
-        requestAnimationFrame(createRicks(ammount-1))
-      }  
-    }
-  }
-
-  function megaShootUntrottled(){
-    if(STATE.power == STATE.max_power){
-      setPower(0);
-      playSound(SOUNDS.rick);
-      createRicks(9)();
-    }
-  }
-
-  var megaShoot = petra.throttle(megaShootUntrottled, 1000);
 
   function addExplosion(pos, size){
     explosions.push(EL.getEntity('explosion',{pos: pos, resize: size}));
@@ -642,7 +567,7 @@ return BombTouchApp.
     } 
 
     if(input.isDown('f')) {
-      megaShoot();
+      //megaShoot();
     }
 
     if(input.isDown('SPACE') ){
@@ -705,7 +630,16 @@ return BombTouchApp.
     createDialog(message, bonusWeapons[0]);
   }
   function doubleWeaponBonusObtain(entity){
-    entity.bonuses.doubleShoot = 10;
+    player.weapon = new Weapons.DoubleShoot();
+    entity.bonuses.weapon = 10;
+  }
+  function shotGunBonusObtain(entity){
+    player.weapon = new Weapons.ShotGun();
+    entity.bonuses.weapon = 10;
+  }
+  function rapidShotBonusObtain(entity){
+    player.weapon = new Weapons.RapidFire();
+    entity.bonuses.weapon = 10;
   }
   function greenGemBonusObtain(entity, bonus){
     addPoints(bonus.points, bonus.pos);
@@ -1118,10 +1052,12 @@ return BombTouchApp.
       }
     }
 
-    if(player.bonuses.doubleShoot){
-      player.bonuses.doubleShoot -= dt;
+    if(player.bonuses.weapon){
+      player.bonuses.weapon -= dt;
+      if(player.bonuses.weapon <= 0){
+        player.weapon = new Weapons.Pistol();
+      }
     }
-    
 
     player.update(dt);
   }
@@ -1420,7 +1356,6 @@ return BombTouchApp.
     }
   }
   function playerDamaged(damage){
-    playSound(SOUNDS.ouch);
     player.life -= damage;
     
     SCENARIO.screenShake();
@@ -1634,15 +1569,8 @@ return BombTouchApp.
   function suscribeGameOver( fn){
     notifyGameEnd.push(fn);
   }
-
   function suscribePoints(fn){
     notifyPoints.push(fn);
-  }
-  function suscribeMessages(fn){
-    notifyMessages.push(fn);
-  }
-  function suscribePower(fn){
-    notifyPower.push(fn);
   }
   function suscribeMaxPower(fn){
     notifyMaxPower.push(fn);
@@ -1658,9 +1586,6 @@ return BombTouchApp.
     return {
       suscribeGameOver : suscribeGameOver,
       suscribePoints : suscribePoints,
-      suscribePower : suscribePower,
-      suscribeMessages: suscribeMessages,
-      megaShoot : megaShoot,
       endGame : endGame,
       start : start,
       restart : restart,

@@ -1,0 +1,32 @@
+<div class="container page difficulty">
+  <div class="row">
+    <div class="col-xs-12 intro-text">
+      <span class="top_tab_trigger" ng-click="goHome()">
+        <span class="glyphicon glyphicon-th-list"></span>Menu
+      </span>
+      <div>
+        <h1>Choose a level</h1>
+      </div>
+      <div class="levels row">
+        <div class="level col-xs-12" ng-repeat="level in levels" ng-click="setLevel(level)">
+          <div class="content" ng-class="{'unlocked': level.playable == true}">
+            <div class="cover"></div>
+            <div class="image text-center">
+              <img ng-src="/images/hud/levels/{{level.image}}.png">
+            </div>
+            <div class="title">
+              <p>{{level.name}}</p>
+              <p>{{level.description}}</p>
+
+            </div>
+            <!--<div class="points">200 points</div>-->
+            <div class="row cristals">
+              <div class="cristal" ng-repeat="cristal in level.cristals" ng-class="{'active' : cristal.used == true}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

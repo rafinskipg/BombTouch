@@ -1,28 +1,26 @@
 <div class="container page badges">
 	<div class="row">
+
 		<div class="col-xs-12 intro-text">
-			<a class="btn btn-nyan" ng-click="goHome()">
+			<span class="top_tab_trigger" ng-click="goHome()">
         <span class="glyphicon glyphicon-th-list"></span>Menu
-      </a>
+      </span>
 			<div>
       	<h1>Your badges</h1>
       </div>
-      
+    
+      <div class="badges-list row">
+        <div class="badge-container text-center col-xs-4 col-sm-3 col-md-2" ng-repeat="badge in badges">
+          <div class="badge {{badge.name}}" ng-class="{'completed': badge.completed == true}">
+            <span class="cover"></span>
+            
+          </div>
+          <div class="description">
+            {{badge.text}}
+          </div>
+        </div>
+      </div>
+
     </div>
-
-	</div>
-
-	<div class="badges-list row">
-
-		<div class="badge-container text-center col-xs-4 col-sm-3 col-md-2" ng-repeat="badge in badges">
-			<div class="badge {{badge.name}}" ng-class="{'completed': badge.completed == true}">
-				<span class="cover"></span>
-				
-			</div>
-			<div class="description">
-				{{badge.text}}
-			</div>
-		</div>
-
 	</div>
 </div>

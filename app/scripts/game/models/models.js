@@ -400,7 +400,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     
     if(barNumber == 1){
       return 'blue';
-    }else if(barNumber > 2 &&  barNumber < 5 ){
+    }else if(barNumber >= 2 &&  barNumber < 5 ){
       return 'pink';
     }else{
       return '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
@@ -441,11 +441,6 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     }
   }
 
-  /*RenderableEntity.prototype.rotate = function(){
-    var angle = this.getLookingPosition();
-    angle = angle ? angle: 0;
-    this.pos = petra.rotatePoint(this.pos,[0,0], angle, this.getCenterOfRotation());
-  }*/
 
   RenderableEntity.prototype.getLookingPosition = function(){
     if(this.aimingAt){
@@ -466,18 +461,6 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
   }
 
   RenderableEntity.prototype.getShootOrigin = function(){
-    /*var angle = this.getBulletAngle()
-    
-    var cos = Math.cos(angle);
-    var sin = Math.sin(angle);
-
-    var x = this.shootOrigin[0];
-    var y = this.shootOrigin[1];
-   
-    var a = x*cos - y*sin;
-    var b = y*cos + x*sin;
-     
-    return petra.sumArrays(this.pos, [a, b])*/
     var angle = this.getBulletAngle() ;
     angle = this.getSprite().lookingLeft ? angle - Math.PI: angle;
     var center = this.getCenterOfRotation();
@@ -492,8 +475,6 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     ynew = point[0]* s + point[1]*c;
 
     return petra.sumArrays(this.pos, [xnew + center[0], ynew + center[1]]);
-
-//    return petra.rotatePoint(this.pos,this.shootOrigin, this.getBulletAngle(), this.getCenterOfRotation());
   }
 
   return  {

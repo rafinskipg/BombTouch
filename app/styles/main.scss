@@ -19,10 +19,15 @@ html, body {
 -moz-box-sizing: border-box;
 box-sizing: border-box;
 }
-
+pre{
+    background: transparent;
+    color: white;
+    border: none;
+}
 body {
-    background: url('../images/hud/home_bg.png');
-    background-size:cover;
+    background-color: black;
+    //background: url('../images/hud/home_bg.png');
+    background: url('../images/hud/home_bg_pixelated.png') rgb(24, 19, 49);
 }
 
 .container{
@@ -31,20 +36,17 @@ body {
 a {
     color: white;
 }
-.glyphicon-star{
+.icon-points{
     color: #E9F64E;
-    margin-left: 5px;
 }
 .fa-html5{
     color: rgb(255, 163, 0);
 }
-.glyphicon-heart-empty{
+.icon-badges{
     color: #CC0F17;
-    margin-left: 5px;
 }
-.glyphicon-plane{
+.icon-play{
     color: #1CEB00;
-    margin-left: 5px;
 }
  
 img {
@@ -69,7 +71,7 @@ h1,h2,h3,h4,h5{
     h1{
         font-size: 30px;
     }
-    background: rgba(0, 51, 255, 0.11);
+    background: $introTexts;
     padding-top: 40px;
 }
 
@@ -78,12 +80,11 @@ h1,h2,h3,h4,h5{
     font-size: 20px;
     padding: 20px 20px 10px 20px;
     cursor: pointer;
-    background: rgba(100, 100, 213, 0.5);
+    background: rgba(63, 145, 52, 1);
     position: absolute;
     top: -15px;
     z-index: 2000;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+
     &.closeMenu{
         top: 10px;
     }
@@ -318,4 +319,5 @@ h1,h2,h3,h4,h5{
 @import "stats";
 @import "mobile";
 @import "game";
+@import "about";
 @import "font_awesome/font-awesome";

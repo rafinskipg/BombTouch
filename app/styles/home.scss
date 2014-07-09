@@ -1,9 +1,5 @@
 @import "variables";
-span.shadow {
-	box-shadow: 0px -38px 150px 28px rgba(255, 255, 255, 0.23);
-	width: 100%;
-	display: block;
-}
+
 
 #intro_imagetitle{
     background: url('../images/hud/home_title.png');
@@ -33,16 +29,20 @@ span.shadow {
         -webkit-animation-timing-function: linear;
         max-width:125px;
     }
+    margin-bottom: 40px;
 }
 
 .home{
-
+    .fa{
+        font-size: 25px;
+    }
     #logo{
         img{
             max-height:200px;
             height: 200px;
         }
-        margin-bottom: 10px;
+        margin-bottom: 40px;
+        margin-top: 100px;
     }
 
     .score{
@@ -62,27 +62,18 @@ span.shadow {
             padding: 0;
             list-style: none;
             li {
-                font-size: 18px;
-                text-align: center;
-                width: 100%;
-                text-transform: uppercase;
-                position: relative;
                 padding: 10px;
                 font-size: 18px;
                 text-align: center;
-            
                 width: 100%;
                 text-transform: uppercase;
-                position: relative;
                 margin-top: 10px;
-                background-size: 15px;
-                background-size: 34px;
-                background:  $blueMenus;
             }
            
             li a{
                 text-decoration: none;
                 color: white;
+                position: relative;
                 font-weight: bold;
                 transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                  -webkit-transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -90,6 +81,8 @@ span.shadow {
                 .sound{
                     color:rgb(246, 139, 78);
                 }
+                background: rgba(40, 137, 150, 1);
+                padding: 10px;
             }
             li a:after{
                 position: absolute;
@@ -108,24 +101,6 @@ span.shadow {
                 a:after{
                     width: 100%;
                 }
-            }
-        }
-    }
-    .about .content{
-        background:  $blueMenus;
-        padding: 20px;
-        font-size: 15px;
-        .fa,.glyphicon{
-            font-size:20px;
-        }
-        img.team{
-            width: 100%;
-        }
-        .roles{
-            margin-top:30px;
-            margin-bottom: 30px;
-            .role{
-                margin-top:10px;
             }
         }
     }

@@ -18,8 +18,8 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.imageSmoothingEnabled = false;
 
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight ;
+    this.canvas.width = window.innerWidth/3;
+    this.canvas.height = window.innerHeight/3 ;
     this.canvasFake.width = this.canvas.width;
     this.canvasFake.height = this.canvas.height;
     

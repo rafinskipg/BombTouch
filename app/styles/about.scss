@@ -1,0 +1,19 @@
+.about .intro-text {
+    padding: 20px;
+    padding-top: 70px;
+    font-size: 15px;
+    .fa,.glyphicon{
+        font-size:20px;
+    }
+    img.team{
+        width: 100%;
+        max-width: 500px;
+    }
+    .roles{
+        margin-top:30px;
+        margin-bottom: 30px;
+        .role{
+            margin-top:10px;
+        }
+    }
+}

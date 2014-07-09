@@ -215,10 +215,10 @@
 
     var addInterstitial =  function() {
         var successCreateBannerView = function() { console.log("addInterstitial Success"); 
-        
+        admob.requestAd({'isTesting': true},success,error); };
         var success = function() { console.log("requestAd Success"); };
         var error = function(message) { console.log("Oopsie! " + message); };
-        admob.requestAd({'isTesting': false},success,error); };
+        
         var options = {
             'publisherId': 'ca-app-pub-6642955064281280/7366083050'
         }

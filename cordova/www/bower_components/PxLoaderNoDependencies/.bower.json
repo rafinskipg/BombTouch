@@ -1,0 +1,14 @@
+{
+  "name": "PxLoaderNoDependencies",
+  "homepage": "https://github.com/rafinskipg/PxLoader",
+  "_release": "6d1364d997",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "6d1364d9975f9c4d1ded70133655c4aaa11a983e"
+  },
+  "_source": "git://github.com/rafinskipg/PxLoader.git",
+  "_target": "*",
+  "_originalSource": "PxLoaderNoDependencies",
+  "_direct": true
+}

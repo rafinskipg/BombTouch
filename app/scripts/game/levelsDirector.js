@@ -132,13 +132,8 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
     }
 
     if(shouldAddBonus()){
-      var name;
-      if(petra.flipCoin()){
-        name = 'dogeBonus';
-      }else{
-        name = 'doubleShootBonus';
-      }
-      notify(suscriptorsAddBonus ,createBonus(null, name));
+      var names = ['dogeBonus', 'doubleShootBonus', 'shotGunBonus', 'rapidShotBonus'];
+      notify(suscriptorsAddBonus ,createBonus(null, petra.getRandomElementFromArray(names)));
     }
   }
 

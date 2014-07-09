@@ -1,12 +1,12 @@
 <div class="container page scores">
   <div class="row intro-text">
-    <div class="col-xs-12">
-      <a class="btn btn-nyan" ng-click="goHome()">
-        <span class="glyphicon glyphicon-th-list"></span>Menu
-      </a>
-    </div>
+  
+    <span class="top_tab_trigger" ng-click="goHome()">
+      <span class="glyphicon glyphicon-th-list"></span>Menu
+    </span> 
+
     <div class="col-xs-12 text-center">
-      <h1>Your best score : {{bestScore}}<span class="glyphicon glyphicon-star"></span></h1>
+      <h1>Your best score : {{bestScore}}<span class="fa fa-beer"></span></h1>
       <h2>Total kills : {{totals.kills}}</h2>
       <h2>Total bonuses : {{totals.bonuses}}</h2>
       <div class="sharer">
@@ -18,8 +18,8 @@
 
       </div>
       <ul class="list-group">
-        <li ng-show="score > 0" ng-repeat="score in scores.slice().reverse()  track by $index | orderBy:identity" class="list-group-item">
-          {{score}} <span class="glyphicon glyphicon-star"></span>
+        <li data-scroll-reveal="{{item.revealOptions}}" on-finish-render="" ng-show="item.score > 0" ng-repeat="item in scores.slice().reverse()  track by $index " class="list-group-item">
+          {{item.score}} <span class="{{item.icon}}"></span>
         </li>
       </ul>  
     </div>

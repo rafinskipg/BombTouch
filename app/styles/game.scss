@@ -2,8 +2,8 @@
     overflow: hidden;
     
     canvas{
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
         padding: 0;
         margin: 0;
      }
@@ -98,47 +98,6 @@
         right: 20px;
     }
 
-    #message{
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3000;
-        background-color: rgba(0, 0, 0, 0.76);
-        width: 100%;
-        border: 1px solid rgb(0, 51, 255);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: rgb(111, 201, 28);
-        padding-top: 20px;
-        .picture{
-            width: 85px;
-            float: left;
-            height: 50px;
-            background-repeat:no-repeat;
-            background-size: 50px 50px;
-            &.cooldog{
-                background-image:url('../images/messages/cooldog.png');
-            }
-            &.cooldogdamaged{
-                background-image:url('../images/messages/cooldogdamaged.png');
-            }
-            &.boss_1{
-                background-image:url('../images/messages/boss_1.png');
-            }
-            &.dog{
-                background-image:url('../images/messages/dog.png');
-            }
-            &.unknown{
-                background-image:url('../images/messages/unknown.png');
-            }
-            margin-left: 20px;
-
-        }
-        
-        .messageBody{
-            
-        }
-    }
 }
 
 
@@ -164,26 +123,7 @@
                 display: none;
             }
         }
-        #message{
-            min-height: 25px;
-            height: auto;
-            .picture{
-                width: 50px;
-                img{
-                    margin-left: 5px;
-                    height: 30px;
-                    width: 30px;
-                }
-            }
-            
-            .messageBody{
-                padding-left: 5px;
-                font-size: 10px;
-                padding-top: 5px;
-                width: 100%;
-                min-height: 25px;
-            }
-        }
+        
     }
     
 

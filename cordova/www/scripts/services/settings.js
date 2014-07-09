@@ -4,7 +4,9 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
     factory('settingsSrv', ['$http', '$q', function($http, $q) {
 
     var soundEnabled = true;
-    var difficulty;
+    var difficulty = 1.0;
+    var prototype;
+    var level = 1.0;
 
     function getSound(){
       return soundEnabled;
@@ -19,12 +21,35 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
 
     function getDifficulty(){
       return difficulty;
+    }   
+
+    function setPrototype(val){
+      prototype = val;
     }
+
+    function getPrototype(){
+      return prototype;
+    }
+
+    function setLevel(val){
+      console.log('setting', val)
+      level = val;
+    }
+
+    function getLevel(){
+      return level;
+    }
+
     return {
         getSound: getSound,
         setSound: setSound,
         setDifficulty: setDifficulty,
-        getDifficulty: getDifficulty
+        getDifficulty: getDifficulty,
+        setPrototype: setPrototype,
+        getPrototype: getPrototype,
+        setLevel: setLevel,
+        getLevel: getLevel
+
       };
   }]);
 });
