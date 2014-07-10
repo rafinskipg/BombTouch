@@ -186,7 +186,6 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
   }
 
   function allEnemiesFromGroupAreOut(stage, group){
-    console.log(stage, group)
     var currGroup = levelStructure.stages[stage].groups[group];
     var enemiesInCurrentGroup =  currGroup.length;
 

@@ -171,7 +171,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     parallaxLayersBack.map(function(layer){
       layer.patterns = [];
       layer.images.map(function(imageList){
-        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 100 * window.RESIZEFACTOR));
+        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 100 * window.RESIZEFACTOR, true));
       })
       return layer;
     })
@@ -181,7 +181,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     parallaxLayersFront.map(function(layer){
       layer.patterns = [];
       layer.images.map(function(imageList){
-        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 60 * window.RESIZEFACTOR));
+        layer.patterns.push(self.scene.generateParallaxPattern(imageList, 60 * window.RESIZEFACTOR, true));
       })
       return layer;
     })
@@ -197,10 +197,10 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     var images = arrOfImageNames.map(function(name){
       return resources.get(name);
     });
-    var parallax1_top = this.scene.makeParallax(images);
-    var parallax2_top = this.scene.makeParallax(images);
-    var parallax1_bot = this.scene.makeParallax(images);
-    var parallax2_bot = this.scene.makeParallax(images);
+    var parallax1_top = this.scene.makeParallax(images, true);
+    var parallax2_top = this.scene.makeParallax(images, true);
+    var parallax1_bot = this.scene.makeParallax(images, true);
+    var parallax2_bot = this.scene.makeParallax(images, true);
     parallaxLayers.push({ 
       index: 0, 
       pos: [xOffset,-parallaxHeight / 2],

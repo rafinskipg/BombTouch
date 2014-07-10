@@ -1,4 +1,5 @@
 define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
+  var PARALLAX_IMAGE_WIDTH = 200;
 
   function Scene(assets, canvasId,endCallback, opts){
     this.canvasId = canvasId;
@@ -18,8 +19,8 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.imageSmoothingEnabled = false;
 
-    this.canvas.width = window.innerWidth/3;
-    this.canvas.height = window.innerHeight/3 ;
+    this.canvas.width = window.innerWidth* window.RESIZEFACTOR;
+    this.canvas.height = window.innerHeight* window.RESIZEFACTOR ;
     this.canvasFake.width = this.canvas.width;
     this.canvasFake.height = this.canvas.height;
     
@@ -222,21 +223,25 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
       tmpCtx.restore();
       return tmpCv;
   }
-  Scene.prototype.makeParallax = function(images){
+  Scene.prototype.makeParallax = function(images, forceResize){
     var maxWidth = this.canvas.width;
     var reachedWidth = 0;
     var generatedParallax = [];
     while(reachedWidth < maxWidth){
       var image = petra.getRandomElementFromArray(images);
-      reachedWidth += image.width;
+      if(!forceResize){
+        reachedWidth += image.width;  
+      }else{
+        reachedWidth += PARALLAX_IMAGE_WIDTH;
+      }
+      
       generatedParallax.push(image);
     }
-    console.log(reachedWidth, this.canvas.width);
 
     return generatedParallax;
   }
 
-  Scene.prototype.generateParallaxPattern = function(images, height){
+  Scene.prototype.generateParallaxPattern = function(images, height, forceResize){
     var tmpCv = document.createElement('canvas');
     tmpCv.width = this.canvas.width ;
     tmpCv.height = height;
@@ -244,8 +249,13 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     var currWidthIndex = 0;
 
     for(var i = 0; i < images.length; i++){
-      tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, images[i].width, height);
-      currWidthIndex+= images[i].width;
+      if(!forceResize){
+        tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, images[i].width, height);
+        currWidthIndex+= images[i].width;
+      }else{
+        tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, PARALLAX_IMAGE_WIDTH, height);
+        currWidthIndex+= PARALLAX_IMAGE_WIDTH;
+      }
     }
     return tmpCv;
   }

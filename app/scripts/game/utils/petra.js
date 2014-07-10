@@ -21,6 +21,15 @@ define( ['hu'], function(hu){
       return arr[Petra.random(0, max)];
     }
 
+    Petra.pickRandomProperty = function(obj) {
+        var result;
+        var count = 0;
+        for (var prop in obj)
+            if (Math.random() < 1/++count)
+               result = prop;
+        return result;
+    }
+
     Petra.passProbabilities = function(probabilitieNumber){
       return ((probabilitieNumber * 100) >= Petra.random(0,100))
     }

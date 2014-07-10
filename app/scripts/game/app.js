@@ -91,10 +91,6 @@ return BombTouchApp.
 
   function preloadSounds(){
     SOUNDS = {
-      death: new Howl({
-        urls: ['sounds/cut_grunt2.wav'],
-        volume: 0.1
-      }),
       shoot: new Howl({
         urls: ['sounds/laser5.wav'],
         volume: 0.05
@@ -498,7 +494,7 @@ return BombTouchApp.
   }
 
   function addExplosion(pos, size){
-    explosions.push(EL.getEntity('explosion',{pos: pos, resize: size}));
+    explosions.push(EL.getEntity('explosion',{pos: pos, resize: size*2}));
     var number = parseInt(Math.random()*SOUNDS.explosions.length);
     playSound(SOUNDS.explosions[number]);
   }
@@ -951,7 +947,7 @@ return BombTouchApp.
       var message = new models.Message(MESSAGES[chosenPhrase], names.main_enemy_name, 1500);
       createDialog(message, entity);
     }else if(action == 'launchEnemy'){
-      var enemy = EL.getEnemy([entity.getX() - 80 * window.RESIZEFACTOR,entity.getY()], 'enemy'+Math.ceil(Math.random() *5  * window.RESIZEFACTOR), 'joke');
+      var enemy = EL.getRandomEnemy([entity.getX() - 80 * window.RESIZEFACTOR, entity.getY() * window.RESIZEFACTOR]);
       enemies.push(enemy);
       miscelanea_front.push(EL.getEntity('portal_front', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
       miscelanea_back.push(EL.getEntity('portal_back', {pos: enemy.pos, speed: entity.speed, angle: entity.angle, resize: petra.multIntegerToArray(enemy.getSize(), 2)}));
@@ -1383,7 +1379,6 @@ return BombTouchApp.
     addPoints(enemy.points, enemy.pos);
 
     addPower(enemy.points);
-    playSound(SOUNDS.death);
     addExplosion(enemy.pos, enemy.getSize());    
   }
 

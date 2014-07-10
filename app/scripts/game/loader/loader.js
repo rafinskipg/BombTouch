@@ -37,11 +37,11 @@ define( ['resources','raf', 'quad_tree'], function(){
     canvas.className = 'visible';
     ctx = canvas.getContext("2d");
     //Seems to work
-    ctx.webkitImageSmoothingEnabled = false;
+    /*ctx.webkitImageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
-    canvas.width = window.innerWidth/3;
-    canvas.height = window.innerHeight/3 ;
+    ctx.imageSmoothingEnabled = false;*/
+    canvas.width = window.innerWidth * window.RESIZEFACTOR;
+    canvas.height = window.innerHeight * window.RESIZEFACTOR ;
     
     current = 0; then = now();
 

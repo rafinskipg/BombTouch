@@ -62,7 +62,7 @@ define(['angular', 'app', 'game/artscenes/scene_intro','game/levels/jokeLevel', 
 
     function play(canvasId){
       reset();
-      window.RESIZEFACTOR = 0.4;
+      window.RESIZEFACTOR = 0.6;
       sceneIntro.init(canvasId, function(){
         game.start(getCurrentLevel());
         notify(suscribersGameStart, 'started');
