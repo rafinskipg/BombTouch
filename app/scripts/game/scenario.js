@@ -90,7 +90,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
 
     this.scene.updateBackground = (function(dt){ 
       this.updateParticles(dt);
-      this.updateParallax(dt);
+      //this.updateParallax(dt);
       this.bufferCtx.fillStyle = 'rgba(2, 2, 43, 0.3)';
       this.bufferCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }).bind(this.scene);
@@ -132,14 +132,14 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
         }
       }
 
-      if(self.parallaxLayersBack && self.parallaxLayersBack.length > 0){
+      /*if(self.parallaxLayersBack && self.parallaxLayersBack.length > 0){
         this.renderParallaxLayers(self.parallaxLayersBack);
-      }
+      }*/
       this.darkenLayer();
-
-      if(self.parallaxLayersFront && self.parallaxLayersFront.length > 0){
+      this.renderParticles();
+      /*if(self.parallaxLayersFront && self.parallaxLayersFront.length > 0){
         this.renderParallaxLayers(self.parallaxLayersFront);
-      }
+      }*/
       for(var i = 0; i < listOfEntitiesArrays.length; i++){
         if(!listOfEntitiesArrays[i].background){
           this.renderEntities(listOfEntitiesArrays[i].entities);
@@ -150,7 +150,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
       for(var i = 0; i < listOfTextEntitiesArrays.length; i++){
         this.renderTexts(listOfTextEntitiesArrays[i].entities, listOfTextEntitiesArrays[i].type);
       }
-      this.renderParticles();
+      
     }).bind(this.scene);
   }
 
@@ -165,7 +165,7 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     var parallaxLayersBack = [];
     var parallaxLayersFront = [];
     if(this.temporalLayersData && this.temporalLayersData[0]){
-      this.createParallaxBotTop(this.temporalLayersData[0], parallaxLayersBack, canvasHeight, 100 * window.RESIZEFACTOR,0);
+      this.createParallaxBotTop(this.temporalLayersData[0], parallaxLayersBack, canvasHeight, 60 * window.RESIZEFACTOR,0);
     }
     parallaxLayersBack.map(function(layer){
       layer.patterns = [];

@@ -1,6 +1,7 @@
 define( [], function(){
   var list = [
     'images/enemies/level_1.png',
+    'images/enemies/unknown.png',
     'images/backgrounds/parallax_1_junk.png',
     'images/backgrounds/parallax_1_junk2.png',
     'images/backgrounds/parallax_1_sprited.png',

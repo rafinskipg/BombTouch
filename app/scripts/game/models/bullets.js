@@ -67,9 +67,8 @@ define( [ 'game/models/hitboxes'], function( hitboxes){
     }
 
     this.render = function(ctx){
-      ctx.globalCompositeOperation = "lighter";
+     // ctx.globalCompositeOperation = "lighter";
 
-  //Lets reduce the opacity of the BG paint to g
       var radgrad = ctx.createRadialGradient( 
           this.size/2,
           this.size/2,

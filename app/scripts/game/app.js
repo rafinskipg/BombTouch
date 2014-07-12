@@ -373,11 +373,11 @@ return BombTouchApp.
       bonuses.push(bonus);
     }, 'brainSrv');
 
-    LEVELS_DIRECTOR.suscribeAmbientEntities(function(entity){
+    /*LEVELS_DIRECTOR.suscribeAmbientEntities(function(entity){
       if(entity){
         miscelanea_back.push(entity);  
       }
-    }, 'brainSrv');
+    }, 'brainSrv');*/
 
     LEVELS_DIRECTOR.suscribeMessages(function(opts){
       showMessages(opts.messages, opts.timeout, opts.type);
@@ -1167,7 +1167,7 @@ return BombTouchApp.
       pointsToRender
       .map(updateTimeCounter(dt))
       .map(moveUp(dt))
-      .map(removeIfTimeCounterGreaterThan(1))
+      .map(removeIfTimeCounterGreaterThan(0.5))
       );
   }
 

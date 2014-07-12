@@ -20,7 +20,7 @@ define( [ 'game/models/bullets'], function( bullets){
         g: 202,
         b: 69
       },
-      size: 20,
+      size: 10,
       pos: pos,
       angle: angle,
       rotate: rotate

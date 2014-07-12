@@ -2,8 +2,6 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   // Sprite(url, pos, size, speed, frames, dir, once)
 
   
-  var greenBulletSchema = ['images/weapons/bullets.png', [0, 0], [10, 10], 0, [0]];
-  var redBulletSchema = ['images/weapons/bullets.png', [0, 10],  [10, 10], 0, [0]];
   var blueBulletSpriteSchema = ['images/weapons/bullets.png', [0, 20],  [10, 10], 10, [0,1,2]];
 
   var explosionSpriteSchema = ['images/sparks/sparks.png',
@@ -16,10 +14,15 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     true];
 
   //Level1
-  var level1_junk1Sprite  = ['images/backgrounds/parallax_1_sprited.png', [0, 0], [13, 13], 0, [0], true];
-  var level1_junk2Sprite  = ['images/backgrounds/parallax_1_sprited.png', [13, 0], [13, 13], 0, [0], true];
-  var level1_junk3Sprite  = ['images/backgrounds/parallax_1_sprited.png', [26, 0], [13, 13], 0, [0], true];
-  var level1_junk4Sprite  = ['images/backgrounds/parallax_1_sprited.png', [39, 0], [13, 13], 0, [0], true];
+  var level1_junk1Sprite  = ['images/backgrounds/parallax_1_sprited.png', [0, 0], [20, 20], 0, [0], true];
+  var level1_junk2Sprite  = ['images/backgrounds/parallax_1_sprited.png', [20, 0], [20, 20], 0, [0], true];
+  var level1_junk3Sprite  = ['images/backgrounds/parallax_1_sprited.png', [40, 0], [20, 20], 0, [0], true];
+  var level1_junk4Sprite  = ['images/backgrounds/parallax_1_sprited.png', [60, 0], [20, 20], 0, [0], true];
+
+  var level1_unknown1Sprite  = ['images/enemies/unknown.png', [0, 0], [20, 20], 2, [0,1,2], true];
+  var level1_unknown2Sprite  = ['images/enemies/unknown.png', [0, 20], [20, 20], 6, [0,1,2,3,2,1], true];
+  var level1_unknown3Sprite  = ['images/enemies/unknown.png', [0, 40], [20, 20], 2, [0,1,2], true];
+  var level1_unknown4Sprite  = ['images/enemies/unknown.png', [0, 60], [20, 20], 2, [0,1,2,3], true];
 
   var level1_tireSprite  = ['images/enemies/level_1.png', [200, 0], [50, 50], 10, [0,1,2,4,5,6,7], true];
   var level1_ship1Sprite  = ['images/enemies/level_1.png', [500, 50], [100, 75], 0, [0], true];
@@ -117,27 +120,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       angle: 0,
       resize: [20,20]
     },
-    'greenBullet' : {
-      sprite: greenBulletSchema,
-      damage: 50,
-      speed: [500,500],
-      angle: 0,
-      resize: [10,10],
-      renderTranslated: [0, 0]
-    },
-    'redBullet' : {
-      sprite: redBulletSchema,
-      damage: 50,
-      speed: [500,500],
-      angle: 0,
-      resize: [10,10],
-      renderTranslated: [0, 0]
-    },
+    
     'cooldog' : {
       sprite: coolDogSpriteSchema,
       damage: 30,
       baseDamage: 30,
-      bulletName : 'greenBullet',
       critChance: 0.05,
       hitbox: {
         pos: [25,30],
@@ -286,8 +273,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   };
 
   var level_1_entities = {
-    'junk1' : {
-      sprite: level1_junk1Sprite,
+    'unknown1' : {
+      sprite: level1_unknown1Sprite,
       speed: [65,65],
       points: 25,
       angle: 1,
@@ -295,8 +282,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       totalLife: 65,
       resize: [50,50],
       damage: 5
-    }, 'junk2' : {
-      sprite: level1_junk2Sprite,
+    }, 'unknown2' : {
+      sprite: level1_unknown2Sprite,
       speed: [65,65],
       points: 25,
       angle: 1,
@@ -304,8 +291,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       totalLife: 65,
       resize: [50,50],
       damage: 5
-    }, 'junk3' : {
-      sprite: level1_junk3Sprite,
+    }, 'unknown3' : {
+      sprite: level1_unknown3Sprite,
       speed: [65,65],
       points: 25,
       angle: 1,
@@ -313,8 +300,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       totalLife: 65,
       resize: [50,50],
       damage: 5
-    },'junk4' : {
-      sprite: level1_junk4Sprite,
+    },'unknown4' : {
+      sprite: level1_unknown4Sprite,
       speed: [65,65],
       points: 25,
       angle: 1,
@@ -369,7 +356,6 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
         pos: [5,5],
         size: [40,40]
       },
-      bulletName: 'greenBullet',
       damage: 20,
       actions : [{name: 'aim', delay: 1.5}, {name : 'neutralShoot', delay: 0.2}],
       animations: [
@@ -604,7 +590,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     getEnemy: getEnemy,
     getSpaceInvader: getSpaceInvader,
     getBoss: getBoss,
-    getBonus: getBonus
+    getBonus: getBonus,
+    getRandomEnemy: getRandomEnemy
   }
 });
 

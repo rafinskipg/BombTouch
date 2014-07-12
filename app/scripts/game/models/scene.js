@@ -1,6 +1,6 @@
 define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   var PARALLAX_IMAGE_WIDTH = 200;
-
+  var PARALLAX_IMAGE_HEIGHT = 68;
   function Scene(assets, canvasId,endCallback, opts){
     this.canvasId = canvasId;
     this.completed = false;
@@ -125,7 +125,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
     if(entity.life){
       this.bufferCtx.save();
-      this.bufferCtx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()- 30 * window.RESIZEFACTOR), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
+      this.bufferCtx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
       entity.drawLife(this.bufferCtx);
       this.bufferCtx.restore();
     }
@@ -231,7 +231,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     var generatedParallax = [];
     while(reachedWidth < maxWidth){
       var image = petra.getRandomElementFromArray(images);
-      if(!forceResize){
+      if(forceResize){
         reachedWidth += image.width;  
       }else{
         reachedWidth += PARALLAX_IMAGE_WIDTH;
@@ -252,11 +252,11 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
 
     for(var i = 0; i < images.length; i++){
       if(!forceResize){
-        tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, images[i].width, height);
+        tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, images[i].width, images[i].height);
         currWidthIndex+= images[i].width;
       }else{
-        tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, PARALLAX_IMAGE_WIDTH, height);
-        currWidthIndex+= PARALLAX_IMAGE_WIDTH;
+        tmpCtx.drawImage(images[i], 0, 0, images[i].width, images[i].height, currWidthIndex, 0, PARALLAX_IMAGE_WIDTH, PARALLAX_IMAGE_HEIGHT);
+        currWidthIndex+= PARALLAX_IMAGE_WIDTH-5;
       }
     }
     return tmpCv;
@@ -277,7 +277,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
       for(var j = 0; j< parallaxLayers[i].patterns.length; j++){
         var posX = parallaxLayers[i].pos[0] + j * this.canvas.width - parallaxLayers[i].index;
         var posY = parallaxLayers[i].pos[1] + parallaxLayers[i].yIndex;
-        this.drawParallax(parallaxLayers[i].patterns[j], [posX, posY], 100);
+        this.drawParallax(parallaxLayers[i].patterns[j], [posX, posY], PARALLAX_IMAGE_HEIGHT);
       } 
     }
   }
@@ -313,7 +313,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
 
   Scene.prototype.darkenLayer = function(){
-    this.bufferCtx.fillStyle = "rgba(0, 0, 0, 0.4)";
+    this.bufferCtx.fillStyle =  'rgba(2, 2, 43, 0.3)';
     this.bufferCtx.fillRect(0,0,this.canvas.width, this.canvas.height);
   }
 
