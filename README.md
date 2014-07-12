@@ -17,13 +17,10 @@ by [VenturaStudios](http://venturastudios.org)
 You can contribute code with pull requests, if you want to contribute artworks or sounds you can email me at rafinskipg(at)gmail(dot)com.
 
 ### Todo list For Beta
--Bugs issues:
-    - Add to the localstorage info the current level played, the total gems used, total gems won fields.
-    - Add the gems only if you won a game.
-    - Add the use gems to unlock level.
-
-
-
+- Add to the localstorage info the current level played, the total gems used, total gems won fields.
+- Add the gems only if you won a game.
+- Add the use gems to unlock level.
+- Add object pooling
 - Redesign game mechanichs and levels.
 - Create a "worlds" or "planets" list, to choose levels.
 - Polish backgrounds and sprites

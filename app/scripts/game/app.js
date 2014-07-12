@@ -955,17 +955,53 @@ return BombTouchApp.
     };
   }
 
+  function createRedBullet(pos, damage, angle,rotate){
+    var opts = {
+      speed: [500,500],
+      damage : damage || 20,
+      color: {
+        r: 255,
+        g: 0,
+        b: 0
+      },
+      size: 20,
+      pos: pos,
+      angle: angle,
+      rotate: rotate
+    }
+    return new models.Bullet(opts);
+  }
+
+  function createYellowBullet(pos, damage, angle,rotate){
+    var opts = {
+      speed: [500,500],
+      damage : damage || 20,
+      color: {
+        r: 255,
+        g: 214,
+        b: 0
+      },
+      size: 20,
+      pos: pos,
+      angle: angle,
+      rotate: rotate
+    }
+    return new models.Bullet(opts);
+  }
+
+
   function enemyShoot(entity, angle){
     var shootOrigin = entity.getShootOrigin();
-    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle });
+    var bullet = createRedBullet(shootOrigin, entity.damage, angle);
     bullet.speed = [300 * window.RESIZEFACTOR,300 * window.RESIZEFACTOR];
     enemyBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));
     playSound(SOUNDS.shoot);
   } 
+
   function neutralShoot(entity, angle){
     var shootOrigin = entity.getShootOrigin();
-    var bullet = EL.getEntity(entity.bulletName, {pos: shootOrigin, damage: entity.damage, angle: angle, rotateSprite: angle });
+    var bullet = createYellowBullet(shootOrigin, entity.damage, angle);
     bullet.speed = [300 * window.RESIZEFACTOR,300 * window.RESIZEFACTOR];
     neutralBullets.push(bullet);      
     miscelanea_front.push(EL.getEntity(entity.bulletShotFireName, {pos: shootOrigin, speed: entity.speed, angle: angle, rotateSprite: angle}));

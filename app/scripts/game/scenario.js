@@ -89,11 +89,10 @@ define( [ 'hu','game/entities', 'petra','game/assets', 'game/models/models'], fu
     }.bind(this.scene);
 
     this.scene.updateBackground = (function(dt){ 
-      this.bufferCtx.fillStyle = '#02022B';
-      this.bufferCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       this.updateParticles(dt);
       this.updateParallax(dt);
-
+      this.bufferCtx.fillStyle = 'rgba(2, 2, 43, 0.3)';
+      this.bufferCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }).bind(this.scene);
 
     this.scene.load();

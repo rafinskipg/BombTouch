@@ -1,4 +1,4 @@
-define( [ 'game/entities'], function( EL){
+define( [ 'game/models/bullets'], function( bullets){
 
 
   function Weapon(options){
@@ -11,6 +11,41 @@ define( [ 'game/entities'], function( EL){
     
   }
 
+  function createGreenBullet(pos, damage, angle,rotate){
+    var opts = {
+      speed: [500,500],
+      damage : damage || 20,
+      color: {
+        r: 85,
+        g: 202,
+        b: 69
+      },
+      size: 20,
+      pos: pos,
+      angle: angle,
+      rotate: rotate
+    }
+    return new bullets.Bullet(opts);
+  }
+
+  function createRedBullet(pos, damage, angle,rotate){
+    var opts = {
+      speed: [500,500],
+      damage : damage || 20,
+      color: {
+        r: 255,
+        g: 0,
+        b: 0
+      },
+      size: 20,
+      pos: pos,
+      angle: angle,
+      rotate: rotate
+    }
+    return new bullets.Bullet(opts);
+  }
+
+
   function Pistol(){
     this.options = new Weapon({
       shootDelay: 0.300,
@@ -19,7 +54,7 @@ define( [ 'game/entities'], function( EL){
     });
     this.shoot = function(arrOfBullets, pos, isCriticalStrike){
       var damage = isCriticalStrike ? this.options.damage * 2 : this.options.damage;
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0}));  
+      arrOfBullets.push(createGreenBullet(pos, damage, 0));  
     }
   }  
 
@@ -31,7 +66,7 @@ define( [ 'game/entities'], function( EL){
     });
     this.shoot = function(arrOfBullets, pos, isCriticalStrike){
       var damage = isCriticalStrike ? this.options.damage * 2 : this.options.damage;
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0}));  
+      arrOfBullets.push(createGreenBullet(pos, damage, 0)); 
     }
   }  
 
@@ -43,8 +78,8 @@ define( [ 'game/entities'], function( EL){
     });
     this.shoot = function(arrOfBullets, pos, isCriticalStrike){
       var damage = isCriticalStrike ? this.options.damage * 2 : this.options.damage;
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0.2*Math.PI,  rotateSprite: 0.2 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 1.8*Math.PI, rotateSprite: 1.8*Math.PI }));  
+      arrOfBullets.push(createGreenBullet(pos, damage, 0.2*Math.PI,  0.2*Math.PI)); 
+      arrOfBullets.push(createGreenBullet(pos, damage, 1.8*Math.PI,  1.8*Math.PI)); 
     }
   }
 
@@ -58,16 +93,16 @@ define( [ 'game/entities'], function( EL){
 
     this.shoot = function(arrOfBullets, pos, isCriticalStrike){
       var damage = isCriticalStrike ? this.options.damage * 2 : this.options.damage;
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0.05*Math.PI,  rotateSprite: 0.05 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0.1*Math.PI,  rotateSprite: 0.1 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0.15*Math.PI,  rotateSprite: 0.15 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0.2*Math.PI,  rotateSprite: 0.2 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: 0.3*Math.PI,  rotateSprite: 0.3 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: -0.05*Math.PI,  rotateSprite: -0.05 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: -0.1*Math.PI,  rotateSprite: -0.1 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: -0.15*Math.PI,  rotateSprite: -0.15 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: -0.2*Math.PI,  rotateSprite: -0.2 *Math.PI}));  
-      arrOfBullets.push(EL.getEntity('greenBullet', {pos: pos, damage: damage, angle: -0.3*Math.PI,  rotateSprite: -0.3 *Math.PI}));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  0.05*Math.PI,  0.05 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  0.1*Math.PI,  0.1 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  0.15*Math.PI,  0.15 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  0.2*Math.PI,  0.2 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  0.3*Math.PI,  0.3 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  -0.05*Math.PI,  -0.05 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  -0.1*Math.PI,  -0.1 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  -0.15*Math.PI,  -0.15 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  -0.2*Math.PI,  -0.2 *Math.PI));  
+      arrOfBullets.push(createGreenBullet(pos, damage,  -0.3*Math.PI,  -0.3 *Math.PI));  
     }
   }
 

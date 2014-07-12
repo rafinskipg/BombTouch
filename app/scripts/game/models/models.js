@@ -1,4 +1,4 @@
-define( ['game/models/scene', 'petra'], function(Scene, petra){
+define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitboxes'], function(Scene, petra, bullets, hitboxes){
   
   //Thanks dr.axel. 
   //Allows Sprite to accept array as args
@@ -20,6 +20,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     this.color = options.color  || 'white';
     this.size = options.size;
     this.color = options.color;
+
 
     this.drawCircle = function(ctx) {
       ctx.fillStyle = this.color;
@@ -71,78 +72,11 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
           this.size
       );
     }
+
   }
 
   SpaceParticle.prototype.update = function(dt){
     this.pos[0] -= this.speed[0] * dt;
-  }
-
-  function SquareHitBox(opts){
-    this.pos = opts.pos;
-    this.size = opts.size;
-    this.width = opts.size[0];
-    this.centerOfRotation = opts.centerOfRotation;
-    this.hitboxStartPoint = opts.hitboxStartPoint;
-    this.getShootOrigin = opts.getShootOrigin;
-    var withpadding = petra.sumArrays([0,0], opts.hitboxStartPoint);
-    this.points = [];
-
-    this.topLeft = withpadding;
-    this.topRight = petra.sumArrays(withpadding, [opts.size[0], 0]);
-    this.bottomLeft = petra.sumArrays(withpadding, [0, opts.size[1]]);
-    this.bottomRight = petra.sumArrays(withpadding, [opts.size[0], opts.size[1]]);
-
-    this.points.push(this.topLeft);
-    this.points.push(this.topRight);
-    this.points.push(this.bottomLeft);
-    this.points.push(this.bottomRight);
-    
-   /* var topLeft = petra.rotatePoint(opts.pos, opts.hitboxStartPoint, angle, centerOfRotation);
-    
-    var topRight = petra.rotatePoint(opts.pos,[opts.hitboxStartPoint[0]  + opts.size[0], opts.hitboxStartPoint[1]], angle, centerOfRotation);
-    
-    var bottomLeft = petra.rotatePoint(opts.pos, [opts.hitboxStartPoint[0] , opts.hitboxStartPoint[1] + opts.size[1]], angle, centerOfRotation);
-    
-    var bottomRight = petra.rotatePoint(opts.pos, [opts.hitboxStartPoint[0]  + opts.size[0], opts.hitboxStartPoint[1] + opts.size[1]], angle, centerOfRotation);
-    */
-  }
-
-  SquareHitBox.prototype.rotatePoint = function(point, angle, center){
-    var s  = Math.sin(angle);
-    var c = Math.cos(angle);
-    point[0]-=center[0];
-    point[1]-=center[1];
-
-    xnew = point[0]* c - point[1]*s;
-    ynew = point[0]* s + point[1]*c;
-
-    return [xnew + center[0], ynew + center[1]]
-  }
-
-
-  SquareHitBox.prototype.rotate = function(angle){
-    var cos = Math.cos(angle);
-    var sin = Math.sin(angle);
-    
-    for(var i = 0; i <this.points.length; i++){
-      var x = this.points[i][0] -this.centerOfRotation[0] ;
-      var y = this.points[i][1] - this.centerOfRotation[1];
-
-      this.points[i][0] = x*cos - y*sin + this.centerOfRotation[0] ;
-      this.points[i][1] = y*cos + x*sin  + this.centerOfRotation[1];
-    }
-  }
-
-  SquareHitBox.prototype.getPos = function(){
-    return petra.sumArrays(this.pos, this.hitboxStartPoint);
-  } 
-  SquareHitBox.prototype.getPoints = function(){
-    var arr = [];
-    for(var i = 0; i < this.points.length; i++){
-      //arr.push(petra.sumArrays(this.points[i], this.pos));
-      arr.push(petra.sumArrays(this.points[i], this.pos));
-    }
-    return arr;
   }
 
   function RenderableText(opts){
@@ -323,8 +257,7 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
       };
     }
     opts.centerOfRotation = this.getCenterOfRotation();
-      opts.getShootOrigin = this.getShootOrigin.bind(this);
-    squareHitB = new SquareHitBox(opts);
+    squareHitB = new hitboxes.SquareHitBox(opts);
     
     //If it has a specified rotation angle. If not we leave it by default
     if(this.getLookingPosition()){
@@ -490,7 +423,8 @@ define( ['game/models/scene', 'petra'], function(Scene, petra){
     Entity: RenderableEntity,
     Scene: Scene,
     RenderableText: RenderableText,
-    SpaceParticle: SpaceParticle
+    SpaceParticle: SpaceParticle,
+    Bullet : bullets.Bullet
   };
 
 });

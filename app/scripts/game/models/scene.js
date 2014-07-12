@@ -69,21 +69,20 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     this.then = current;
     //frames = (1000/ (dt * 60)) * 60;
     var realtimeDt = dt / 1000.0;
-    
+    this.ctx.globalCompositeOperation = "source-over";
+
     if(!this.completed){
       this.update(realtimeDt * this.scenespeed, realtimeDt);
-      //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      //this.ctx.save();
+      
       this.updateBackground(realtimeDt * this.bgspeed);
 
-      //this.ctx.scale(0.8,0.8);
       if(this.shaking){
         this.updateShaking(realtimeDt * this.scenespeed);
       }
+
       this.render();
       this.ctx.drawImage(this.canvasFake, 0,0);
       
-      //this.ctx.restore();
       this.rafID = requestAnimationFrame(this.mainLoop.bind(this));  
     }else{
       cancelAnimationFrame(this.rafID);
@@ -97,6 +96,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
 
   Scene.prototype.renderEntities = function(list) {
+    this.bufferCtx.globalAlpha = 1.0;
     for(var i=0; i<list.length; i++) {
       this.renderEntity(list[i]);
     }
@@ -110,10 +110,12 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
       this.bufferCtx.fillStyle = 'green';
       this.bufferCtx.fill();
       
-      this.bufferCtx.beginPath();
-      this.bufferCtx.rect((this.offSetX + entity.getShootOrigin()[0]),this.offSetY + entity.getShootOrigin()[1], 15, 7);
-      this.bufferCtx.fillStyle = 'purple';
-      this.bufferCtx.fill();
+      if(entity.getShootOrigin){
+        this.bufferCtx.beginPath();
+        this.bufferCtx.rect((this.offSetX + entity.getShootOrigin()[0]),this.offSetY + entity.getShootOrigin()[1], 15, 7);
+        this.bufferCtx.fillStyle = 'purple';
+        this.bufferCtx.fill();  
+      }
     }
 
     this.bufferCtx.save();

@@ -65,8 +65,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       teleport :['images/enemies/boss_1.png', [0,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0],true, 'vertical']
     }
   } 
-  var coolDogShootingSpriteSchema = ['images/doggy/pixeleddog.png', [400, 100], [100,100], 10, [0, 1,2,3,4,5,6,7]];
-  var coolDogSpriteSchema = ['images/doggy/pixeleddog.png', [400, 200], [100,100], 8, [0, 1,2,3,4,5,6,7]];
+  var coolDogShootingSpriteSchema = ['images/doggy/cooldog_final.png', [45, 60], [30,30], 8, [2,2,1,0]];
+  var coolDogSpriteSchema = ['images/doggy/cooldog_final.png', [45, 30], [30,30], 8, [0, 1]];
   var coolDogMovingDownSpriteSchema = ['images/doggy/pixeleddog.png', [100, 400], [100,100], 10, [3,4]];
   var coolDogMovingUpSpriteSchema = ['images/doggy/pixeleddog.png', [100, 500], [100,100], 10, [0, 1,2]];
   var coolDogMovingUpAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [100, 600], [100,100], 10, [0, 1,2,3,4,5,6,7,8]];

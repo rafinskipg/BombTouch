@@ -88,6 +88,8 @@
 
             if(transparency){
                 ctx.globalAlpha = transparency;
+            }else{
+                ctx.globalAlpha = 1.0;
             }
 
             ctx.drawImage(resources.get(this.url),

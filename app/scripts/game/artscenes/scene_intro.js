@@ -4,6 +4,7 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
   function init(canvasId, endCallback){
     scene = new models.Scene([
       'images/doggy/pixeleddog.png',
+      'images/doggy/cooldog_final.png',
       'images/weapons/bullets.png'
       ],canvasId, endCallback);
 
