@@ -68,14 +68,14 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       teleport :['images/enemies/boss_1.png', [0,225], [40,75], 30, [0,1,2,3,4,5,6,6,5,4,3,2,1,0],true, 'vertical']
     }
   } 
-  var coolDogShootingSpriteSchema = ['images/doggy/cooldog_final.png', [45, 60], [30,30], 8, [2,2,1,0]];
-  var coolDogSpriteSchema = ['images/doggy/cooldog_final.png', [45, 30], [30,30], 8, [0, 1]];
-  var coolDogMovingDownSpriteSchema = ['images/doggy/pixeleddog.png', [100, 400], [100,100], 10, [3,4]];
-  var coolDogMovingUpSpriteSchema = ['images/doggy/pixeleddog.png', [100, 500], [100,100], 10, [0, 1,2]];
-  var coolDogMovingUpAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [100, 600], [100,100], 10, [0, 1,2,3,4,5,6,7,8]];
-  var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/pixeleddog.png', [300, 300], [100,100], 10, [0, 1,2,3,4,5,6,7]];
-  var superCoolDogSpriteSchema = ['images/doggy/cooldog.png', [2265, 932], [755,932], 1, [0, 1,2,3]];
-  
+  var coolDogShootingSpriteSchema = ['images/doggy/cooldog_final.png', [0, 30], [30,30], 8, [2,2,1,0]];
+  var coolDogSpriteSchema = ['images/doggy/cooldog_final.png', [0, 0], [30,30], 8, [0, 1]];
+  var coolDogMovingDownSpriteSchema = ['images/doggy/cooldog_final.png', [90, 0], [30,30], 8, [0, 1]];
+  var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/cooldog_final.png', [90, 30], [30,30], 8, [2,2,1,0]];  
+
+  var coolDogMovingUpSpriteSchema = ['images/doggy/cooldog_final.png', [180, 0], [30,30], 8, [0, 1]];
+  var coolDogMovingUpAndShootingSpriteSchema = ['images/doggy/cooldog_final.png', [180, 30], [30,30], 8, [2,2,1,0]];
+
   var graveSpriteSheet = ['images/sparks/sparks.png', [0,450], [30,30], 4 , [0,1,2,0,1,2],null, null, true];
   
   //BUllets

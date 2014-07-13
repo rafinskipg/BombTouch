@@ -7,7 +7,6 @@ define( [], function(){
     'images/backgrounds/parallax_1_sprited.png',
     'images/enemies/boss_1.png',
     'images/doggy/cooldog_final.png',
-    'images/doggy/pixeleddog.png',
     'images/rick/rickrollsprite.png',
     'images/sparks/sparks.png',
     'images/weapons/bullets.png',
