@@ -486,9 +486,10 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     if(!opts){
       opts = {};
     } 
+
     var entity =  new GameEntity(JSON.parse(JSON.stringify(entityList[name])), opts);
     entity.name = name;
-    
+
     return entity;
   }
   
@@ -498,11 +499,12 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   }
 
   function getRandomEnemy(pos, entitiesList){
-    var list = entitiesList ? entitiesList : 'level_1';
+    var list_name = entitiesList ? entitiesList : 'level_1';
+    var list = list_name == 'level_1' ? level_1_entities : entities;
 
     var prop = petra.pickRandomProperty(list);
 
-    return getEnemy(pos, prop, list);
+    return getEnemy(pos, prop, list_name);
   }
 
   function getEnemy(pos, name, entitiesList){

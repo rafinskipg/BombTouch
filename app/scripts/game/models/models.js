@@ -286,7 +286,7 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
   RenderableEntity.prototype.drawLife = function(ctx){
     var hitBoxWidth = this.getHitBox().width;
 
-    var lifeSize = this.getSize()[0];
+    var lifeSize = hitBoxWidth;
     var chunkLifeValue = 10;
     var chunks = 0;
     var minChunkSize = 5 * this.resizeFactor;

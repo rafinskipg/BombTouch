@@ -202,7 +202,7 @@ return BombTouchApp.
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
-    LEVELS_DIRECTOR.init(names, 1,true,canvas,LEVEL_STRUCTURE);
+    LEVELS_DIRECTOR.init(names,5,true,canvas,LEVEL_STRUCTURE);
     suscribeToEvents();
     main();
   };

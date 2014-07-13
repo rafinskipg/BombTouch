@@ -282,6 +282,59 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     }
   }
 
+  function getBlurValue(blur) {
+    var userAgent = navigator.userAgent;
+    if (userAgent && userAgent.indexOf('Firefox/4') != -1) {
+      var kernelSize = (blur < 8 ? blur / 2 : Math.sqrt(blur * 2));
+      var blurRadius = Math.ceil(kernelSize);
+      return blurRadius * 2;
+    }
+    return blur;
+  };
+  
+  Scene.prototype.jittedText = function(text,x,y){
+
+  var font = "15px 'Press Start 2P'";
+  var jitter = 25; // the distance of the maximum jitter
+  var offsetX = x;
+  var offsetY = y;
+  var blur = getBlurValue(100);
+  // save state
+  this.bufferCtx.save();
+  this.bufferCtx.font = font;
+  // calculate width + height of text-block
+  var measure = this.bufferCtx.measureText(text) ;
+  // create shadow-blur to mask rainbow onto (since shadowColor doesn't accept gradients)
+  this.bufferCtx.save();
+  this.bufferCtx.fillStyle = "#fff";
+  this.bufferCtx.shadowColor = "rgba(0,0,0,1)";
+  this.bufferCtx.shadowOffsetX = measure.width + blur;
+  this.bufferCtx.shadowOffsetY = 0;
+  this.bufferCtx.shadowBlur = blur;
+  this.bufferCtx.fillText(text, -measure.width + offsetX - blur, offsetY );
+  this.bufferCtx.restore();
+  // create the rainbow linear-gradient
+
+  // change composite to mix as light
+  this.bufferCtx.globalCompositeOperation = "lighter";
+  // multiply the layer
+
+  // draw white-text ontop of glow
+  this.bufferCtx.fillStyle = "rgba(255,255,255,0.95)";
+  this.bufferCtx.fillText(text, offsetX, offsetY );
+  // created jittered stroke
+  this.bufferCtx.lineWidth = 0.80;
+  this.bufferCtx.strokeStyle = "rgba(255,255,255,0.25)";
+  var i = 5; while(i--) { 
+      var left = jitter / 2 - Math.random() * jitter;
+      var top = jitter / 2 - Math.random() * jitter;
+      this.bufferCtx.strokeText(text, left + offsetX, top + offsetY );
+  }    
+  this.bufferCtx.strokeStyle = "rgba(0,0,0,0.20)";
+  this.bufferCtx.strokeText(text, offsetX, offsetY);
+  this.bufferCtx.restore();
+  }
+
 
   Scene.prototype.drawFrames = function(frames){
     this.bufferCtx.fillStyle = "blue";

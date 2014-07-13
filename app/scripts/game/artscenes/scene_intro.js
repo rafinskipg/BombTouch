@@ -3,9 +3,8 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
 
   function init(canvasId, endCallback){
     scene = new models.Scene([
-      'images/doggy/pixeleddog.png',
-      'images/doggy/cooldog_final.png',
-      'images/weapons/bullets.png'
+      'images/scenes/intro_1_background.png',
+      'images/scenes/intro_1_foreground.png'
       ],canvasId, endCallback);
 
     window.addEventListener('click', function(ev){
@@ -13,15 +12,19 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
       window.removeEventListener('click');
     });
 
+    scene.foreground = {
+        pos: [0,0],
+        speed: [10,10],
+        angle: -0.4
+      };
+    
+    
     scene.init = (function(){
-      this.dog = entities.getEntity('cooldog',{pos: [50  * window.RESIZEFACTOR, this.canvas.height / 2]});
       this.texts = [
-        ["Once upon a time... "],
-        ['there was a planet where ', 'all the creatures lived in peace and harmony'],
-        ['from the outter universe a voice raised'],
-        ["claiming death as said it's master"],
-        ["but nobody will destroy this beautiful planet"],
-        ['nor when Cool Dog is fully armed']
+        ["Dreams..."],
+        ['Populated by ghosts'],
+        ['what you will find there, CoolDog?'],
+        ['Scene 1 - Junk of the space']
       ]
       this.maxTime = this.texts.length * 3 + 2;
       this.currentTimeScene = 3;
@@ -30,8 +33,8 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
     }).bind(scene);
 
     scene.update = (function(dt){
-      this.dog.pos =  petra.moveRight(this.dog.pos, this.dog.speed, dt);
-      this.dog.update(dt);
+      this.foreground.pos =  petra.calculateNextPositionByAngle(this.foreground, dt);
+      
       this.time += dt;
       if(this.time >= this.maxTime || this.skipped){
         this.completed = true;
@@ -47,25 +50,27 @@ define( ['game/models/models', 'petra','game/entities', 'resources','raf', 'quad
       }
     }
 
+
     scene.render = (function(){
-      this.bufferCtx.fillStyle = "#33337a";
-      this.bufferCtx.fillRect(0,0,canvas.width,canvas.height);
-      this.bufferCtx.fillStyle = 'white';
+      this.bufferCtx.drawImage(resources.get('images/scenes/intro_1_background.png'), 0,0,this.canvas.width,this.canvas.height);
+
+      //TODO: adjust fonts
       this.bufferCtx.font = 15  * window.RESIZEFACTOR + "x 'Press Start 2P'";
 
       if(this.currentText){
         for(var i = 0; i < this.currentText.length ; i++){
           b = i+1;
-          var y = (80  * window.RESIZEFACTOR * b) + b* 10  * window.RESIZEFACTOR;
-          this.bufferCtx.fillText(this.currentText[i], 40  * window.RESIZEFACTOR, y);    
+          var y = (this.canvas.height/2  * window.RESIZEFACTOR * b) + b* 10  * window.RESIZEFACTOR;
+          var x =  40  * window.RESIZEFACTOR;
+          this.jittedText(this.currentText[i],x,y);
         }
         
       }
 
       this.bufferCtx.font = 10 * window.RESIZEFACTOR + "px 'Press Start 2P'";
-      this.bufferCtx.fillText('Touch screen to skip the awesome story', 15  * window.RESIZEFACTOR,15  * window.RESIZEFACTOR)
+      this.bufferCtx.fillText('Touch screen to skip', 15  * window.RESIZEFACTOR,(this.canvas.height - 20)  * window.RESIZEFACTOR)
 
-      this.renderEntities([this.dog]);
+      this.bufferCtx.drawImage(resources.get('images/scenes/intro_1_foreground.png'), this.foreground.pos[0],  this.foreground.pos[1],this.canvas.width, this.canvas.height)
     }).bind(scene);
 
     scene.load();
