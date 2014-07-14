@@ -8,60 +8,12 @@ define(['angular', 'app'], function(angular, BombTouchApp ){
       {
         name :'In Game Concept - Rob Tyler',
         song: new Howl({
-          urls: ['sounds/songs/CoolDog_InGameConcept01.m4a'],
+          urls: ['sounds/songs/CoolDog_SpaceJunkyard_Full.m4a'],
           volume: 0.5,
           loop: true
         })
       }
-       /* {
-          name :'Broken Reality',
-          song: new Howl({
-            urls: ['sounds/songs/broken_reality.mp3'],
-            volume: 0.5
-          })
-        },
-        {
-          name :'Montego - Reggae',
-          song: new Howl({
-            urls: ['sounds/songs/montego.mp3'],
-            volume: 0.5
-          })
-        },
-        {
-          name: 'Hustle - Blues',
-          song: new Howl({
-            urls: ['sounds/songs/hustle_blues.mp3'],
-            volume: 0.5
-          })
-        },
-        {
-          name : 'Thiaz itch : Bubblin pipe',
-          song: new Howl({
-            urls: ['sounds/songs/thiaz_itch_bubblin_pipe.mp3'],
-            volume: 0.5
-          })
-        },
-        {
-          name : 'Night of chaos - Horror',
-          song: new Howl({
-            urls: ['sounds/songs/nightofchaos_horror.mp3'],
-            volume: 0.5
-          })
-        },
-        {
-          name : 'Retro future dirty - Funk',
-          song: new Howl({
-            urls: ['sounds/songs/retrofuturedirty_funk.mp3'],
-            volume: 0.5
-          })
-        },
-        {
-          name : 'Shannon & the Clams - Tired Of being bad - Rockabilly',
-          song: new Howl({
-            urls: ['sounds/songs/shannon_and_the_clams_tired_of_being_bad_rockabilly.mp3'],
-            volume: 0.5
-          })
-        }*/
+
       ];
     
     function getSongs(){

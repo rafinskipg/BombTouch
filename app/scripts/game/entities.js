@@ -69,6 +69,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     }
   } 
   var coolDogShootingSpriteSchema = ['images/doggy/cooldog_final.png', [0, 30], [30,30], 8, [2,2,1,0]];
+  var coolDogShootingSpriteSchema2 = ['images/doggy/cooldog_final.png', [0, 60], [30,30], 8, [2,2,1,0]];
   var coolDogSpriteSchema = ['images/doggy/cooldog_final.png', [0, 0], [30,30], 8, [0, 1]];
   var coolDogMovingDownSpriteSchema = ['images/doggy/cooldog_final.png', [90, 0], [30,30], 8, [0, 1]];
   var coolDogMovingDownAndShootingSpriteSchema = ['images/doggy/cooldog_final.png', [90, 30], [30,30], 8, [2,2,1,0]];  
@@ -141,7 +142,8 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       animations: [
        {
           name: 'shoot',
-          sprite: coolDogShootingSpriteSchema
+          sprite: coolDogShootingSpriteSchema,
+          variations: [coolDogShootingSpriteSchema2]
         },
         {
           name: 'moveDown',
