@@ -143,7 +143,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
        {
           name: 'shoot',
           sprite: coolDogShootingSpriteSchema,
-          variations: [coolDogShootingSpriteSchema2]
+          variations: [coolDogShootingSpriteSchema2,coolDogShootingSpriteSchema]
         },
         {
           name: 'moveDown',
