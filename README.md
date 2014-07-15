@@ -17,15 +17,33 @@ by [VenturaStudios](http://venturastudios.org)
 You can contribute code with pull requests, if you want to contribute artworks or sounds you can email me at rafinskipg(at)gmail(dot)com.
 
 ### Todo list For Beta
-- Add to the localstorage info the current level played, the total gems used, total gems won fields.
-- Add the gems only if you won a game.
-- Add the use gems to unlock level.
-- Add object pooling
-- Redesign game mechanichs and levels.
-- Create a "worlds" or "planets" list, to choose levels.
-- Polish backgrounds and sprites
-- Add all the entities into quadtrees
-- Create intro scene
+- [DEVELOPMENT] Save the current level played, the total gems used, total gems won.
+- [DEVELOPMENT] Use gems to unlock level.
+- [DEVELOPMENT] Add object pooling
+- [DEVELOPMENT] Add quad tree for bullets / enemies
+- [DEVELOPMENT] Optimize the game, try CocoonJS with the full game.
+- [GAME DESIGN] Explain more in depth the mechanichs. We need the life of the monster, when and where the bonus / enemies appear, how many damage they do, how they move, etc.
+- [GAME DESIGN]**Some different mechanichs have to be analyzed in depth and sketched in notes for being evaluated as prototypes.**
+- [ART] Create the intro scene composed by several subscenes that will be animated. Decide which pieces will be animated and how will they be moved. Some sort of fire/light effects could be added by the developer. 
+- [ART] Talk with the lord audio leader for creating the best audio / image pair possible.
+- [AUDIO] Make the intro scene audio. Make the best decisions on the audio of the beta. 
+
+### Alpha enemies
+This is the list of the implemented enemies
+#### Various
+This are random stuff that appears on the screen
+![various_1](https://github.com/rafinskipg/BombTouch/tree/master/documentation/unknown.png)
+
+#### Rat
+This sprite may be redone
+![various_1](https://github.com/rafinskipg/BombTouch/tree/master/documentation/rat.png)
+
+#### Ship
+This sprite needs more animation frames
+![various_1](https://github.com/rafinskipg/BombTouch/tree/master/documentation/ship.png)
+
+#### To be implemented
+![various_1](https://github.com/rafinskipg/BombTouch/blob/master/app/images/arts/level_1.jpg)
 
 ### New game mechanics notes
 
