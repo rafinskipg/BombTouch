@@ -198,11 +198,10 @@ return BombTouchApp.
     preloadSounds();
     //TODO , here send levels director the stage 0, at "continue game" send the current Stag, increment the current stag
 
-    //LEVELS_DIRECTOR.init(5,1,20);
     canvas = document.getElementById("canvas");
     reset();
     toMouseListeners();
-    LEVELS_DIRECTOR.init(names,1,true,canvas,LEVEL_STRUCTURE);
+    LEVELS_DIRECTOR.init(names,5,true,canvas,LEVEL_STRUCTURE);
     suscribeToEvents();
     main();
   };

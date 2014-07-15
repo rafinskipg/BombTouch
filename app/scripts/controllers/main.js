@@ -22,7 +22,8 @@ define(['angular', 'app'], function(angular, BombTouchApp){
           opts.gameState.newBadges = badgesSrv.checkIfWonBadges(opts.gameState, settingsSrv.getLevel());
           localStorageSrv.saveGameState(opts.gameState);
           $location.path('/gameover');
-        }, 'main_gameover');
+          window.location.hash('#/main')
+        }.bind(this), 'main_gameover');
         
         $scope.start();
 
