@@ -32,18 +32,18 @@ You can contribute code with pull requests, if you want to contribute artworks o
 This is the list of the implemented enemies
 #### Various
 This are random stuff that appears on the screen
-![various_1](https://github.com/rafinskipg/BombTouch/tree/master/documentation/unknown.png)
+![various_1](https://raw.githubusercontent.com/rafinskipg/BombTouch/master/documentation/enemies/unknown.png)
 
 #### Rat
 This sprite may be redone
-![various_1](https://github.com/rafinskipg/BombTouch/tree/master/documentation/rat.png)
+![various_1](https://raw.githubusercontent.com/rafinskipg/BombTouch/master/documentation/enemies/rat.png)
 
 #### Ship
 This sprite needs more animation frames
-![various_1](https://github.com/rafinskipg/BombTouch/tree/master/documentation/ship.png)
+![various_1](https://raw.githubusercontent.com/rafinskipg/BombTouch/master/documentation/enemies/ship.png)
 
 #### To be implemented
-![various_1](https://github.com/rafinskipg/BombTouch/blob/master/app/images/arts/level_1.jpg)
+![various_1](https://raw.githubusercontent.com/rafinskipg/BombTouch/master/app/images/arts/level_1.jpg)
 
 ### New game mechanics notes
 
