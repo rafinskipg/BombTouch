@@ -28,6 +28,7 @@ return BombTouchApp.
   }
 
   var STATE = getDefaultState();
+  var isShooting = false;
 
   function getDefaultTimers(){
     return {
@@ -212,7 +213,7 @@ return BombTouchApp.
   }
 
   function toMouseListeners(){
-    console.log(canvas.width, window.innerWidth);
+
     var variation = canvas.width / window.innerWidth;
     canvas.addEventListener('touchmove', function(ev){
       var x = ev.targetTouches[0].pageX - canvas.offsetLeft;
@@ -226,8 +227,7 @@ return BombTouchApp.
           y : y - player.getHeight()/2
         }
       }
-
-      shoot();
+      isShooting = true;
       ev.preventDefault();
     });
     canvas.addEventListener('touchstart', function(ev){
@@ -247,6 +247,7 @@ return BombTouchApp.
 
     canvas.addEventListener('touchend', function(){
       touchInputs = null;
+      isShooting = false;
     })
     
     var options = {
@@ -452,7 +453,11 @@ return BombTouchApp.
   function createDialog(message, entity){
     inGameDialogs.push(new models.Dialog(message, entity));
   }
-
+  function handleUserShoots(){
+    if(isShooting){
+      shoot();
+    }
+  }
   function shoot(){
     if(!isGameOver() &&
       TIMERS.gameTime - TIMERS.lastFire > player.weapon.options.shootDelay) {
@@ -1036,56 +1041,16 @@ return BombTouchApp.
   /* Updates */
   
   function updatePlayer(dt){
+
     
+    movePlayer(dt);
+    setPlayerAnimation();
+    handleUserShoots();
     if(TIMERS.shootSpriteTime > 0){
       TIMERS.shootSpriteTime -= dt;
       if(TIMERS.shootSpriteTime <= 0){
         TIMERS.shootSpriteTime = 0;
         player.shooting = false;
-      }
-    }
-
-    var previouslyMovingDown =  player.moving == 'down';
-    player.moving = null;
-
-    if(touchInputs){
-      var newPosX = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
-      var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
-      if(newPosY > player.pos[1]){
-        player.moving = 'down';
-      }else if(newPosY < player.pos[1]){
-        player.moving = 'up';
-      }else{
-        player.moving == null;
-      }
-      player.pos[0] = newPosX;
-      player.pos[1] =newPosY;
-    }else if(player.dir){
-      player = petra.moveToDirection(dt, player.dir)(player);
-      player.moving =player.dir;
-    }
-
-    if(player.shooting){
-      if(player.moving == 'down'){
-        SCENARIO.moveDown();
-        player.setAnimation('shootMoveDown');
-      }else if(player.moving == 'up'){
-        player.setAnimation('shootMoveUp');
-        SCENARIO.moveUp();
-      }else{
-        player.setAnimation('shoot');
-        SCENARIO.stopMove();
-      }
-    }else{
-      if(player.moving == 'down'){
-        player.setAnimation('moveDown');
-        SCENARIO.moveDown();
-      }else if(player.moving == 'up'){
-        player.setAnimation('moveUp');
-        SCENARIO.moveUp();
-      }else {
-        player.setDefaultAnimation();
-        SCENARIO.stopMove();
       }
     }
 
@@ -1097,6 +1062,70 @@ return BombTouchApp.
     }
 
     player.update(dt);
+  }
+
+  function getPlayerAnimationName(){
+    var animationName;
+    if(player.shooting){
+      if(player.moving == 'down'){
+        SCENARIO.moveDown();
+        animationName = 'shootMoveDown';
+      }else if(player.moving == 'up'){
+        animationName = 'shootMoveUp';
+        SCENARIO.moveUp();
+      }else{
+        animationName = 'shoot';
+        SCENARIO.stopMove();
+      }
+    }else{
+      if(player.moving == 'down'){
+        animationName = 'moveDown';
+        SCENARIO.moveDown();
+      }else if(player.moving == 'up'){
+        animationName = 'moveUp';
+        SCENARIO.moveUp();
+      }else {
+        animationName = 'default';
+        SCENARIO.stopMove();
+      }
+    }
+
+    return animationName;
+  }
+
+  function setPlayerAnimation(){
+    var previousPlayerAnimation = player.enabledAnimation;
+    var animationName = getPlayerAnimationName();
+    //If the animation name changes,update it
+    if(previousPlayerAnimation != animationName){
+      console.log(previousPlayerAnimation, animationName);
+      player.setAnimation(animationName);
+      player.getAnimation().setEndCallback(function(){
+        //For randomnly updating the animation
+        setPlayerAnimation();
+      });
+    }
+  }
+
+  function movePlayer(dt){
+    if(touchInputs){
+      var newPosX = petra.lerp3(player.pos[0], touchInputs.pos.x,player.speed, dt) ;
+      var newPosY = petra.lerp3(player.pos[1], touchInputs.pos.y,player.speed, dt) ;
+      if(newPosY > player.pos[1]){
+        player.moving = 'down';
+      }else if(newPosY < player.pos[1]){
+        player.moving = 'up';
+      }else{
+        player.moving == null;
+      }
+      player.pos[0] = newPosX;
+      player.pos[1] = newPosY;
+    }else if(player.dir){
+      player.player = petra.moveToDirection(dt, player.dir)(player);
+      player.moving = player.dir;
+    }else{
+      player.moving = null;
+    }
   }
 
   function updateEntititesAndMoveAndRemoveIfOutsideScreen(entities, dt){

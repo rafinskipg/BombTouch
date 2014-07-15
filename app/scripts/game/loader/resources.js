@@ -24,7 +24,7 @@ define( ['px_loader','px_loader_image','px_loader_audio'], function(){
     function _load(url) {
       if(resourceCache[url]) {
         return;
-      }else if( (/(\.mp4|\.mp3|\.ogg|\.wav)/).test(url) ){
+      }else if( (/(\.mp4|\.mp3|\.ogg|\.m4a|\.wav)/).test(url) ){
           resourceCache[url] = loader.addAudio(url);
       }else{
           resourceCache[url] = loader.addImage(url);

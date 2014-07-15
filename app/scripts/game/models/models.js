@@ -119,7 +119,6 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     this.baseDamage = opts.baseDamage || 0;
     this.points = opts.points || 0;
 
-    this.sprite = Sprite.construct(opts.sprite);
     this.transparency = opts.transparency ? opts.transparency :  null;
     this.animations = {};
 
@@ -139,29 +138,17 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
 
     this.messages = opts.messages || null;
 
-    if(opts.resize){
-      this.sprite.resize(opts.resize[0], opts.resize[1]);
-    }
-
-
-    if(opts.resizePercentage){
-      this.sprite.resize(Math.floor(this.sprite.getSize()[0]*opts.resizePercentage),Math.floor(this.sprite.getSize()[1]*opts.resizePercentage) );
-    }
+    this.sprite = constructAnimation(opts.sprite,this, opts.resize, opts.resizePercentage)
 
     if(opts.animations){
       var self = this;
       opts.animations.map(function(anim){ 
-        self.animations[anim.name] = Sprite.construct(anim.sprite);
-        if(anim.resetAfterEnd){
-          self.animations[anim.name].setEndCallback(function(){
-            this.setDefaultAnimation();
-          }.bind(self));
-        }
-        if(opts.resize){
-          self.animations[anim.name].resize(opts.resize[0], opts.resize[1]);
-        }
-        if(opts.resizePercentage){
-          self.animations[anim.name].resize(Math.floor(self.animations[anim.name].getSize()[0]*opts.resizePercentage),Math.floor(self.animations[anim.name].getSize()[1]*opts.resizePercentage) );
+        self.animations[anim.name] = constructAnimation(anim.sprite, self, opts.resize, opts.resizePercentage, anim.resetAfterEnd);
+        if(anim.variations){
+          self.animations[anim.name].variations = [];
+          for(var i = 0; i < anim.variations.length; i++){
+            self.animations[anim.name].variations[i] = constructAnimation(anim.variations[i], self,opts.resize, opts.resizePercentage, anim.resetAfterEnd);
+          }
         }
       });
     }
@@ -169,6 +156,22 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     this.enabledAnimation = 'default';
     this.hitbox = opts.hitbox || null;
     
+  }
+
+  function constructAnimation(anim,self, resize, resizePercentage, resetAnimation){
+    var animation = Sprite.construct(anim);
+    if(resetAnimation){
+      animation.setEndCallback(function(){
+        this.setDefaultAnimation();
+      }.bind(self));
+    }
+    if(resize){
+      animation.resize(resize[0], resize[1]);
+    }
+    if(resizePercentage){
+      animation.resize(Math.floor(animation.getSize()[0]*resizePercentage),Math.floor(animation.getSize()[1]*resizePercentage) );
+    }
+    return animation;
   }
 
   RenderableEntity.prototype.render = function(ctx){
@@ -187,11 +190,8 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
       ctx.stroke();
     }
 
-    if(this.enabledAnimation == 'default'){
-      this.sprite.render(ctx, this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation(), this.transparency);
-    }else{
-      this.animations[this.enabledAnimation].render(ctx,this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation(), this.transparency);
-    }
+    this.getAnimation().render(ctx, this.getLookingPosition(), this.renderTranslated, this.getCenterOfRotation(), this.transparency);
+
   }
   RenderableEntity.prototype.getCenterOfRotation = function(){
     if(this.centerOfRotation){
@@ -202,16 +202,18 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     }
   }
 
-  RenderableEntity.prototype.getSprite = function(){
+  RenderableEntity.prototype.getAnimation = function(){
     if(this.enabledAnimation == 'default'){
       return this.sprite;
+    }else if(this.variation){
+      return this.variation;
     }else{
       return this.animations[this.enabledAnimation];
     }
   }
 
   RenderableEntity.prototype.getSize = function(){
-    return this.getSprite().getSize();
+    return this.getAnimation().getSize();
   }
   RenderableEntity.prototype.resizeByFactor = function(factor){
     this.resizeFactor = factor;
@@ -262,7 +264,7 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     //If it has a specified rotation angle. If not we leave it by default
     if(this.getLookingPosition()){
       var angle = this.getBulletAngle();
-      if(this.getSprite().lookingLeft){
+      if(this.getAnimation().lookingLeft){
         angle = angle -Math.PI;
       }
       squareHitB.rotate(angle);  
@@ -348,34 +350,45 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
   }
 
   RenderableEntity.prototype.resetAnimation = function(animation){
-    if(animation == 'default'){
-      this.sprite.reset();
-    }else{
-      this.animations[this.enabledAnimation].reset();
-    }
+    console.log('reseting')
+    this.getAnimation().reset();
   }
 
   RenderableEntity.prototype.setAnimation = function(name, cb,reset){
     if(this.animations[name]){
+
       this.enabledAnimation = name;
+      if(this.animations[name].variations){
+        this.variation = petra.getRandomElementFromArray(this.animations[name].variations);
+      }else{
+        this.variation = null;
+      }
       if(cb){
         this.animations[this.enabledAnimation].setFrameChangeCallback(cb);
       }
       if(reset){
         this.resetAnimation(this.enabledAnimation);
       }
+
+    }else{
+      this.setDefaultAnimation();
+      if(cb){
+        this.sprite.setFrameChangeCallback(cb);
+      }
+      
+      this.variation = null;
+      if(reset){
+        this.resetAnimation('default');
+      }
     }
   }
+
   RenderableEntity.prototype.setDefaultAnimation = function(){
     this.enabledAnimation = 'default';
   }
 
   RenderableEntity.prototype.update = function(dt){
-    if(this.enabledAnimation == 'default'){
-      this.sprite.update(dt);
-    }else{
-      this.animations[this.enabledAnimation].update(dt);
-    }
+    this.getAnimation().update(dt);
     if(this.behaviourUpdate){
       this.behaviourUpdate(dt);
     }
@@ -402,7 +415,7 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
 
   RenderableEntity.prototype.getShootOrigin = function(){
     var angle = this.getBulletAngle() ;
-    angle = this.getSprite().lookingLeft ? angle - Math.PI: angle;
+    angle = this.getAnimation().lookingLeft ? angle - Math.PI: angle;
     var center = this.getCenterOfRotation();
     var point =petra.sumArrays([0,0], this.shootOrigin);
 

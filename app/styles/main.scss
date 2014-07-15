@@ -26,7 +26,6 @@ pre{
 }
 body {
     background-color: black;
-    //background: url('../images/hud/home_bg.png');
     background: url('../images/hud/home_bg_pixelated.png') rgb(24, 19, 49);
 }
 
@@ -73,6 +72,7 @@ h1,h2,h3,h4,h5{
     }
     background: $introTexts;
     padding-top: 40px;
+    padding-bottom: 20px;
 }
 
 .top_tab_trigger{
