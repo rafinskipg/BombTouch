@@ -226,9 +226,9 @@ define( [ 'hu','game/entities', 'petra'], function(hu, EL, petra){
       pos = [width, Math.random() * (height - 39)]
     }else if(method == 'vshape'){
       if(CURRENT_ENEMY %2 == 0){
-        pos = [width, height /2 + 40 * CURRENT_ENEMY]
+        pos = [width, height /2 + 80 * CURRENT_ENEMY]
       }else{
-        pos = [width, height /2 - 80 * CURRENT_ENEMY]
+        pos = [width, height /2 - 180 * CURRENT_ENEMY]
       }
     }
     return pos;

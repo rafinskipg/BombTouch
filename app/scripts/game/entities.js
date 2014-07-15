@@ -37,7 +37,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       aiming :['images/enemies/level_1.png', [0,125], [50, 50], 1, [0],true]
     }
   }
-  var level1_battleStationSprite  = ['images/enemies/level_1.png', [0,175], [100, 100], 1, [0], true];
+  var level1_battleStationSprite  = ['images/enemies/level_1.png', [45,185], [50, 40], 1, [0], true];
   
   var level1_worm_headSprite  = ['images/enemies/level_1.png', [0,150], [50, 50], 1, [0], true];
   var level1_worm_bodySprite  = ['images/enemies/level_1.png', [50,150], [50, 50], 1, [0], true];
@@ -376,8 +376,9 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       bulletName: 'redBullet',
       totalLife: 1000,
       messages: ['alpha bravo rat', 'v formation', 'clearing area'],
-      resize: [100,100],
+      resize: [140,120],
       damage: 20,
+      shootOrigin: [-10,80],
       actions : [{name: 'enemyShoot', delay: 2.5}]
     }
   }
