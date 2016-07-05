@@ -16,7 +16,7 @@ requirejs.config({
     ngroute : '../bower_components/angular-route/angular-route',
     howler : '../bower_components/howler/howler.min',
     fastclick: '../bower_components/fastclick-amd/fastclick',
-    scroll_reveal: '../bower_components/scrollReveal.js/dist/scrollReveal.min',
+    scroll_reveal: '../bower_components/scrollreveal/dist/scrollReveal.min',
     px_loader: '../bower_components/PxLoaderNoDependencies/PxLoader',
     px_loader_audio: '../bower_components/PxLoaderNoDependencies/PxLoaderAudio',
     px_loader_image: '../bower_components/PxLoaderNoDependencies/PxLoaderImage',

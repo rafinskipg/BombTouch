@@ -2,8 +2,10 @@
 'use strict';
 var LIVERELOAD_PORT = 35729;
 var lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
-var mountFolder = function (connect, dir) {
-  return connect.static(require('path').resolve(dir));
+var serveStatic = require('serve-static');
+
+var mountFolder = function (dir) {
+  return serveStatic(require('path').resolve(dir));
 };
 
 // # Globbing
@@ -79,8 +81,8 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               lrSnippet,
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.app)
+              mountFolder('.tmp'),
+              mountFolder(yeomanConfig.app)
             ];
           }
         }
@@ -89,8 +91,8 @@ module.exports = function (grunt) {
         options: {
           middleware: function (connect) {
             return [
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, 'test')
+              mountFolder('.tmp'),
+              mountFolder('test')
             ];
           }
         }
@@ -99,7 +101,7 @@ module.exports = function (grunt) {
         options: {
           middleware: function (connect) {
             return [
-              mountFolder(connect, yeomanConfig.dist)
+              mountFolder(yeomanConfig.dist)
             ];
           }
         }
@@ -107,7 +109,7 @@ module.exports = function (grunt) {
     },
     open: {
       server: {
-        url: 'http://localhost:<%= connect.options.port %>'
+        url: 'http://0.0.0.0:<%= connect.options.port %>'
       }
     },
     clean: {
@@ -155,6 +157,17 @@ module.exports = function (grunt) {
           ext: '.js'
         }]
       }
+    },
+    sass: {
+        options: {
+            sourceMap: true,
+            includePaths: ['<%= yeoman.app %>/bower_components']
+        },
+        dist: {
+            files: {
+                '.tmp/styles/main.css': '<%= yeoman.app %>/styles/main.scss'
+            }
+        }
     },
     compass: {
       options: {
@@ -313,7 +326,8 @@ module.exports = function (grunt) {
     concurrent: {
       server: [
         'coffee:dist',
-        'compass:server',
+        //'compass:server',
+        'sass',
         'copy:styles'
       ],
       test: [
