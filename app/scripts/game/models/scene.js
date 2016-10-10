@@ -106,7 +106,7 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     var x = Math.round(this.offSetX + entity.getX())
     var y = Math.round(this.offSetY + entity.getY())
 
-    if(true){
+    if(window.DEBUGGER){
       this.bufferCtx.beginPath();
       this.bufferCtx.rect(x, y, 5, 7);
       this.bufferCtx.fillStyle = 'green';

@@ -283,7 +283,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 65,
       totalLife: 65,
       resize: [50,50],
-      damage: 5
+      damage: 5,
+      actions : [
+        {name: 'moveDown', delay: 0.3},
+        {name: 'moveUp', delay: 0.3}
+      ]
     }, 'unknown2' : {
       sprite: level1_unknown2Sprite,
       speed: [105,65],
@@ -292,7 +296,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 65,
       totalLife: 65,
       resize: [50,50],
-      damage: 5
+      damage: 5,
+      actions : [
+        {name: 'moveDown', delay: 0.3},
+        {name: 'moveUp', delay: 0.3}
+      ]
     }, 'unknown3' : {
       sprite: level1_unknown3Sprite,
       speed: [105,105],
@@ -301,7 +309,11 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 65,
       totalLife: 65,
       resize: [50,50],
-      damage: 5
+      damage: 5,
+      actions : [
+        {name: 'moveDown', delay: 0.3},
+        {name: 'moveUp', delay: 0.3}
+      ]
     },'unknown4' : {
       sprite: level1_unknown4Sprite,
       speed: [105,105],
@@ -310,11 +322,15 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       life: 65,
       totalLife: 65,
       resize: [50,50],
-      damage: 5
+      damage: 5,
+      actions : [
+        {name: 'moveDown', delay: 0.3},
+        {name: 'moveUp', delay: 0.3}
+      ]
     },
     'rat' : {
       sprite: level1_ratSprite,
-      speed: [105,105],
+      speed: [60,60],
       points: 50,
       angle: 1,
       shootOrigin: [5,25],
@@ -341,7 +357,13 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
           resetAfterEnd: true
         }
       ],
-      actions : [{name: 'enemyShoot', delay: 0.5}, {name: 'doubleShoot', delay: 0.8}]
+      actions : [
+        {name: 'enemyShoot', delay: 0.8}, 
+        {name: 'moveStraight', delay: petra.randomFloat(0.1, 0.8)},
+        {name: 'moveDown', delay: petra.randomFloat(0.1, 0.8)},
+        {name: 'doubleShoot', delay: 0.8},
+        {name: 'moveUp', delay: petra.randomFloat(0.1, 0.8)}
+      ]
     },
     'drone': {
       sprite: level1_droneSpriteDefinition.normal.standby,
@@ -379,7 +401,14 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       resize: [112,96],
       damage: 20,
       shootOrigin: [-10,80],
-      actions : [{name: 'enemyShoot', delay: 0.5}, {name: 'moveUp', delay: 0.5},{name: 'enemyShoot', delay: 0.5}, {name: 'moveDown', delay: 0.5},]
+      actions : [
+        {name: 'moveStraight', delay: 0.1},
+        {name: 'enemyShoot', delay: 0.1},
+        {name: 'moveUp', delay: petra.randomFloat(0.1, 0.8)},
+        {name: 'enemyShoot', delay: 0.5}, 
+        {name: 'moveDown', delay: petra.randomFloat(0.1, 0.8)},
+        {name: 'enemyShoot', delay: 0.2},  
+        {name: 'enemyShoot', delay: 0.5}]
     }
   }
 

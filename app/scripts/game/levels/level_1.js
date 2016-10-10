@@ -13,7 +13,7 @@ var stageStructure = {
   stages : [
 
     {
-      groups: [['ratship'],['unknown1','unknown2'],['unknown3','unknown2','unknown1'],
+      groups: [['unknown1'],['unknown1','unknown2'],['unknown3','unknown2','unknown1'],
         ['unknown1','unknown2','unknown3'],['rat'],
         ['unknown2','unknown3','unknown4', 'rat']
       ]

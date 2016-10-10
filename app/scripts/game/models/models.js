@@ -181,7 +181,7 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
   }
 
   RenderableEntity.prototype.render = function (ctx, x, y){
-    if(this.hitbox){
+    if(window.DEBUGGER && this.hitbox){
       ctx.beginPath();
       var hitbox = this.getHitBox();
 

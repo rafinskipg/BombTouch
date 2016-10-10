@@ -100,7 +100,7 @@ define( [ 'game/models/bullets'], function( bullets){
     this.options = new Weapon({
       shootDelay: 0.5,
       color: 'blue',
-      damage: 60,
+      damage: 30,
       range: 200
     });
 
