@@ -158,6 +158,12 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     
   }
 
+  RenderableEntity.prototype.addLife = function (bonusLife){
+    var totalLife = this.life + bonusLife > this.totalLife ? this.life + bonusLife : this.totalLife
+    this.life += bonusLife;
+    this.totalLife = totalLife;
+  }
+
   function constructAnimation(anim,self, resize, resizePercentage, resetAnimation){
     var animation = Sprite.construct(anim);
     if(resetAnimation){
@@ -174,8 +180,8 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     return animation;
   }
 
-  RenderableEntity.prototype.render = function(ctx){
-    if(window.DEBUGGER && this.hitbox){
+  RenderableEntity.prototype.render = function (ctx, x, y){
+    if(this.hitbox){
       ctx.beginPath();
       var hitbox = this.getHitBox();
 
@@ -285,7 +291,7 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
     return this.pos[1];
   }
 
-  RenderableEntity.prototype.drawLife = function(ctx){
+  RenderableEntity.prototype.drawLife = function (ctx,x, y){
     var hitBoxWidth = this.getHitBox().width;
 
     var lifeSize = hitBoxWidth;
@@ -329,7 +335,6 @@ define( ['game/models/scene', 'petra', 'game/models/bullets', 'game/models/hitbo
       index++;
     }
     fillColor(ctx, color);
-
   }
   function fillColor(ctx, color){
     ctx.fillStyle = color;

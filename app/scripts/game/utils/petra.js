@@ -31,7 +31,7 @@ define( ['hu'], function(hu){
     }
 
     Petra.passProbabilities = function(probabilitieNumber){
-      return ((probabilitieNumber * 100) >= Petra.random(0,100))
+      return ((probabilitieNumber * 100) >= Petra.random(0,100)) && probabilitieNumber * 100 > 0
     }
 
     Petra.moveToDirection = function(dt, dir){

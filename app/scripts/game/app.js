@@ -334,7 +334,7 @@ return BombTouchApp.
     SCENARIO.init();
     setDefaultStateForEntities();
     player = EL.getEntity(names.main_character_name,{pos: [50, canvas.height / 2]});
-    player.weapon = new Weapons.ShotGun();
+    player.weapon = new Weapons.Pistol();
 
     player.bonuses = {};
     TIMERS = getDefaultTimers();
@@ -470,9 +470,10 @@ return BombTouchApp.
       var isCriticalStrike = petra.passProbabilities(player.critChance);
       if(isCriticalStrike){
         pointsToRender.push(new models.RenderableText({
-          text: 'critical strike!!',
-          color: 'rgba(69, 187, 111, 0.49)',
+          text: 'crit',
+          color: 'green',
           timeAlive: 0, 
+          font: '9px',
           speed: [50 * window.RESIZEFACTOR,50 * window.RESIZEFACTOR],
           pos: player.pos
         }));
@@ -520,7 +521,8 @@ return BombTouchApp.
     }
     pointsToRender.push(new models.RenderableText({
       text: pts,
-      color: 'rgba(39, 214, 46, 0.61)',
+      color: '#F7D358',
+      font: '9px',
       timeAlive: 0, 
       speed: [50,50],
       pos: petra.sumIntegerToArray(pos, 30)
@@ -627,28 +629,31 @@ return BombTouchApp.
     LEVELS_DIRECTOR.pickedDogeBonus();
     entity.hasBonus = true;
     addPoints(200, entity.pos);
-    entity.life += 200;
-    entity.totalLife += 200;
+
+    entity.addLife(200)
+    entity.critChance += 0.05;
   
     bonusWeapons = [EL.getEntity('bonusWeapon', {pos:entity.pos})];
     playSound(SOUNDS.yeah);
     var message = new models.Message(MESSAGES.wow, names.bonus_image_name, 1500);
     createDialog(message, bonusWeapons[0]);
   }
+
   function doubleWeaponBonusObtain(entity){
     player.weapon = new Weapons.DoubleShoot();
-    entity.bonuses.weapon = 10;
+    entity.critChance += 0.05;
   }
   function shotGunBonusObtain(entity){
     player.weapon = new Weapons.ShotGun();
-    entity.bonuses.weapon = 10;
+    entity.critChance += 0.05;
   }
   function rapidShotBonusObtain(entity){
     player.weapon = new Weapons.RapidFire();
-    entity.bonuses.weapon = 10;
+    entity.critChance += 0.05;
   }
   function greenGemBonusObtain(entity, bonus){
     addPoints(bonus.points, bonus.pos);
+    entity.addLife(50)
     STATE.gemsPicked++;
   }
 
@@ -931,7 +936,12 @@ return BombTouchApp.
       enemyShoot(entity,1.0 *Math.PI);
       enemyShoot(entity,1.2 *Math.PI);
       enemyShoot(entity,1.4 *Math.PI);
+    }else if(action =='moveUp'){
+      entity.angle = 1
+    }else if(action =='moveDown'){
+      entity.angle = -1
     }else if(action =='teleport'){
+      entity.angle = 1
       entity.setAnimation('teleport'+life, function(frame,index){
         var times = 0;
         if(frame == 6 && times < 1){
@@ -1054,11 +1064,8 @@ return BombTouchApp.
       }
     }
 
-    if(player.bonuses.weapon){
-      player.bonuses.weapon -= dt;
-      if(player.bonuses.weapon <= 0){
-        player.weapon = new Weapons.Pistol();
-      }
+    if(player.weapon.withAmmo && player.weapon.bullets <= 0){
+      player.weapon = new Weapons.Pistol();
     }
 
     player.update(dt);
@@ -1366,8 +1373,9 @@ return BombTouchApp.
     return function(item){
       if(entitiesCollide(entity,item)){
         pointsToRender.push(new models.RenderableText({
-          text: item.damage,
+          text: item.damage + ' dmg',
           color: 'rgba(169, 81, 185, 0.61)',
+          font: '8px',
           timeAlive: 0, 
           speed: [50,50],
           pos: entity.pos
@@ -1427,8 +1435,9 @@ return BombTouchApp.
     SCENARIO.screenShake();
 
     pointsToRender.push(new models.RenderableText({
-      text: damage,
+      text: damage + ' dmg',
       color: 'rgba(255, 0, 0, 0.61)',
+      font: '8px',
       timeAlive: 0, 
       speed: [50 * window.RESIZEFACTOR, 50 * window.RESIZEFACTOR],
       pos: [player.getX(), player.getY()]
@@ -1615,8 +1624,32 @@ return BombTouchApp.
   };
 
   function getTextEntitiesToRender(){
+  
+    var weaponText = player.weapon.bullets + ' bullets'
+
+    var points = new models.RenderableText({
+      text: STATE.points + ' points',
+      color: 'yellow',
+      timeAlive: 0, 
+      font: '9px',
+      speed: [0,0],
+      pos: [100,100]
+    })
+
+    var weaponTime = new models.RenderableText({
+      text: weaponText,
+      color: 'green',
+      timeAlive: 0, 
+      font: '9px',
+      speed: [0,0],
+      pos: [200,100]
+    })
+
     return [{
       entities: pointsToRender,
+      type: 'basic'
+    },{
+      entities: [points, weaponTime],
       type: 'basic'
     },{
       entities: inGameDialogs,

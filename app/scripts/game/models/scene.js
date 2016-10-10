@@ -103,10 +103,12 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
   }
 
   Scene.prototype.renderEntity = function(entity) {
-    
-    if(window.DEBUGGER){
+    var x = Math.round(this.offSetX + entity.getX())
+    var y = Math.round(this.offSetY + entity.getY())
+
+    if(true){
       this.bufferCtx.beginPath();
-      this.bufferCtx.rect((this.offSetX + entity.getX()),this.offSetY + entity.getY(), 5, 7);
+      this.bufferCtx.rect(x, y, 5, 7);
       this.bufferCtx.fillStyle = 'green';
       this.bufferCtx.fill();
       
@@ -119,15 +121,20 @@ define( ['game/loader/loader','petra', 'raf'], function(Loader, petra){
     }
 
     this.bufferCtx.save();
-    this.bufferCtx.translate(Math.round(this.offSetX + entity.getX()), Math.round(this.offSetY + entity.getY()));
-    entity.render(this.bufferCtx);
+    
+    this.bufferCtx.translate(x, y);
+    entity.render(this.bufferCtx, x, y);
     this.bufferCtx.restore();
 
     if(entity.life){
       this.bufferCtx.save();
-      this.bufferCtx.translate(Math.round(this.offSetX +entity.getHitBoxLeftPadding()), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
+      this.bufferCtx.translate(Math.round(this.offSetX + entity.getHitBoxLeftPadding()), Math.round(this.offSetY + entity.getY() + entity.getHeight()));
       entity.drawLife(this.bufferCtx);
       this.bufferCtx.restore();
+      var damage = entity.weapon ? entity.weapon.options.damage : entity.damage 
+      this.renderText({pos: [entity.pos[0], entity.pos[1] - 10], text: entity.life + ' hp', font: '9px', color: 'green'})
+      this.renderText({pos: entity.pos, text: damage + ' dmg', font: '9px', color: 'green'})
+      this.renderText({pos: [entity.pos[0], entity.pos[1] + 10], text: Math.round(entity.critChance * 100)  + '% crit', font: '9px', color: 'green'})
     }
 
   }

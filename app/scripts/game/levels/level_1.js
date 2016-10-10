@@ -13,25 +13,25 @@ var stageStructure = {
   stages : [
 
     {
-      groups: [['rat'],['unknown1','unknown2'],['unknown3','unknown2','unknown1'],
-        ['unknown1','unknown2','unknown3'],['rat','unknown3','unknown4'],
-        ['unknown2','unknown3','unknown4'],['unknown4','unknown3','unknown1']
+      groups: [['ratship'],['unknown1','unknown2'],['unknown3','unknown2','unknown1'],
+        ['unknown1','unknown2','unknown3'],['rat'],
+        ['unknown2','unknown3','unknown4', 'rat']
       ]
     },
     {
       groups: [
-        ['rat','rat'],['unknown1', 'rat','rat','rat'],['unknown3', 'rat','rat','rat'],['unknown2', 'drone','unknown4','rat'],['unknown2', 'rat','rat','rat'], ['unknown3', 'rat','rat','rat']
+        ['rat','rat'],['unknown1', 'rat','rat','rat'],['rat','rat','rat'],['unknown2'], ['drone'],['rat', 'rat','drone','rat']
         ]
     },
     {
       groups:[
-        ['rat','drone'],['unknown1', 'unknown3','rat','rat'],['unknown2', 'drone','rat','unknown4'],['unknown3', 'drone','rat','rat'],['unknown1', 'rat','rat','rat'], ['unknown4', 'rat','rat','rat']
+        ['rat','drone', 'drone', 'drone', 'unknown1', 'unknown3', 'rat'], ['ratship']
         ]
     },
     {
       positioningMethod: 'vshape',
-      time_between_enemies:3,
-      time_between_groups: 5,
+      time_between_enemies:0.2,
+      time_between_groups: 2,
       groups: [
       ['ratship', 'ratship', 'ratship'],
       ['ratship', 'ratship', 'ratship'],

@@ -126,16 +126,16 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       sprite: coolDogSpriteSchema,
       damage: 30,
       baseDamage: 30,
-      critChance: 0.05,
+      critChance: 0.00,
       hitbox: {
         pos: [25,30],
         size: [30,40]
       },
       shootOrigin : [80, 40],
-      speed: [200,200],
+      speed: [250,250],
       angle: 0,
-      life: 100,
-      totalLife: 100,
+      life: 200,
+      totalLife: 200,
       hitArea: [80,56],
       resize: [80,80],
       isSuperSaiyan: false, 
@@ -277,7 +277,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
   var level_1_entities = {
     'unknown1' : {
       sprite: level1_unknown1Sprite,
-      speed: [65,65],
+      speed: [105,105],
       points: 25,
       angle: 1,
       life: 65,
@@ -286,7 +286,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       damage: 5
     }, 'unknown2' : {
       sprite: level1_unknown2Sprite,
-      speed: [65,65],
+      speed: [105,65],
       points: 25,
       angle: 1,
       life: 65,
@@ -295,7 +295,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       damage: 5
     }, 'unknown3' : {
       sprite: level1_unknown3Sprite,
-      speed: [65,65],
+      speed: [105,105],
       points: 25,
       angle: 1,
       life: 65,
@@ -304,7 +304,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       damage: 5
     },'unknown4' : {
       sprite: level1_unknown4Sprite,
-      speed: [65,65],
+      speed: [105,105],
       points: 25,
       angle: 1,
       life: 65,
@@ -314,7 +314,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
     },
     'rat' : {
       sprite: level1_ratSprite,
-      speed: [45,45],
+      speed: [105,105],
       points: 50,
       angle: 1,
       shootOrigin: [5,25],
@@ -341,7 +341,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
           resetAfterEnd: true
         }
       ],
-      actions : [{name: 'enemyShoot', delay: 2.5}]
+      actions : [{name: 'enemyShoot', delay: 0.5}, {name: 'doubleShoot', delay: 0.8}]
     },
     'drone': {
       sprite: level1_droneSpriteDefinition.normal.standby,
@@ -359,7 +359,7 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
         size: [40,40]
       },
       damage: 20,
-      actions : [{name: 'aim', delay: 1.5}, {name : 'neutralShoot', delay: 0.2}],
+      actions : [{name: 'aim', delay: 0.5}, {name : 'neutralShoot', delay: 0.2}],
       animations: [
         {
           name: 'aiming',
@@ -376,10 +376,10 @@ define( [ 'game/models/models','petra', 'hu'], function(Models,petra, hu){
       bulletName: 'redBullet',
       totalLife: 1000,
       messages: ['alpha bravo rat', 'v formation', 'clearing area'],
-      resize: [140,120],
+      resize: [112,96],
       damage: 20,
       shootOrigin: [-10,80],
-      actions : [{name: 'enemyShoot', delay: 2.5}]
+      actions : [{name: 'enemyShoot', delay: 0.5}, {name: 'moveUp', delay: 0.5},{name: 'enemyShoot', delay: 0.5}, {name: 'moveDown', delay: 0.5},]
     }
   }
 
